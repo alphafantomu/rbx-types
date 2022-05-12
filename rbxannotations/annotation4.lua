@@ -1,0 +1,2949 @@
+---@class RBXScriptConnection
+---@field public Connected bool
+---The `RBXScriptConnection` data type, also known as a Connection, is a
+---special object returned by the Connect method of an Event
+---(`DataType/RBXScriptSignal`). This is used primarily to disconnect a listener
+---from an `DataType/RBXScriptSignal`. For more information about events, see [Events](/scripting/events/index).
+RBXScriptConnection = {};
+---@return void
+---Disconnects the connection from the event.
+RBXScriptConnection.Disconnect = function(self) end;
+---@class RBXScriptSignal
+---The `RBXScriptSignal` data type, more commonly known as an **Event**, provides
+---a way for user-defined functions, called **listeners**, to call when something
+---happens in the game. When an event happens, the `RBXScriptSignal` fires and
+---calls any listeners that are connected to it. An `RBXScriptSignal` may also
+---pass arguments to each listener to provide extra information about the event.
+---For more information about events, see [Events](/scripting/events/index).
+RBXScriptSignal = {};
+---@param func function
+---@return RBXScriptConnection
+---Establishes a function to be called when the event fires. Returns
+---a `DataType/RBXScriptConnection` object associated with the connection.
+RBXScriptSignal.Connect = function(self, func) end;
+---@return Variant
+---Yields the current thread until the signal fires and returns the
+---arguments provided by the signal.
+RBXScriptSignal.Wait = function(self) end;
+---@class Random
+---The `Random` data type provides pseudorandom numbers.
+Random = {};
+---@param seed number
+---Returns a new `Random` object. If the seed parameter is not specified, it
+---will use a seed pulled from an internal entropy source.
+---@return Random
+Random.new = function(seed) end;
+---@param min int
+---@param max int
+---@return int
+---Returns a pseudorandom integer uniformly distributed over `[min, max]`.
+Random.NextInteger = function(self, min, max) end;
+---@return Vector3
+---Returns a unit vector with a pseudorandom direction. Vectors returned from
+---this function are uniformly distributed over the unit sphere.
+Random.NextUnitVector = function(self) end;
+---@overload fun(self, min: number, max: number): number
+---@return number
+---Returns a pseudorandom number uniformly distributed over `[0, 1)`.
+Random.NextNumber = function(self) end;
+---@return Random
+---Returns a new Random object with the same state as the original.
+Random.Clone = function(self) end;
+---@class Ray
+---@field public Unit Ray
+---@field public Origin Vector3
+---@field public Direction Vector3
+---The `Ray` data type represents a half-line, finite in one direction but
+---infinite in the other. It can be defined by a 3D point, where the line
+---originates from, and a direction vector, which is the direction it goes in.
+Ray = {};
+---@param Origin Vector3
+---@param Direction Vector3
+---Returns a new `Ray` with given `Origin` and `Direction`.
+---@return Ray
+Ray.new = function(Origin, Direction) end;
+---@param point Vector3
+---@return Vector3
+---Returns a `Vector3` projected onto the ray so that it is within the
+---`Ray`'s line of sight.
+---
+---**Note:** the `Ray` **must** be a unit ray for this method to behave as
+---expected!
+Ray.ClosestPoint = function(self, point) end;
+---@param point Vector3
+---@return number
+---Returns the distance between the given point and the point on the ray
+---nearest to the given point (`Ray:ClosestPoint(point)`).
+Ray.Distance = function(self, point) end;
+---@class RaycastParams
+---@field public FilterDescendantsInstances Array
+---@field public FilterType RaycastFilterType
+---@field public IgnoreWater bool
+---@field public CollisionGroup string
+---The `RaycastParams` data type stores parameters for
+---`WorldRoot/Raycast|WorldRoot:Raycast()` operations. The
+---`FilterDescendantsInstances` property stores an array of objects to use as
+---either a whitelist or blacklist based on the `FilterType` enum. If desired,
+---the `IgnoreWater` property can be used to ignore `Terrain` water and the
+---`CollisionGroup` property can specify a collision group for the raycasting
+---operation.
+---
+---This object is different from the similarly-named `datatype/RaycastResult`
+---which provides the results of a raycast.
+---
+---Unlike most datatypes on Roblox, you can change all the members of
+---`RaycastParams` without creating a new object. When raycasting repeatedly,
+---re-use the same object instead of creating new ones.
+RaycastParams = {};
+---Returns a blank `datatype/RaycastParams` object. Unlike other datatype
+---constructors, this constructor does not have any parameters, so you should
+---set its properties appropriately.
+---@return RaycastParams
+RaycastParams.new = function() end;
+---@class RaycastResult
+---@field public Distance number
+---@field public Instance Instance
+---@field public Material Material
+---@field public Position Vector3
+---@field public Normal Vector3
+---The `RaycastResult` data type stores the result of a successful raycasting
+---operation performed by `WorldRoot/Raycast|WorldRoot:Raycast()`. It contains
+---the properties listed below.
+---
+---This object should not be confused with the similarly-named
+---`datatype/RaycastParams` which is used to perform a raycast.
+RaycastResult = {};
+---@class Rect
+---@field public Width number
+---@field public Height number
+---@field public Min Vector2
+---@field public Max Vector2
+---The `Rect` describes a rectangle on a 2D plane. It is constructed using two of its corners, either using two `datatype/Vector2` form or as four numbers:
+---
+---```lua
+---Rect.new(Vector2.new(1, 2), Vector2.new(3, 4))
+---Rect.new(1, 2, 3, 4)
+---```
+---
+---The Rect data type is used in the `ImageLabel/SliceCenter` property, which determines the center area of a scaled image.
+Rect = {};
+---@overload fun(min: Vector2, max: Vector2)
+---@overload fun(minX: number, minY: number, maxX: number, maxY: number)
+---Constructs a new Rect given two zero `datatype/Vector2`: `min` as top left corner and `max` as bottom right corner.
+---@return Rect
+Rect.new = function() end;
+---@class Region3
+---@field public CFrame CFrame
+---@field public Size Vector3
+---The `Region3` data type describes a volume in 3D space similar to an
+---**axis-aligned rectangular prism**. It is commonly used with `Terrain`
+---functions and functions that detect parts within a volume, such as
+---`Workspace/FindPartsInRegion3`.
+---
+---  - The prism's center can be accessed using the `datatype/CFrame` **CFrame**
+---  property.
+---  - The prism's size is available in the `datatype/Vector3` **Size** property.
+---  Note that the components of this property may be **negative**!
+---
+---When converted to a string, the output format is `CFrame; Size` where each of
+---these is the respective property also converted to a string.
+---
+---The only operation that can be done on a `Region3` is
+---`Region3.ExpandToGrid(resolution)`, which returns a new `Region3` whose bounds
+---comply with a provided resolution value. The resulting volume may be equal to
+---or greater than the original volume, but never smaller.
+---
+---See also:
+---  
+---  - `datatype/Region3int16`, a similar data type
+Region3 = {};
+---@param min Vector3
+---@param max Vector3
+---Returns a new `Region3` given the `datatype/Vector3` bounds of a the
+---rectangular prism volume.
+---
+---Note that the order of the provided bounds matters: by switching them, the
+---polarity of the Size components will switch. It is possible to create a
+---`Region3` with a **negative volume**.
+---@return Region3
+Region3.new = function(min, max) end;
+---@param resolution int
+---@return Region3
+---Expands the `Region3` so that it is aligned with a voxel grid based on the
+---provided resolution and returns the expanded `Region3`.
+---
+---All you need to do is perform the method on the Region3 you have defined,
+---providing a resolution. Then, the function will align the region so that
+---it is compatible with the `Terrain` grid.
+Region3.ExpandToGrid = function(self, resolution) end;
+---@class Region3int16
+---@field public Min Vector3int16
+---@field public Max Vector3int16
+---Not to be confused with `datatype/Region3`, a separate class that fulfills a different purpose.
+---
+---The `Region3int16` data type represents a volume in 3D space similar to an
+---**axis-aligned rectangular prism**. It uses two `datatype/Vector3int16` to
+---store the volume's bounds in the `Min` and `Max` properties. It is constructed
+---using `Region3int16.new(Min, Max)`, given the two `Vector3int16` bounds. This
+---data type features no functions or operations.
+---
+---## Calculating Center and Size
+---
+---This data type differs from `datatype/Region3` in that it stores its bounds
+---directly, rather than through a center and size combination. Nonetheless, it
+---is possible to calculate these dimensions using `Min` and `Max`:
+---
+---```lua
+---local region = Region3int16.new(Vector3int16.new(0, 0, -3), Vector3int16.new(4, 4, 4))
+---local size = region.Max - region.Min
+---local center = (region.Max + region.Min) / 2
+---```
+---
+---## Conversion to Region3
+---
+---The following function can be used to convert a Region3int16 into a similar
+---`Region3`. It does this by converting the `Min` and `Max` properties, which
+---are Vector3int16, into `datatype/Vector3` used with `Region3.new`.
+---
+---```lua
+---local function Region3int16toRegion3(region16)
+---	return Region3.new(
+---		Vector3.new(region16.Min.X, region16.Min.Y, region16.Min.Z),
+---		Vector3.new(region16.Max.X, region16.Max.Y, region16.Max.Z)
+---	)
+---end
+---```
+---
+---See also:
+---  
+---  - `datatype/Region3`, a similar data type
+Region3int16 = {};
+---@param min Vector3int16
+---@param max Vector3int16
+---Returns a new Region3int16 from the provided boundaries.
+---@return Region3int16
+Region3int16.new = function(min, max) end;
+---@class TweenInfo
+---@field public EasingDirection Enum.EasingDirection
+---@field public Time number
+---@field public DelayTime number
+---@field public RepeatCount number
+---@field public EasingStyle Enum.EasingStyle
+---@field public Reverses bool
+---The `TweenInfo` data type stores parameters for
+---`TweenService/Create|TweenService:Create()` to specify the behavior of the
+---tween. The properties of a `TweenInfo` cannot be written to after its
+---creation.
+TweenInfo = {};
+---@param time number
+---@param easingStyle Enum.EasingStyle
+---@param easingDirection Enum.EasingDirection
+---@param repeatCount number
+---@param reverses bool
+---@param delayTime number
+---Creates a new `TweenInfo` from the provided parameters.
+---@return TweenInfo
+TweenInfo.new = function(time, easingStyle, easingDirection, repeatCount, reverses, delayTime) end;
+---@class UDim
+---@field public Scale number
+---@field public Offset int
+---The `UDim` data type represents a one-dimensional value with two components, a
+---relative scale and an absolute offset.
+UDim = {};
+---@param Scale number
+---@param Offset number
+---Returns a `UDim` from the given components.
+---@return UDim
+UDim.new = function(Scale, Offset) end;
+---@class UDim2
+---@field public X UDim
+---@field public Y UDim
+---@field public Width UDim
+---@field public Height UDim
+---The `UDim2` data type represents a two-dimensional value where each dimension
+---is composed of a relative scale and an absolute offset. for a coordinate used
+---in building user interfaces. It is a combination of two `UDim`
+---representing the x and y dimensions. The most common usages of `UDim2` objects
+---are setting the `GuiObject/Size|Size` and `GuiObject/Position|Position` of
+---`GuiObject`s.
+---
+---```lua
+---local guiObject = script.Parent
+---guiObject.Size = UDim2.new(0, 300, 1, 0) -- 300 px wide, full height of parent
+---guiObject.Position = UDim2.new(0, 50, 0, 0) -- 50 px from the left
+---```
+UDim2 = {};
+---@param xScale number
+---@param yScale number
+---Returns a new `UDim2` with the given scalar coordinates and no offsets.
+---Equivalent to:
+---
+---```lua
+---UDim2.fromScale(xScale, yScale) == UDim2.new(xScale, 0, yScale, 0)
+---```
+---@return UDim2
+UDim2.fromScale = function(xScale, yScale) end;
+---@param xOffset number
+---@param yOffset number
+---Returns a new `UDim2` with the given offset coordinates and no scales.
+---Equivalent to:
+---
+---```lua
+---UDim2.fromOffset(xOffset, yOffset) == UDim2.new(0, xOffset, 0, yOffset)
+---```
+---@return UDim2
+UDim2.fromOffset = function(xOffset, yOffset) end;
+---@overload fun(xScale: number, xOffset: number, yScale: number, yOffset: number)
+---@overload fun(x: UDim, y: UDim)
+---Returns a new `UDim2` with the coordinates of the two zero `UDim`
+---representing each axis.
+---@return UDim2
+UDim2.new = function() end;
+---@param goal UDim2
+---@param alpha number
+---@return UDim2
+---Returns a `UDim2` interpolated linearly between this `UDim2` and the given
+---`goal`. The `alpha` value should be a number between 0 and 1.
+UDim2.Lerp = function(self, goal, alpha) end;
+---@class Vector2
+---@field public zero Vector2
+---@field public one Vector2
+---@field public xAxis Vector2
+---@field public yAxis Vector2
+---@field public X number
+---@field public Y number
+---@field public Magnitude number
+---@field public Unit Vector2
+---The `Vector2` data type represents a 2D value with direction and magnitude.
+---Some applications include GUI elements and 2D mouse positions.
+Vector2 = {};
+---@param x number
+---@param y number
+---Returns a `Vector2` from the given x and y components.
+---@return Vector2
+Vector2.new = function(x, y) end;
+---@param v Vector2
+---@param alpha number
+---@return Vector2
+---Returns a `Vector2` linearly interpolated between this `Vector2` and the
+---given goal by the given alpha.
+Vector2.Lerp = function(self, v, alpha) end;
+---@param dbfcaacca Tuple
+---@return Vector2
+---Returns a `Vector2` with each component as the highest among the
+---respective components of the provided `Vector2` objects.
+---
+---```lua
+---local a = Vector2.new(1, 2)
+---local b = Vector2.new(2, 1)
+---
+---print(a:Max(b)) -- Vector2.new(2, 2)
+---```
+Vector2.Max = function(self, dbfcaacca) end;
+---@param v Vector2
+---@return number
+---Returns a scalar dot product of the two vectors.
+Vector2.Dot = function(self, v) end;
+---@param other Vector2
+---@return number
+---Returns the cross product of the two vectors.
+Vector2.Cross = function(self, other) end;
+---@param ddbafacae Tuple
+---@return Vector2
+---Returns a `Vector2` with each component as the lowest among the
+---respective components of the provided `Vector2` objects.
+---
+---```lua
+---local a = Vector2.new(1, 2)
+---local b = Vector2.new(2, 1)
+---
+---print(a:Min(b)) -- Vector2.new(1, 1)
+---```
+Vector2.Min = function(self, ddbafacae) end;
+---@class Vector2int16
+---@field public X integer
+---@field public Y integer
+---Not to be confused with:
+---
+---- `datatype/Vector2`, a **more precise** and complete implementation for 2D
+---vectors.
+---- `datatype/Vector3int16`, a similar implementation for 3D vectors.
+---
+---The `Vector2int16` data type represents a vector in 2D space with a **signed
+---16-bit integer** for its components. It is similar to `datatype/Vector2` in
+---that it allows for the same arithmetic operations; however it lacks commonly
+---used vector functions.
+---
+---For each component:
+---
+---- The **lower** bound is -2<sup>15</sup>, or **-32,768**.
+---- The **upper** bound is 2<sup>15</sup> &minus; 1, or **32,767**.
+---
+---## Converting to Vector2
+---
+---To convert a `Vector2int16` to a `Vector2`, construct a `Vector2`
+---component-wise by passing the components of the `Vector2int16` to
+---`Vector2.new()`:
+---
+---```lua
+---local function ConvertVector2int16ToVector2(vector16)
+---	return Vector2.new(vector16.X, vector16.Y)
+---end
+---```
+---
+---**Don't pass a `Vector2int16` to `Vector2.new()`:** The `Vector2.new()`
+---constructor interprets a `Vector2int16` as a 0 (zero) within its parameters
+---**without producing an error**. This can lead to silent logic errors if you do
+---something like this:
+---
+---```lua
+---Vector2.new(Vector2int16.new(1, 2, 3)) --> Vector2.new(0, 0, 0)
+---```
+Vector2int16 = {};
+---@param x number
+---@param y number
+---Returns a new `Vector2int16` given the x and y components. Non-integer
+---components are rounded down.
+---
+---The components must fall within the range [-2<sup>15</sup>,
+---2<sup>15</sup>).  If outside this range, [integer
+---overflow](https://en.wikipedia.org/wiki/Integer_overflow) may occur. For
+---example, providing 32,768 (equal to 2<sup>15</sup>) as a component
+---overflows the 16-bit integer, and so the component is -32,768 (equal
+---to -2<sup>15</sup>) instead.
+---@return Vector2int16
+Vector2int16.new = function(x, y) end;
+---@class Vector3
+---@field public zero Vector3
+---@field public one Vector3
+---@field public xAxis Vector3
+---@field public yAxis Vector3
+---@field public zAxis Vector3
+---@field public X number
+---@field public Y number
+---@field public Z number
+---@field public Magnitude number
+---@field public Unit Vector3
+---The `Vector3` data type represents a
+---[vector](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) in 3D
+---space, typically usually used as a point in 3D space or the dimensions of a
+---rectangular prism. `Vector3` supports basic component-based arithmetic
+---operators: sum, difference, product, and quotient. These operations can be
+---applied on the left or right hand side to either another `Vector3` or a
+---number. It also features functions for commonly used vector operations, such
+---as cross and dot products.
+---
+---Some example usages of `Vector3` are the `BasePart/Position|Position`,
+---`BasePart/Rotation|Rotation` and `BasePart/Size|Size` of `BasePart|parts`.
+---Learning to set these properties are among the first things many developers
+---will learn:
+---
+---```lua
+---local part = workspace.Part
+---part.Position = part.Position + Vector3.new(5, 20, 100) -- Moves a part by this much
+---```
+---
+---`Vector3` is commonly used when constructing other more complex 3D data types,
+---namely `datatype/CFrame` and `datatype/Ray`. Many of these data types'
+---functions will use a `Vector3` within their parameters, such as
+---`CFrame:PointToObjectSpace` or `Ray:ClosestPoint`. CFrame arithmetic also
+---supports `Vector3` for addition/subtraction.
+---
+---See also:
+---  
+---- `datatype/Vector3int16`, a lower precision implementation of 3D vectors used with `Region3int16`.
+Vector3 = {};
+---@param x number
+---@param y number
+---@param z number
+---Returns a new `Vector3` using the given x, y, and z components.
+---@return Vector3
+Vector3.new = function(x, y, z) end;
+---@param axis Enum.Axis
+---Returns a new `Vector3` for the given axis.
+---@return Vector3
+Vector3.FromAxis = function(axis) end;
+---@param normal Enum.NormalId
+---Returns a new `Vector3` in the given direction.
+---@return Vector3
+Vector3.FromNormalId = function(normal) end;
+---@param other Vector3
+---@return Vector3
+---Returns the cross product of the two vectors.
+Vector3.Cross = function(self, other) end;
+---@param goal Vector3
+---@param alpha number
+---@return Vector3
+---Returns a `Vector3` linearly interpolated between this `Vector3` and the
+---given `goal` `Vector3` by the fraction `alpha`.
+---
+---Note: the `alpha` value is **not** limited to the range [0, 1].
+Vector3.Lerp = function(self, goal, alpha) end;
+---@param fcaeccebbbafde Tuple
+---@return Vector3
+---Returns a `Vector3` with each component as the highest among the
+---respective components of the provided `Vector3` objects.
+---
+---```lua
+---local a = Vector3.new(1, 2, 1)
+---local b = Vector3.new(2, 1, 2)
+---
+---print(a:Max(b)) -- Vector3.new(2, 2, 2)
+---```
+Vector3.Max = function(self, fcaeccebbbafde) end;
+---@param caedcadebfabf Tuple
+---@return Vector3
+---Returns a `Vector3` with each component as the lowest among the
+---respective components of the provided `Vector3` objects.
+---
+---```lua
+---local a = Vector3.new(1, 2, 1)
+---local b = Vector3.new(2, 1, 2)
+---
+---print(a:Min(b)) -- Vector3.new(1, 1, 1)
+---```
+Vector3.Min = function(self, caedcadebfabf) end;
+---@param other Vector3
+---@param epsilon number
+---@return bool
+---Returns `true` if the `other` `Vector3` falls within the `epsilon` radius
+---of this `Vector3`.
+Vector3.FuzzyEq = function(self, other, epsilon) end;
+---@param other Vector3
+---@return number
+---Returns a scalar dot product of the two vectors.
+Vector3.Dot = function(self, other) end;
+---@class Vector3int16
+---@field public X integer
+---@field public Y integer
+---@field public Z integer
+---Not to be confused with `datatype/Vector3`, which is more commonly used in the
+---Roblox API.
+---
+---The `Vector3int16` data type describes a vector in 3D space using a **signed
+---16-bit integer** for its components. It is similar to `datatype/Vector3` in
+---that it allows for the same arithmetic operations; however it lacks commonly
+---used vector functions. It is used in constructing `Region3int16`, which is
+---relevant in some `Terrain` operations.
+---
+---For each component:
+---
+---- The **lower** bound is -2<sup>15</sup>, or **-32,768**.
+---- The **upper** bound is 2<sup>15</sup> &minus; 1, or **32,767**.
+---
+---## Conversion to Vector3
+---
+---To convert a `Vector3int16` to a `Vector3`, construct the `Vector3`
+---component-wise by passing the components of the `Vector3int16` to
+---`Vector3.new()`:
+---
+---```lua
+---local function ConvertVector3int16ToVector3(vector16)
+---	return Vector3.new(vector16.X, vector16.Y, vector16.Z)
+---end
+---```
+---
+---**Don't pass a `Vector3int16` to `Vector3.new()`:** The `Vector3.new()`
+---constructor interprets a `Vector3int16` as a 0 (zero) within its parameters
+---**without producing an error**. This can lead to silent logic errors if you're
+---doing something like this:
+---
+---```lua
+---Vector3.new(Vector3int16.new(1, 2, 3)) --> Vector3.new(0, 0, 0)
+---```
+---
+---In order to properly convert to `Vector3`, you must construct it
+---component-wise as above.
+Vector3int16 = {};
+---@param x number
+---@param y number
+---@param z number
+---Returns a new `Vector3int16` from the given x, y and z components.
+---Non-integer components are rounded down.
+---
+---The components must fall within the range [-2<sup>15</sup>,
+---2<sup>15</sup>).  If outside this range, [integer
+---overflow](https://en.wikipedia.org/wiki/Integer_overflow) may occur. For
+---example, providing 32,768 (equal to 2<sup>15</sup>) as a component
+---overflows the 16-bit integer, and so the component will be -32,768 (equal
+---to -2<sup>15</sup>) instead.
+---@return Vector3int16
+Vector3int16.new = function(x, y, z) end;
+---@class Enum.ABTestLoadingStatus
+---@field public None number | '0'
+---@field public Pending number | '1'
+---@field public Initialized number | '2'
+---@field public Error number | '3'
+---@field public TimedOut number | '4'
+---@field public ShutOff number | '5'
+local ABTestLoadingStatus;
+---@diagnostic disable-next-line
+---@alias ABTestLoadingStatus Enum.ABTestLoadingStatus
+---@class Enum.AccessoryType
+---@field public Unknown number | '0'
+---@field public Hat number | '1'
+---@field public Hair number | '2'
+---@field public Face number | '3'
+---@field public Neck number | '4'
+---@field public Shoulder number | '5'
+---@field public Front number | '6'
+---@field public Back number | '7'
+---@field public Waist number | '8'
+---@field public TShirt number | '9'
+---@field public Shirt number | '10'
+---@field public Pants number | '11'
+---@field public Jacket number | '12'
+---@field public Sweater number | '13'
+---@field public Shorts number | '14'
+---@field public LeftShoe number | '15'
+---@field public RightShoe number | '16'
+---@field public DressSkirt number | '17'
+---@field public Eyebrow number | '18'
+---@field public Eyelash number | '19'
+---AccessoryType is a subset of AssetTypes which are relevant to only accessories.
+---
+---To get the AccessoryType of an accessory, see the Type on the accessory's web page. For example, see [Yi the Art Teacher - Hair](https://www.roblox.com/catalog/5911063681/Yi-the-Art-Teacher-Hair).
+---
+---AccessoryTypes are mainly used in the AccessoryBlob of HumanoidDescription, and to specify the type in Accessory.
+local AccessoryType;
+---@diagnostic disable-next-line
+---@alias AccessoryType Enum.AccessoryType
+---@class Enum.ActionType
+---@field public Nothing number | '0'
+---@field public Pause number | '1'
+---@field public Lose number | '2'
+---@field public Draw number | '3'
+---@field public Win number | '4'
+local ActionType;
+---@diagnostic disable-next-line
+---@alias ActionType Enum.ActionType
+---@class Enum.ActuatorRelativeTo
+---@field public Attachment0 number | '0'
+---@field public Attachment1 number | '1'
+---@field public World number | '2'
+---The CFrame value in which the body mover constraint is expressed.
+local ActuatorRelativeTo;
+---@diagnostic disable-next-line
+---@alias ActuatorRelativeTo Enum.ActuatorRelativeTo
+---@class Enum.ActuatorType
+---@field public None number | '0'
+---@field public Motor number | '1'
+---@field public Servo number | '2'
+local ActuatorType;
+---@diagnostic disable-next-line
+---@alias ActuatorType Enum.ActuatorType
+---@class Enum.AdornCullingMode
+---@field public Automatic number | '0'
+---@field public Never number | '1'
+---Used by `HandleAdornment` to determine how it is culled.
+local AdornCullingMode;
+---@diagnostic disable-next-line
+---@alias AdornCullingMode Enum.AdornCullingMode
+---@class Enum.AlignType
+---@field public Parallel number | '0'
+---@field public Perpendicular number | '1'
+---An enum that specifies the relationship between two axes. It's either parallel or perpendicular.
+local AlignType;
+---@diagnostic disable-next-line
+---@alias AlignType Enum.AlignType
+---@class Enum.AlphaMode
+---@field public Overlay number | '0'
+---@field public Transparency number | '1'
+---Used by `SurfaceAppearance/AlphaMode` to determine how the alpha channel of the `SurfaceAppearance/ColorMap` of a `SurfaceAppearance` is used.
+local AlphaMode;
+---@diagnostic disable-next-line
+---@alias AlphaMode Enum.AlphaMode
+---@class Enum.AnalyticsEconomyAction
+---@field public Default number | '0'
+---@field public Acquire number | '1'
+---@field public Spend number | '2'
+---This enum is used as an argument in `AnalyticsService/FireInGameEconomyEvent`.
+local AnalyticsEconomyAction;
+---@diagnostic disable-next-line
+---@alias AnalyticsEconomyAction Enum.AnalyticsEconomyAction
+---@class Enum.AnalyticsLogLevel
+---@field public Trace number | '0'
+---@field public Debug number | '1'
+---@field public Information number | '2'
+---@field public Warning number | '3'
+---@field public Error number | '4'
+---@field public Fatal number | '5'
+---This enum is used as an argument in `AnalyticsService/LogEvent` to describe
+---the error severity level.
+local AnalyticsLogLevel;
+---@diagnostic disable-next-line
+---@alias AnalyticsLogLevel Enum.AnalyticsLogLevel
+---@class Enum.AnalyticsProgressionStatus
+---@field public Default number | '0'
+---@field public Begin number | '1'
+---@field public Complete number | '2'
+---@field public Abandon number | '3'
+---@field public Fail number | '4'
+---This enum is used as an argument in `AnalyticsService/FirePlayerProgressionEvent` to describe the status of progression.
+local AnalyticsProgressionStatus;
+---@diagnostic disable-next-line
+---@alias AnalyticsProgressionStatus Enum.AnalyticsProgressionStatus
+---@class Enum.AnimationPriority
+---@field public Idle number | '0'
+---@field public Movement number | '1'
+---@field public Action number | '2'
+---@field public Action2 number | '3'
+---@field public Action3 number | '4'
+---@field public Action4 number | '5'
+---@field public Core number | '1000'
+---When multiple AnimationTracks are played concurrently by the same Animator and affect the same animated joints,
+---the tracks are evaluated in order from high to low priority, per joint, while the total track weight sum remains
+---less than 1.0. When the track weight sum reaches or exceeds 1.0 for a joint, evaluation stops and no
+---lower-priority tracks will be evaluated for that joint. AnimationTracks with the same priority that are playing
+---concurrently will blend proportional to their track weights (normalized if the sum exceeds 1).
+---
+---Higher priority animation will override lower priority ones per joint. The priority order is: <br />
+---	 1. Action4 (Highest Priority) <br />
+---   2. Action3 <br />
+---   3. Action2 <br />
+---   4. Action <br />
+---	 5. Movement <br />
+---	 6. Idle <br />
+---	 7. Core (Lowest Priority)
+---
+---Roblox's default character animations, including catalog animation bundles, play at Core priority. Idle through Action4 priority are for
+---developer use.
+local AnimationPriority;
+---@diagnostic disable-next-line
+---@alias AnimationPriority Enum.AnimationPriority
+---@class Enum.AnimatorRetargetingMode
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---The AnimatorRetargetingMode Enum describes the setting for Animation
+---Retargeting. Retargeting adapts animations to various character rigs based on
+---their proportions.
+local AnimatorRetargetingMode;
+---@diagnostic disable-next-line
+---@alias AnimatorRetargetingMode Enum.AnimatorRetargetingMode
+---@class Enum.AppShellActionType
+---@field public None number | '0'
+---@field public OpenApp number | '1'
+---@field public TapChatTab number | '2'
+---@field public TapConversationEntry number | '3'
+---@field public TapAvatarTab number | '4'
+---@field public ReadConversation number | '5'
+---@field public TapGamePageTab number | '6'
+---@field public TapHomePageTab number | '7'
+---@field public GamePageLoaded number | '8'
+---@field public HomePageLoaded number | '9'
+---@field public AvatarEditorPageLoaded number | '10'
+local AppShellActionType;
+---@diagnostic disable-next-line
+---@alias AppShellActionType Enum.AppShellActionType
+---@class Enum.AppShellFeature
+---@field public None number | '0'
+---@field public Chat number | '1'
+---@field public AvatarEditor number | '2'
+---@field public GamePage number | '3'
+---@field public HomePage number | '4'
+---@field public More number | '5'
+---@field public Landing number | '6'
+local AppShellFeature;
+---@diagnostic disable-next-line
+---@alias AppShellFeature Enum.AppShellFeature
+---@class Enum.AppUpdateStatus
+---@field public Unknown number | '0'
+---@field public NotSupported number | '1'
+---@field public Failed number | '2'
+---@field public NotAvailable number | '3'
+---@field public Available number | '4'
+local AppUpdateStatus;
+---@diagnostic disable-next-line
+---@alias AppUpdateStatus Enum.AppUpdateStatus
+---@class Enum.ApplyStrokeMode
+---@field public Contextual number | '0'
+---@field public Border number | '1'
+---This enum is used by `UIStroke/ApplyStrokeMode` to determine whether to apply the stroke to the object's border or of the text itself. For a more detailed walkthrough of the UIStroke object, see Applying Strokes.
+local ApplyStrokeMode;
+---@diagnostic disable-next-line
+---@alias ApplyStrokeMode Enum.ApplyStrokeMode
+---@class Enum.AspectType
+---@field public FitWithinMaxSize number | '0'
+---@field public ScaleWithParentSize number | '1'
+---Used by `UIAspectRatioConstraint/AspectType` to control the sizing behavior.
+local AspectType;
+---@diagnostic disable-next-line
+---@alias AspectType Enum.AspectType
+---@class Enum.AssetFetchStatus
+---@field public Success number | '0'
+---@field public Failure number | '1'
+local AssetFetchStatus;
+---@diagnostic disable-next-line
+---@alias AssetFetchStatus Enum.AssetFetchStatus
+---@class Enum.AssetType
+---@field public Image number | '1'
+---@field public TShirt number | '2'
+---@field public Audio number | '3'
+---@field public Mesh number | '4'
+---@field public Lua number | '5'
+---@field public Hat number | '8'
+---@field public Place number | '9'
+---@field public Model number | '10'
+---@field public Shirt number | '11'
+---@field public Pants number | '12'
+---@field public Decal number | '13'
+---@field public Head number | '17'
+---@field public Face number | '18'
+---@field public Gear number | '19'
+---@field public Badge number | '21'
+---@field public Animation number | '24'
+---@field public Torso number | '27'
+---@field public RightArm number | '28'
+---@field public LeftArm number | '29'
+---@field public LeftLeg number | '30'
+---@field public RightLeg number | '31'
+---@field public Package number | '32'
+---@field public GamePass number | '34'
+---@field public Plugin number | '38'
+---@field public MeshPart number | '40'
+---@field public HairAccessory number | '41'
+---@field public FaceAccessory number | '42'
+---@field public NeckAccessory number | '43'
+---@field public ShoulderAccessory number | '44'
+---@field public FrontAccessory number | '45'
+---@field public BackAccessory number | '46'
+---@field public WaistAccessory number | '47'
+---@field public ClimbAnimation number | '48'
+---@field public DeathAnimation number | '49'
+---@field public FallAnimation number | '50'
+---@field public IdleAnimation number | '51'
+---@field public JumpAnimation number | '52'
+---@field public RunAnimation number | '53'
+---@field public SwimAnimation number | '54'
+---@field public WalkAnimation number | '55'
+---@field public PoseAnimation number | '56'
+---@field public EarAccessory number | '57'
+---@field public EyeAccessory number | '58'
+---@field public EmoteAnimation number | '61'
+---@field public Video number | '62'
+---@field public TShirtAccessory number | '64'
+---@field public ShirtAccessory number | '65'
+---@field public PantsAccessory number | '66'
+---@field public JacketAccessory number | '67'
+---@field public SweaterAccessory number | '68'
+---@field public ShortsAccessory number | '69'
+---@field public LeftShoeAccessory number | '70'
+---@field public RightShoeAccessory number | '71'
+---@field public DressSkirtAccessory number | '72'
+---@field public EyebrowAccessory number | '76'
+---@field public EyelashAccessory number | '77'
+---This Enum can be used to match the AssetTypeId from `MarketplaceService/GetProductInfo` to an asset type.
+local AssetType;
+---@diagnostic disable-next-line
+---@alias AssetType Enum.AssetType
+---@class Enum.AssetTypeVerification
+---@field public Default number | '1'
+---@field public ClientOnly number | '2'
+---@field public Always number | '3'
+---Determines the asset type verification mode used when calling `Humanoid/ApplyDescription`. Asset type verification determines if ApplyDescription will load models or not. Loading models can be insecure if it's possible for malicious users to trick your game into loading unexpected models that you own which may include malicious scripts. You should set this to Always unless you want to load non-catalog assets.
+local AssetTypeVerification;
+---@diagnostic disable-next-line
+---@alias AssetTypeVerification Enum.AssetTypeVerification
+---@class Enum.AutoIndentRule
+---@field public Off number | '0'
+---@field public Absolute number | '1'
+---@field public Relative number | '2'
+local AutoIndentRule;
+---@diagnostic disable-next-line
+---@alias AutoIndentRule Enum.AutoIndentRule
+---@class Enum.AutomaticSize
+---@field public None number | '0'
+---@field public X number | '1'
+---@field public Y number | '2'
+---@field public XY number | '3'
+---UI objects with `GuiObject/AutomaticSize|AutomaticSize` enabled will increase in size up to maximum size allowed by the parent (if there is one) and no smaller than the `GuiObject/Size|Size` property bounds. To enable `AutomaticSize`, set the value to an enum value other than `None`.
+---
+---This enum is used by `GuiObject/AutomaticSize` and `ScrollingFrame/AutomaticCanvasSize` to determine whether and how resizing occurs based on child content.
+---
+---For more information, see How to use AutomaticSize.
+local AutomaticSize;
+---@diagnostic disable-next-line
+---@alias AutomaticSize Enum.AutomaticSize
+---@class Enum.AvatarAssetType
+---@field public TShirt number | '2'
+---@field public Hat number | '8'
+---@field public Shirt number | '11'
+---@field public Pants number | '12'
+---@field public Head number | '17'
+---@field public Face number | '18'
+---@field public Gear number | '19'
+---@field public Torso number | '27'
+---@field public RightArm number | '28'
+---@field public LeftArm number | '29'
+---@field public LeftLeg number | '30'
+---@field public RightLeg number | '31'
+---@field public HairAccessory number | '41'
+---@field public FaceAccessory number | '42'
+---@field public NeckAccessory number | '43'
+---@field public ShoulderAccessory number | '44'
+---@field public FrontAccessory number | '45'
+---@field public BackAccessory number | '46'
+---@field public WaistAccessory number | '47'
+---@field public ClimbAnimation number | '48'
+---@field public FallAnimation number | '50'
+---@field public IdleAnimation number | '51'
+---@field public JumpAnimation number | '52'
+---@field public RunAnimation number | '53'
+---@field public SwimAnimation number | '54'
+---@field public WalkAnimation number | '55'
+---@field public EmoteAnimation number | '61'
+---@field public TShirtAccessory number | '64'
+---@field public ShirtAccessory number | '65'
+---@field public PantsAccessory number | '66'
+---@field public JacketAccessory number | '67'
+---@field public SweaterAccessory number | '68'
+---@field public ShortsAccessory number | '69'
+---@field public LeftShoeAccessory number | '70'
+---@field public RightShoeAccessory number | '71'
+---@field public DressSkirtAccessory number | '72'
+---@field public EyebrowAccessory number | '76'
+---@field public EyelashAccessory number | '77'
+---Describes the asset types that an avatar can equip. See `Enum/AssetType` for
+---all asset types.
+local AvatarAssetType;
+---@diagnostic disable-next-line
+---@alias AvatarAssetType Enum.AvatarAssetType
+---@class Enum.AvatarContextMenuOption
+---@field public Friend number | '0'
+---@field public Chat number | '1'
+---@field public Emote number | '2'
+---@field public InspectMenu number | '3'
+local AvatarContextMenuOption;
+---@diagnostic disable-next-line
+---@alias AvatarContextMenuOption Enum.AvatarContextMenuOption
+---@class Enum.AvatarItemType
+---@field public Asset number | '1'
+---@field public Bundle number | '2'
+---The type (Asset or Bundle) of avatar items.
+local AvatarItemType;
+---@diagnostic disable-next-line
+---@alias AvatarItemType Enum.AvatarItemType
+---@class Enum.AvatarPromptResult
+---@field public Success number | '1'
+---@field public PermissionDenied number | '2'
+---@field public Failed number | '3'
+---The result of prompt operations of `AvatarEditorService`.
+local AvatarPromptResult;
+---@diagnostic disable-next-line
+---@alias AvatarPromptResult Enum.AvatarPromptResult
+---@class Enum.Axis
+---@field public X number | '0'
+---@field public Y number | '1'
+---@field public Z number | '2'
+---The Axis Enum represents the X, Y and Z axes. Primarily this Enum is used with
+---`ArcHandles` and `Handles|Handles`.
+local Axis;
+---@diagnostic disable-next-line
+---@alias Axis Enum.Axis
+---@class Enum.BinType
+---@field public Script number | '0'
+---@field public GameTool number | '1'
+---@field public Grab number | '2'
+---@field public Clone number | '3'
+---@field public Hammer number | '4'
+local BinType;
+---@diagnostic disable-next-line
+---@alias BinType Enum.BinType
+---@class Enum.BodyPart
+---@field public Head number | '0'
+---@field public Torso number | '1'
+---@field public LeftArm number | '2'
+---@field public RightArm number | '3'
+---@field public LeftLeg number | '4'
+---@field public RightLeg number | '5'
+---The BodyPart Enum determines which BodyPart a `CharacterMesh` affects. (the
+---`CharacterMesh` is used with R6 characters)
+local BodyPart;
+---@diagnostic disable-next-line
+---@alias BodyPart Enum.BodyPart
+---@class Enum.BodyPartR15
+---@field public Head number | '0'
+---@field public UpperTorso number | '1'
+---@field public LowerTorso number | '2'
+---@field public LeftFoot number | '3'
+---@field public LeftLowerLeg number | '4'
+---@field public LeftUpperLeg number | '5'
+---@field public RightFoot number | '6'
+---@field public RightLowerLeg number | '7'
+---@field public RightUpperLeg number | '8'
+---@field public LeftHand number | '9'
+---@field public LeftLowerArm number | '10'
+---@field public LeftUpperArm number | '11'
+---@field public RightHand number | '12'
+---@field public RightLowerArm number | '13'
+---@field public RightUpperArm number | '14'
+---@field public RootPart number | '15'
+---@field public Unknown number | '17'
+---BodyPartR15 is an enum used with both `Humanoid/GetBodyPartR15` and
+---`Humanoid/ReplaceBodyPartR15` to find and replace specific body parts of R15
+---characters.
+local BodyPartR15;
+---@diagnostic disable-next-line
+---@alias BodyPartR15 Enum.BodyPartR15
+---@class Enum.BorderMode
+---@field public Outline number | '0'
+---@field public Middle number | '1'
+---@field public Inset number | '2'
+---Determines in what matter the border of a `GuiObject` is laid out relative to
+---its actual dimensions. It is used by the property of the same name,
+---`GuiObject/BorderMode`. See the animation below to understand how the layout
+---changes as `GuiObject/BorderSizePixel` increases.
+---
+---<img src="/assets/bltc055b61764ed776b/BorderSizePixel-BorderMode.gif" />
+local BorderMode;
+---@diagnostic disable-next-line
+---@alias BorderMode Enum.BorderMode
+---@class Enum.BreakReason
+---@field public Other number | '0'
+---@field public Error number | '1'
+---@field public UserBreakpoint number | '3'
+---@field public SpecialBreakpoint number | '2'
+---Value for the reason the `ScriptDebugger/EncounteredBreak` signal fired.
+local BreakReason;
+---@diagnostic disable-next-line
+---@alias BreakReason Enum.BreakReason
+---@class Enum.BreakpointRemoveReason
+---@field public Requested number | '0'
+---@field public ScriptChanged number | '1'
+---@field public ScriptRemoved number | '2'
+---Reason reason that a breakpoint was removed.
+local BreakpointRemoveReason;
+---@diagnostic disable-next-line
+---@alias BreakpointRemoveReason Enum.BreakpointRemoveReason
+---@class Enum.BulkMoveMode
+---@field public FireAllEvents number | '0'
+---@field public FireCFrameChanged number | '1'
+local BulkMoveMode;
+---@diagnostic disable-next-line
+---@alias BulkMoveMode Enum.BulkMoveMode
+---@class Enum.BundleType
+---@field public BodyParts number | '1'
+---@field public Animations number | '2'
+---@field public Shoes number | '3'
+---The type of a bundle of assets.
+local BundleType;
+---@diagnostic disable-next-line
+---@alias BundleType Enum.BundleType
+---@class Enum.Button
+---@field public Jump number | '32'
+---@field public Dismount number | '8'
+---Used for accessing buttons for use by the `Controller`.
+local Button;
+---@diagnostic disable-next-line
+---@alias Button Enum.Button
+---@class Enum.ButtonStyle
+---@field public Custom number | '0'
+---@field public RobloxButtonDefault number | '1'
+---@field public RobloxButton number | '2'
+---@field public RobloxRoundButton number | '3'
+---@field public RobloxRoundDefaultButton number | '4'
+---@field public RobloxRoundDropdownButton number | '5'
+---Used by `GuiButton/Style` to set a special hardcoded appearance.
+---
+---These should generally be avoided in favor of setting other appearance
+---properties, but they can be useful for wireframing.
+---
+---Despite the Roblox naming, these are not used by any official Roblox UI.
+local ButtonStyle;
+---@diagnostic disable-next-line
+---@alias ButtonStyle Enum.ButtonStyle
+---@class Enum.CageType
+---@field public Inner number | '0'
+---@field public Outer number | '1'
+local CageType;
+---@diagnostic disable-next-line
+---@alias CageType Enum.CageType
+---@class Enum.CameraMode
+---@field public Classic number | '0'
+---@field public LockFirstPerson number | '1'
+---The CameraMode Enum is used to set `Player/CameraMode` in `Player`, and
+---determines when first person and third person cameras should be used.
+---
+---First-person
+---------------
+---In first-person mode, the player's camera is zoomed all the way in. Unless there is a visible GUI present with the `GuiButton/Modal` property set to *true*, the mouse will be locked and the user's camera will turn as the mouse moves.
+---![First Person CameraMode][1]
+---
+---Third-person
+---------------
+---In third-person mode, the character can be seen in the camera. While in third-person mode on Roblox:
+---
+---* You may right-click and drag to rotate your camera, or use the arrow keys at the bottom right-hand corner of the screen. 
+---* When you move your mouse, your camera does not change (unless you move the mouse to the end of the screen). 
+---* When you press any of the arrow keys, the user's character will face in the corresponding arrow key's direction. 
+---* You can zoom in and out freely. 
+---
+---Third-person is the default camera setting.
+---![Third Person CameraMode][2]
+---
+---
+---  [1]: /assets/blt3d3247ee058ba219/CameraMode-LockFirstPerson.jpg
+---  [2]: /assets/bltbf81f29ace6b335b/CameraMode-Classic.jpg
+local CameraMode;
+---@diagnostic disable-next-line
+---@alias CameraMode Enum.CameraMode
+---@class Enum.CameraPanMode
+---@field public Classic number | '0'
+---@field public EdgeBump number | '1'
+---The CameraPanMode Enum represents the available pan modes for
+---`Camera/SetCameraPanMode`.
+local CameraPanMode;
+---@diagnostic disable-next-line
+---@alias CameraPanMode Enum.CameraPanMode
+---@class Enum.CameraType
+---@field public Fixed number | '0'
+---@field public Watch number | '2'
+---@field public Attach number | '1'
+---@field public Track number | '3'
+---@field public Follow number | '4'
+---@field public Custom number | '5'
+---@field public Scriptable number | '6'
+---@field public Orbital number | '7'
+---The CameraType Enum is used in `Camera.CameraType` to set the behavior of the
+---Camera object.
+---
+---Attach, Watch, Track, and Follow all require a valid
+---`Camera/CameraSubject` to work properly.
+local CameraType;
+---@diagnostic disable-next-line
+---@alias CameraType Enum.CameraType
+---@class Enum.CatalogCategoryFilter
+---@field public None number | '1'
+---@field public Featured number | '2'
+---@field public Collectibles number | '3'
+---@field public CommunityCreations number | '4'
+---@field public Premium number | '5'
+---@field public Recommended number | '6'
+local CatalogCategoryFilter;
+---@diagnostic disable-next-line
+---@alias CatalogCategoryFilter Enum.CatalogCategoryFilter
+---@class Enum.CatalogSortType
+---@field public Relevance number | '1'
+---@field public PriceHighToLow number | '2'
+---@field public PriceLowToHigh number | '3'
+---@field public RecentlyUpdated number | '4'
+---@field public MostFavorited number | '5'
+local CatalogSortType;
+---@diagnostic disable-next-line
+---@alias CatalogSortType Enum.CatalogSortType
+---@class Enum.CellBlock
+---@field public Solid number | '0'
+---@field public VerticalWedge number | '1'
+---@field public CornerWedge number | '2'
+---@field public InverseCornerWedge number | '3'
+---@field public HorizontalWedge number | '4'
+local CellBlock;
+---@diagnostic disable-next-line
+---@alias CellBlock Enum.CellBlock
+---@class Enum.CellMaterial
+---@field public Empty number | '0'
+---@field public Grass number | '1'
+---@field public Sand number | '2'
+---@field public Brick number | '3'
+---@field public Granite number | '4'
+---@field public Asphalt number | '5'
+---@field public Iron number | '6'
+---@field public Aluminum number | '7'
+---@field public Gold number | '8'
+---@field public WoodPlank number | '9'
+---@field public WoodLog number | '10'
+---@field public Gravel number | '11'
+---@field public CinderBlock number | '12'
+---@field public MossyStone number | '13'
+---@field public Cement number | '14'
+---@field public RedPlastic number | '15'
+---@field public BluePlastic number | '16'
+---@field public Water number | '17'
+local CellMaterial;
+---@diagnostic disable-next-line
+---@alias CellMaterial Enum.CellMaterial
+---@class Enum.CellOrientation
+---@field public NegZ number | '0'
+---@field public X number | '1'
+---@field public Z number | '2'
+---@field public NegX number | '3'
+local CellOrientation;
+---@diagnostic disable-next-line
+---@alias CellOrientation Enum.CellOrientation
+---@class Enum.CenterDialogType
+---@field public UnsolicitedDialog number | '1'
+---@field public PlayerInitiatedDialog number | '2'
+---@field public ModalDialog number | '3'
+---@field public QuitDialog number | '4'
+local CenterDialogType;
+---@diagnostic disable-next-line
+---@alias CenterDialogType Enum.CenterDialogType
+---@class Enum.ChatCallbackType
+---@field public OnCreatingChatWindow number | '1'
+---@field public OnClientSendingMessage number | '2'
+---@field public OnClientFormattingMessage number | '3'
+---@field public OnServerReceivingMessage number | '17'
+local ChatCallbackType;
+---@diagnostic disable-next-line
+---@alias ChatCallbackType Enum.ChatCallbackType
+---@class Enum.ChatColor
+---@field public Blue number | '0'
+---@field public Green number | '1'
+---@field public Red number | '2'
+---@field public White number | '3'
+---The ChatStyle Enum is used to change the color of a chat using `Chat`.
+local ChatColor;
+---@diagnostic disable-next-line
+---@alias ChatColor Enum.ChatColor
+---@class Enum.ChatMode
+---@field public Menu number | '0'
+---@field public TextAndMenu number | '1'
+---Controls the methods of communication available to a player.
+local ChatMode;
+---@diagnostic disable-next-line
+---@alias ChatMode Enum.ChatMode
+---@class Enum.ChatPrivacyMode
+---@field public AllUsers number | '0'
+---@field public NoOne number | '1'
+---@field public Friends number | '2'
+---Internally controls the user's chat privacy settings.
+local ChatPrivacyMode;
+---@diagnostic disable-next-line
+---@alias ChatPrivacyMode Enum.ChatPrivacyMode
+---@class Enum.ChatStyle
+---@field public Classic number | '0'
+---@field public Bubble number | '1'
+---@field public ClassicAndBubble number | '2'
+---The ChatStyle Enum is used to set the style of `Chat` used in a game via the
+---`Players/SetChatStyle` method.
+local ChatStyle;
+---@diagnostic disable-next-line
+---@alias ChatStyle Enum.ChatStyle
+---@class Enum.ChatVersion
+---@field public LegacyChatService number | '0'
+---@field public TextChatService number | '1'
+---Determines whether `TextChatService` should be fully enabled or allow legacy [Lua Chat System](https://developer.roblox.com/en-us/articles/Lua-Chat-System) behavior.
+---
+---`TextChatService.ChatVersion` is not scriptable. It must be set in Studio.
+local ChatVersion;
+---@diagnostic disable-next-line
+---@alias ChatVersion Enum.ChatVersion
+---@class Enum.ClientAnimatorThrottlingMode
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---An Enum describing various animation throttling modes on clients.
+local ClientAnimatorThrottlingMode;
+---@diagnostic disable-next-line
+---@alias ClientAnimatorThrottlingMode Enum.ClientAnimatorThrottlingMode
+---@class Enum.CollisionFidelity
+---@field public Default number | '0'
+---@field public Hull number | '1'
+---@field public Box number | '2'
+---@field public PreciseConvexDecomposition number | '3'
+---Determines how the collision models of `UnionOperation`s and `MeshPart`s behave. 
+---
+---The CollisionFidelity property of union objects is not scriptable: it must be set in Studio.
+local CollisionFidelity;
+---@diagnostic disable-next-line
+---@alias CollisionFidelity Enum.CollisionFidelity
+---@class Enum.CommandPermission
+---@field public Plugin number | '0'
+---@field public LocalUser number | '1'
+local CommandPermission;
+---@diagnostic disable-next-line
+---@alias CommandPermission Enum.CommandPermission
+---@class Enum.ComputerCameraMovementMode
+---@field public Default number | '0'
+---@field public Follow number | '2'
+---@field public Classic number | '1'
+---@field public Orbital number | '3'
+---@field public CameraToggle number | '4'
+---The camera movement mode currently in-use by the client.
+local ComputerCameraMovementMode;
+---@diagnostic disable-next-line
+---@alias ComputerCameraMovementMode Enum.ComputerCameraMovementMode
+---@class Enum.ComputerMovementMode
+---@field public Default number | '0'
+---@field public KeyboardMouse number | '1'
+---@field public ClickToMove number | '2'
+---The computer movement type in-use by the client.
+local ComputerMovementMode;
+---@diagnostic disable-next-line
+---@alias ComputerMovementMode Enum.ComputerMovementMode
+---@class Enum.ConnectionError
+---@field public OK number | '0'
+---@field public DisconnectErrors number | '256'
+---@field public DisconnectBadhash number | '257'
+---@field public DisconnectSecurityKeyMismatch number | '258'
+---@field public DisconnectProtocolMismatch number | '259'
+---@field public DisconnectReceivePacketError number | '260'
+---@field public DisconnectReceivePacketStreamError number | '261'
+---@field public DisconnectSendPacketError number | '262'
+---@field public DisconnectIllegalTeleport number | '263'
+---@field public DisconnectDuplicatePlayer number | '264'
+---@field public DisconnectDuplicateTicket number | '265'
+---@field public DisconnectTimeout number | '266'
+---@field public DisconnectLuaKick number | '267'
+---@field public DisconnectOnRemoteSysStats number | '268'
+---@field public DisconnectHashTimeout number | '269'
+---@field public DisconnectCloudEditKick number | '270'
+---@field public DisconnectPlayerless number | '271'
+---@field public DisconnectNewSecurityKeyMismatch number | '272'
+---@field public DisconnectEvicted number | '273'
+---@field public DisconnectDevMaintenance number | '274'
+---@field public DisconnectRobloxMaintenance number | '275'
+---@field public DisconnectRejoin number | '276'
+---@field public DisconnectConnectionLost number | '277'
+---@field public DisconnectIdle number | '278'
+---@field public DisconnectRaknetErrors number | '279'
+---@field public DisconnectWrongVersion number | '280'
+---@field public DisconnectBySecurityPolicy number | '281'
+---@field public DisconnectBlockedIP number | '282'
+---@field public DisconnectClientFailure number | '284'
+---@field public DisconnectClientRequest number | '285'
+---@field public DisconnectOutOfMemory number | '286'
+---@field public DisconnectModeratedGame number | '287'
+---@field public PlacelaunchErrors number | '512'
+---@field public PlacelaunchDisabled number | '515'
+---@field public PlacelaunchError number | '516'
+---@field public PlacelaunchGameEnded number | '517'
+---@field public PlacelaunchGameFull number | '518'
+---@field public PlacelaunchUserLeft number | '522'
+---@field public PlacelaunchRestricted number | '523'
+---@field public PlacelaunchUnauthorized number | '524'
+---@field public PlacelaunchFlooded number | '525'
+---@field public PlacelaunchHashExpired number | '526'
+---@field public PlacelaunchHashException number | '527'
+---@field public PlacelaunchPartyCannotFit number | '528'
+---@field public PlacelaunchHttpError number | '529'
+---@field public PlacelaunchCustomMessage number | '610'
+---@field public PlacelaunchOtherError number | '611'
+---@field public TeleportErrors number | '768'
+---@field public TeleportFailure number | '769'
+---@field public TeleportGameNotFound number | '770'
+---@field public TeleportGameEnded number | '771'
+---@field public TeleportGameFull number | '772'
+---@field public TeleportUnauthorized number | '773'
+---@field public TeleportFlooded number | '774'
+---@field public TeleportIsTeleporting number | '775'
+local ConnectionError;
+---@diagnostic disable-next-line
+---@alias ConnectionError Enum.ConnectionError
+---@class Enum.ConnectionState
+---@field public Connected number | '0'
+---@field public Disconnected number | '1'
+---Used to determine the connection state of the client to the game server.
+local ConnectionState;
+---@diagnostic disable-next-line
+---@alias ConnectionState Enum.ConnectionState
+---@class Enum.ContextActionPriority
+---@field public Low number | '1000'
+---@field public Medium number | '2000'
+---@field public Default number | '2000'
+---@field public High number | '3000'
+---The ContextActionPriority is used to set the priority of a context action.
+---This priority is used to determine context action order.
+local ContextActionPriority;
+---@diagnostic disable-next-line
+---@alias ContextActionPriority Enum.ContextActionPriority
+---@class Enum.ContextActionResult
+---@field public Pass number | '1'
+---@field public Sink number | '0'
+---ContextActionResult controls the behavior of multiple bound actions. It gives
+---the option of controlling whether or not a bound action should sink or pass
+---the input event, meaning other things (including other bound actions) can
+---process it.
+local ContextActionResult;
+---@diagnostic disable-next-line
+---@alias ContextActionResult Enum.ContextActionResult
+---@class Enum.ControlMode
+---@field public MouseLockSwitch number | '1'
+---@field public Classic number | '0'
+---The ControlMode Enum sets how the player is controlled.
+local ControlMode;
+---@diagnostic disable-next-line
+---@alias ControlMode Enum.ControlMode
+---@class Enum.CoreGuiType
+---@field public PlayerList number | '0'
+---@field public Health number | '1'
+---@field public Backpack number | '2'
+---@field public Chat number | '3'
+---@field public All number | '4'
+---@field public EmotesMenu number | '5'
+---The CoreGuiType Enum represents all `CoreGui` "types" which are available,
+---such as the `Backpack` and Leaderboard.
+local CoreGuiType;
+---@diagnostic disable-next-line
+---@alias CoreGuiType Enum.CoreGuiType
+---@class Enum.CreateOutfitFailure
+---@field public InvalidName number | '1'
+---@field public OutfitLimitReached number | '2'
+---@field public Other number | '3'
+local CreateOutfitFailure;
+---@diagnostic disable-next-line
+---@alias CreateOutfitFailure Enum.CreateOutfitFailure
+---@class Enum.CreatorType
+---@field public User number | '0'
+---@field public Group number | '1'
+---The ownership type of the open place.
+local CreatorType;
+---@diagnostic disable-next-line
+---@alias CreatorType Enum.CreatorType
+---@class Enum.CurrencyType
+---@field public Default number | '0'
+---@field public Robux number | '1'
+---@field public Tix number | '2'
+---The CurrencyType Enum is used with `MarketplaceService` to set the currency
+---used. As tickets no longer exist on the Roblox platform, this enum is
+---**ignored** in most API that previously used it, such as
+---`MarketplaceService/PromptPurchase|PromptPurchase`.
+local CurrencyType;
+---@diagnostic disable-next-line
+---@alias CurrencyType Enum.CurrencyType
+---@class Enum.CustomCameraMode
+---@field public Default number | '0'
+---@field public Follow number | '2'
+---@field public Classic number | '1'
+---Changes the player's camera mode in Roblox's Game settings.
+local CustomCameraMode;
+---@diagnostic disable-next-line
+---@alias CustomCameraMode Enum.CustomCameraMode
+---@class Enum.DataStoreRequestType
+---@field public GetAsync number | '0'
+---@field public SetIncrementAsync number | '1'
+---@field public UpdateAsync number | '2'
+---@field public GetSortedAsync number | '3'
+---@field public SetIncrementSortedAsync number | '4'
+---@field public OnUpdate number | '5'
+---Indicates the type of data store request being made.
+local DataStoreRequestType;
+---@diagnostic disable-next-line
+---@alias DataStoreRequestType Enum.DataStoreRequestType
+---@class Enum.DebuggerEndReason
+---@field public ClientRequest number | '0'
+---@field public Timeout number | '1'
+---@field public InvalidHost number | '2'
+---@field public Disconnected number | '3'
+---@field public ServerShutdown number | '4'
+---@field public ServerProtocolMismatch number | '5'
+---@field public ConfigurationFailed number | '6'
+---@field public RpcError number | '7'
+---Reason for the end of the debugger session.
+local DebuggerEndReason;
+---@diagnostic disable-next-line
+---@alias DebuggerEndReason Enum.DebuggerEndReason
+---@class Enum.DebuggerExceptionBreakMode
+---@field public Never number | '0'
+---@field public Unhandled number | '1'
+---@field public Always number | '2'
+local DebuggerExceptionBreakMode;
+---@diagnostic disable-next-line
+---@alias DebuggerExceptionBreakMode Enum.DebuggerExceptionBreakMode
+---@class Enum.DebuggerFrameType
+---@field public C number | '0'
+---@field public Lua number | '1'
+---Call stack frame type.
+local DebuggerFrameType;
+---@diagnostic disable-next-line
+---@alias DebuggerFrameType Enum.DebuggerFrameType
+---@class Enum.DebuggerPauseReason
+---@field public Unknown number | '0'
+---@field public Requested number | '1'
+---@field public Breakpoint number | '2'
+---@field public Exception number | '3'
+---@field public SingleStep number | '4'
+---@field public Entrypoint number | '5'
+---Reason that the DataModel was paused.
+local DebuggerPauseReason;
+---@diagnostic disable-next-line
+---@alias DebuggerPauseReason Enum.DebuggerPauseReason
+---@class Enum.DebuggerStatus
+---@field public Success number | '0'
+---@field public Timeout number | '1'
+---@field public ConnectionLost number | '2'
+---@field public InvalidResponse number | '3'
+---@field public InternalError number | '4'
+---@field public InvalidState number | '5'
+---@field public RpcError number | '6'
+---@field public InvalidArgument number | '7'
+---@field public ConnectionClosed number | '8'
+---Result of a debugger request.
+local DebuggerStatus;
+---@diagnostic disable-next-line
+---@alias DebuggerStatus Enum.DebuggerStatus
+---@class Enum.DevCameraOcclusionMode
+---@field public Zoom number | '0'
+---@field public Invisicam number | '1'
+---Determines how the default camera handles objects that are in-between the
+---camera and the camera subject.
+local DevCameraOcclusionMode;
+---@diagnostic disable-next-line
+---@alias DevCameraOcclusionMode Enum.DevCameraOcclusionMode
+---@class Enum.DevComputerCameraMovementMode
+---@field public UserChoice number | '0'
+---@field public Classic number | '1'
+---@field public Follow number | '2'
+---@field public Orbital number | '3'
+---@field public CameraToggle number | '4'
+---Overwrites the player's camera movement mode setting on a computer.
+local DevComputerCameraMovementMode;
+---@diagnostic disable-next-line
+---@alias DevComputerCameraMovementMode Enum.DevComputerCameraMovementMode
+---@class Enum.DevComputerMovementMode
+---@field public UserChoice number | '0'
+---@field public KeyboardMouse number | '1'
+---@field public ClickToMove number | '2'
+---@field public Scriptable number | '3'
+---Sets the movement mode of players who are playing on computers.
+local DevComputerMovementMode;
+---@diagnostic disable-next-line
+---@alias DevComputerMovementMode Enum.DevComputerMovementMode
+---@class Enum.DevTouchCameraMovementMode
+---@field public UserChoice number | '0'
+---@field public Classic number | '1'
+---@field public Follow number | '2'
+---@field public Orbital number | '3'
+---Overwrites the camera mode if the player is on a touch device.
+local DevTouchCameraMovementMode;
+---@diagnostic disable-next-line
+---@alias DevTouchCameraMovementMode Enum.DevTouchCameraMovementMode
+---@class Enum.DevTouchMovementMode
+---@field public UserChoice number | '0'
+---@field public Thumbstick number | '1'
+---@field public DPad number | '2'
+---@field public Thumbpad number | '3'
+---@field public ClickToMove number | '4'
+---@field public Scriptable number | '5'
+---@field public DynamicThumbstick number | '6'
+---Overrides the movement mode of players who are playing on touch devices.
+local DevTouchMovementMode;
+---@diagnostic disable-next-line
+---@alias DevTouchMovementMode Enum.DevTouchMovementMode
+---@class Enum.DeveloperMemoryTag
+---@field public Internal number | '0'
+---@field public HttpCache number | '1'
+---@field public Instances number | '2'
+---@field public Signals number | '3'
+---@field public LuaHeap number | '4'
+---@field public Script number | '5'
+---@field public PhysicsCollision number | '6'
+---@field public PhysicsParts number | '7'
+---@field public GraphicsSolidModels number | '8'
+---@field public GraphicsMeshParts number | '10'
+---@field public GraphicsParticles number | '11'
+---@field public GraphicsParts number | '12'
+---@field public GraphicsSpatialHash number | '13'
+---@field public GraphicsTerrain number | '14'
+---@field public GraphicsTexture number | '15'
+---@field public GraphicsTextureCharacter number | '16'
+---@field public Sounds number | '17'
+---@field public StreamingSounds number | '18'
+---@field public TerrainVoxels number | '19'
+---@field public Gui number | '21'
+---@field public Animation number | '22'
+---@field public Navigation number | '23'
+---@field public GeometryCSG number | '24'
+---A list of memory categories, and a description of what they are allocated to.
+local DeveloperMemoryTag;
+---@diagnostic disable-next-line
+---@alias DeveloperMemoryTag Enum.DeveloperMemoryTag
+---@class Enum.DeviceType
+---@field public Unknown number | '0'
+---@field public Desktop number | '1'
+---@field public Tablet number | '2'
+---@field public Phone number | '3'
+---The DeviceType Enum is used to determine the category of devices that a client
+---belongs to.
+---
+---Currently this can only be used in `CoreScript`s.
+local DeviceType;
+---@diagnostic disable-next-line
+---@alias DeviceType Enum.DeviceType
+---@class Enum.DialogBehaviorType
+---@field public SinglePlayer number | '0'
+---@field public MultiplePlayers number | '1'
+---Controls whether multiple people can use this dialog, or only one person at a
+---time can use it.
+local DialogBehaviorType;
+---@diagnostic disable-next-line
+---@alias DialogBehaviorType Enum.DialogBehaviorType
+---@class Enum.DialogPurpose
+---@field public Quest number | '0'
+---@field public Help number | '1'
+---@field public Shop number | '2'
+---The DialogPurpose enum is used to set the icon of a `Dialog`.
+local DialogPurpose;
+---@diagnostic disable-next-line
+---@alias DialogPurpose Enum.DialogPurpose
+---@class Enum.DialogTone
+---@field public Neutral number | '0'
+---@field public Friendly number | '1'
+---@field public Enemy number | '2'
+---Sets the `Dialog/Tone` of a `Dialog` object, which influences how the dialog
+---appears.
+local DialogTone;
+---@diagnostic disable-next-line
+---@alias DialogTone Enum.DialogTone
+---@class Enum.DominantAxis
+---@field public Width number | '0'
+---@field public Height number | '1'
+---Used by `UIAspectRatioConstraint/DominantAxis` to specify which axis is used
+---when setting the new size of the GUI element.
+local DominantAxis;
+---@diagnostic disable-next-line
+---@alias DominantAxis Enum.DominantAxis
+---@class Enum.DraftStatusCode
+---@field public OK number | '0'
+---@field public DraftOutdated number | '1'
+---@field public ScriptRemoved number | '2'
+---@field public DraftCommitted number | '3'
+local DraftStatusCode;
+---@diagnostic disable-next-line
+---@alias DraftStatusCode Enum.DraftStatusCode
+---@class Enum.DraggerCoordinateSpace
+---@field public Object number | '0'
+---@field public World number | '1'
+local DraggerCoordinateSpace;
+---@diagnostic disable-next-line
+---@alias DraggerCoordinateSpace Enum.DraggerCoordinateSpace
+---@class Enum.DraggerMovementMode
+---@field public Geometric number | '0'
+---@field public Physical number | '1'
+local DraggerMovementMode;
+---@diagnostic disable-next-line
+---@alias DraggerMovementMode Enum.DraggerMovementMode
+---@class Enum.EasingDirection
+---@field public In number | '0'
+---@field public Out number | '1'
+---@field public InOut number | '2'
+---Pass to `TweenInfo|TweenInto.new` to control the direction `Tween|Tweens`
+---play in. The animation below demonstrates the different options using
+---`enum/EasingStyle|EasingStyle.Quad`.
+---
+---<img src="/assets/blt9231861ad966495f/EasingDirection.gif" />
+local EasingDirection;
+---@diagnostic disable-next-line
+---@alias EasingDirection Enum.EasingDirection
+---@class Enum.EasingStyle
+---@field public Linear number | '0'
+---@field public Sine number | '1'
+---@field public Back number | '2'
+---@field public Quad number | '3'
+---@field public Quart number | '4'
+---@field public Quint number | '5'
+---@field public Bounce number | '6'
+---@field public Elastic number | '7'
+---@field public Exponential number | '8'
+---@field public Circular number | '9'
+---@field public Cubic number | '10'
+---Passed to `TweenInfo|TweenInfo.new` to control the motion of a `Tween`. Each
+---easing style is described in a graph below. The X axis is a value passed to
+---`TweenService/GetValue` and the Y axis is the value returned.
+---
+---This diagram uses `Enum/EasingDirection|EasingDirection.In`. The
+---`Enum/EasingDirection|EasingDirection.Out` version of the diagram is a
+---reflection flipped in both directions, and the `InOut` version is the In and
+---Out versions stuck together.
+---
+---![Easing style graphs][1]
+---
+---The following is an animation demonstrating how each `Enum/EasingDirection`
+---acts when used with `GuiObject/TweenPosition`. Note that some EasingStyles
+---(Elastic and Back) will go **further** than the UDim2s involved in the tween
+---(in the case of this animation, the start Positions and end Positions of the
+---`TextLabel`s).
+---
+---![enter image description here][2]
+---
+---
+---  [1]: /assets/blt6e86ddaa7953f358/EasingStyles.jpg
+---  [2]: /assets/blt164bc3fd53630e3a/Easingstyle.gif
+local EasingStyle;
+---@diagnostic disable-next-line
+---@alias EasingStyle Enum.EasingStyle
+---@class Enum.ElasticBehavior
+---@field public WhenScrollable number | '0'
+---@field public Always number | '1'
+---@field public Never number | '2'
+---This enum is used by `ScrollingFrame/ElasticBehavior` to control when elastic
+---scrolling is active for a `ScrollingFrame`.
+local ElasticBehavior;
+---@diagnostic disable-next-line
+---@alias ElasticBehavior Enum.ElasticBehavior
+---@class Enum.EnviromentalPhysicsThrottle
+---@field public DefaultAuto number | '0'
+---@field public Disabled number | '1'
+---@field public Always number | '2'
+---@field public Skip2 number | '3'
+---@field public Skip4 number | '4'
+---@field public Skip8 number | '5'
+---@field public Skip16 number | '6'
+local EnviromentalPhysicsThrottle;
+---@diagnostic disable-next-line
+---@alias EnviromentalPhysicsThrottle Enum.EnviromentalPhysicsThrottle
+---@class Enum.ExplosionType
+---@field public NoCraters number | '0'
+---@field public Craters number | '1'
+---The ExplosionType Enum is used to set the `Explosion/ExplosionType` property.
+local ExplosionType;
+---@diagnostic disable-next-line
+---@alias ExplosionType Enum.ExplosionType
+---@class Enum.FieldOfViewMode
+---@field public Vertical number | '0'
+---@field public Diagonal number | '1'
+---@field public MaxAxis number | '2'
+local FieldOfViewMode;
+---@diagnostic disable-next-line
+---@alias FieldOfViewMode Enum.FieldOfViewMode
+---@class Enum.FillDirection
+---@field public Horizontal number | '0'
+---@field public Vertical number | '1'
+---Used by `UIGridStyleLayout/FillDirection` to control which direction elements
+---are placed.
+local FillDirection;
+---@diagnostic disable-next-line
+---@alias FillDirection Enum.FillDirection
+---@class Enum.FilterResult
+---@field public Rejected number | '1'
+---@field public Accepted number | '0'
+---Used to determine the result of a text filter request.
+local FilterResult;
+---@diagnostic disable-next-line
+---@alias FilterResult Enum.FilterResult
+---@class Enum.Font
+---@field public AmaticSC number | '21'
+---@field public Antique number | '15'
+---@field public Arcade number | '13'
+---@field public Arial number | '1'
+---@field public ArialBold number | '2'
+---@field public Bangers number | '22'
+---@field public Bodoni number | '7'
+---@field public Cartoon number | '9'
+---@field public Code number | '10'
+---@field public Creepster number | '23'
+---@field public DenkOne number | '24'
+---@field public Fantasy number | '14'
+---@field public Fondamento number | '25'
+---@field public FredokaOne number | '26'
+---@field public Garamond number | '8'
+---@field public Gotham number | '17'
+---@field public GothamBlack number | '20'
+---@field public GothamBold number | '19'
+---@field public GothamSemibold number | '18'
+---@field public GrenzeGotisch number | '27'
+---@field public Highway number | '11'
+---@field public IndieFlower number | '28'
+---@field public JosefinSans number | '29'
+---@field public Jura number | '30'
+---@field public Kalam number | '31'
+---@field public Legacy number | '0'
+---@field public LuckiestGuy number | '32'
+---@field public Merriweather number | '33'
+---@field public Michroma number | '34'
+---@field public Nunito number | '35'
+---@field public Oswald number | '36'
+---@field public PatrickHand number | '37'
+---@field public PermanentMarker number | '38'
+---@field public Roboto number | '39'
+---@field public RobotoCondensed number | '40'
+---@field public RobotoMono number | '41'
+---@field public Sarpanch number | '42'
+---@field public SciFi number | '12'
+---@field public SourceSans number | '3'
+---@field public SourceSansBold number | '4'
+---@field public SourceSansItalic number | '6'
+---@field public SourceSansLight number | '5'
+---@field public SourceSansSemibold number | '16'
+---@field public SpecialElite number | '43'
+---@field public TitilliumWeb number | '44'
+---@field public Ubuntu number | '45'
+---@field public Unknown number | '100'
+---The Font enum is used in `TextBox`, `TextLabel`, and `TextButton` to determine how the GUI element will render its text.
+local Font;
+---@diagnostic disable-next-line
+---@alias Font Enum.Font
+---@class Enum.FontSize
+---@field public Size8 number | '0'
+---@field public Size9 number | '1'
+---@field public Size10 number | '2'
+---@field public Size11 number | '3'
+---@field public Size12 number | '4'
+---@field public Size14 number | '5'
+---@field public Size18 number | '6'
+---@field public Size24 number | '7'
+---@field public Size36 number | '8'
+---@field public Size48 number | '9'
+---@field public Size28 number | '10'
+---@field public Size32 number | '11'
+---@field public Size42 number | '12'
+---@field public Size60 number | '13'
+---@field public Size96 number | '14'
+---The FontSize Enum controls the font size of text in `TextBox`, `TextLabel`, and `TextButton` objects.
+local FontSize;
+---@diagnostic disable-next-line
+---@alias FontSize Enum.FontSize
+---@class Enum.FontStyle
+---@field public Normal number | '0'
+---@field public Italic number | '1'
+local FontStyle;
+---@diagnostic disable-next-line
+---@alias FontStyle Enum.FontStyle
+---@class Enum.FontWeight
+---@field public Thin number | '100'
+---@field public ExtraLight number | '200'
+---@field public Light number | '300'
+---@field public Regular number | '400'
+---@field public Medium number | '500'
+---@field public SemiBold number | '600'
+---@field public Bold number | '700'
+---@field public ExtraBold number | '800'
+---@field public Heavy number | '900'
+local FontWeight;
+---@diagnostic disable-next-line
+---@alias FontWeight Enum.FontWeight
+---@class Enum.FormFactor
+---@field public Symmetric number | '0'
+---@field public Brick number | '1'
+---@field public Plate number | '2'
+---@field public Custom number | '3'
+---The FormFactor Enum for `FormFactorPart/FormFactor`.
+---
+---Minimum size along a given axis is 1 * RateOfIncrease for that axis, except in the case of the "Custom" FormFactor, which has a minimum size of 0.2 along all axes.
+local FormFactor;
+---@diagnostic disable-next-line
+---@alias FormFactor Enum.FormFactor
+---@class Enum.FrameStyle
+---@field public Custom number | '0'
+---@field public ChatBlue number | '1'
+---@field public RobloxSquare number | '2'
+---@field public RobloxRound number | '3'
+---@field public ChatGreen number | '4'
+---@field public ChatRed number | '5'
+---@field public DropShadow number | '6'
+---The FrameStyle Enum is used to set the style of a `Frame`. Below is a
+---comparison of all seven frame styles. The TextLabels are positioned at the
+---top-left corner of the frame (at the `DataType/UDim2` value of `{{0, 0}, {0,
+---0}}`).
+---
+---Example
+----------
+---Below is a screenshot containing all seven frame styles.
+---![The seven frame styles][1]
+---
+---
+---  [1]: /assets/blte94588e14ec23e3c/FrameStyle.png
+local FrameStyle;
+---@diagnostic disable-next-line
+---@alias FrameStyle Enum.FrameStyle
+---@class Enum.FramerateManagerMode
+---@field public Automatic number | '0'
+---@field public On number | '1'
+---@field public Off number | '2'
+local FramerateManagerMode;
+---@diagnostic disable-next-line
+---@alias FramerateManagerMode Enum.FramerateManagerMode
+---@class Enum.FriendRequestEvent
+---@field public Issue number | '0'
+---@field public Revoke number | '1'
+---@field public Accept number | '2'
+---@field public Deny number | '3'
+---Describes the event when a player sends or responds to a friend request. This is used by the in-game friend request system.
+local FriendRequestEvent;
+---@diagnostic disable-next-line
+---@alias FriendRequestEvent Enum.FriendRequestEvent
+---@class Enum.FriendStatus
+---@field public Unknown number | '0'
+---@field public NotFriend number | '1'
+---@field public Friend number | '2'
+---@field public FriendRequestSent number | '3'
+---@field public FriendRequestReceived number | '4'
+---Determines the friendship status between two players. This is used by the in-game friend request system.
+local FriendStatus;
+---@diagnostic disable-next-line
+---@alias FriendStatus Enum.FriendStatus
+---@class Enum.FunctionalTestResult
+---@field public Passed number | '0'
+---@field public Warning number | '1'
+---@field public Error number | '2'
+---Represents the outcome of a single functional test run.
+local FunctionalTestResult;
+---@diagnostic disable-next-line
+---@alias FunctionalTestResult Enum.FunctionalTestResult
+---@class Enum.GameAvatarType
+---@field public R6 number | '0'
+---@field public R15 number | '1'
+---@field public PlayerChoice number | '2'
+---The value of this Enum indicates which type of avatar an experience uses. Some experiences may specify explicitly R6/R15, while some will allow the player's choice of avatar to be used.
+local GameAvatarType;
+---@diagnostic disable-next-line
+---@alias GameAvatarType Enum.GameAvatarType
+---@class Enum.GearGenreSetting
+---@field public AllGenres number | '0'
+---@field public MatchingGenreOnly number | '1'
+---The GearGenreSetting Enum sets what types of gear are allowed in a place.
+local GearGenreSetting;
+---@diagnostic disable-next-line
+---@alias GearGenreSetting Enum.GearGenreSetting
+---@class Enum.GearType
+---@field public MeleeWeapons number | '0'
+---@field public RangedWeapons number | '1'
+---@field public Explosives number | '2'
+---@field public PowerUps number | '3'
+---@field public NavigationEnhancers number | '4'
+---@field public MusicalInstruments number | '5'
+---@field public SocialItems number | '6'
+---@field public BuildingTools number | '7'
+---@field public Transport number | '8'
+---The GearType Enum is used as an argument in `DataModel/IsGearTypeAllowed`. Gear may have more than one type/attribute.
+local GearType;
+---@diagnostic disable-next-line
+---@alias GearType Enum.GearType
+---@class Enum.Genre
+---@field public All number | '0'
+---@field public TownAndCity number | '1'
+---@field public Fantasy number | '2'
+---@field public SciFi number | '3'
+---@field public Ninja number | '4'
+---@field public Scary number | '5'
+---@field public Pirate number | '6'
+---@field public Adventure number | '7'
+---@field public Sports number | '8'
+---@field public Funny number | '9'
+---@field public WildWest number | '10'
+---@field public War number | '11'
+---@field public SkatePark number | '12'
+---@field public Tutorial number | '13'
+---Used to represent the type of game. This can be changed in the "Basic
+---Settings" tab when configuring a place on the website.
+local Genre;
+---@diagnostic disable-next-line
+---@alias Genre Enum.Genre
+---@class Enum.GraphicsMode
+---@field public Automatic number | '1'
+---@field public Direct3D11 number | '2'
+---@field public OpenGL number | '4'
+---@field public Metal number | '5'
+---@field public Vulkan number | '6'
+---@field public NoGraphics number | '7'
+---Used to set the graphics API that Roblox uses to render the game.
+local GraphicsMode;
+---@diagnostic disable-next-line
+---@alias GraphicsMode Enum.GraphicsMode
+---@class Enum.HandlesStyle
+---@field public Resize number | '0'
+---@field public Movement number | '1'
+local HandlesStyle;
+---@diagnostic disable-next-line
+---@alias HandlesStyle Enum.HandlesStyle
+---@class Enum.HighlightDepthMode
+---@field public AlwaysOnTop number | '0'
+---@field public Occluded number | '1'
+local HighlightDepthMode;
+---@diagnostic disable-next-line
+---@alias HighlightDepthMode Enum.HighlightDepthMode
+---@class Enum.HorizontalAlignment
+---@field public Center number | '0'
+---@field public Left number | '1'
+---@field public Right number | '2'
+---Used by `UIGridStyleLayout/HorizontalAlignment` to align the layout within its
+---parent.
+local HorizontalAlignment;
+---@diagnostic disable-next-line
+---@alias HorizontalAlignment Enum.HorizontalAlignment
+---@class Enum.HoverAnimateSpeed
+---@field public VerySlow number | '0'
+---@field public Slow number | '1'
+---@field public Medium number | '2'
+---@field public Fast number | '3'
+---@field public VeryFast number | '4'
+---Specifies how frequently the hover animation flashes.
+local HoverAnimateSpeed;
+---@diagnostic disable-next-line
+---@alias HoverAnimateSpeed Enum.HoverAnimateSpeed
+---@class Enum.HttpCachePolicy
+---@field public None number | '0'
+---@field public Full number | '1'
+---@field public DataOnly number | '2'
+---@field public Default number | '3'
+---@field public InternalRedirectRefresh number | '4'
+local HttpCachePolicy;
+---@diagnostic disable-next-line
+---@alias HttpCachePolicy Enum.HttpCachePolicy
+---@class Enum.HttpContentType
+---@field public ApplicationJson number | '0'
+---@field public ApplicationXml number | '1'
+---@field public ApplicationUrlEncoded number | '2'
+---@field public TextPlain number | '3'
+---@field public TextXml number | '4'
+---Specifies the value of the HTTP Content-Type header which describes the HTTP
+---request data type.
+local HttpContentType;
+---@diagnostic disable-next-line
+---@alias HttpContentType Enum.HttpContentType
+---@class Enum.HttpError
+---@field public OK number | '0'
+---@field public InvalidUrl number | '1'
+---@field public DnsResolve number | '2'
+---@field public ConnectFail number | '3'
+---@field public OutOfMemory number | '4'
+---@field public TimedOut number | '5'
+---@field public TooManyRedirects number | '6'
+---@field public InvalidRedirect number | '7'
+---@field public NetFail number | '8'
+---@field public Aborted number | '9'
+---@field public SslConnectFail number | '10'
+---@field public SslVerificationFail number | '11'
+---@field public Unknown number | '12'
+local HttpError;
+---@diagnostic disable-next-line
+---@alias HttpError Enum.HttpError
+---@class Enum.HttpRequestType
+---@field public Default number | '0'
+---@field public MarketplaceService number | '2'
+---@field public Players number | '7'
+---@field public Chat number | '15'
+---@field public Avatar number | '16'
+---@field public Analytics number | '23'
+---@field public Localization number | '25'
+local HttpRequestType;
+---@diagnostic disable-next-line
+---@alias HttpRequestType Enum.HttpRequestType
+---@class Enum.HumanoidCollisionType
+---@field public OuterBox number | '0'
+---@field public InnerBox number | '1'
+---Enum to select the `Humanoid/CollisionType` for non-player `Humanoid|Humanoids`.
+---
+---For player `Player/Character|Characters` the CollisionType property will be decided by the Avatar Collision Option in Game Settings.
+local HumanoidCollisionType;
+---@diagnostic disable-next-line
+---@alias HumanoidCollisionType Enum.HumanoidCollisionType
+---@class Enum.HumanoidDisplayDistanceType
+---@field public Viewer number | '0'
+---@field public Subject number | '1'
+---@field public None number | '2'
+---HumanoidDisplayDistanceType determines how `/Humanoid/HealthDisplayDistance`, and `/Humanoid/NameDisplayDistance` are used in determining whether a players's name and health are visible to other players.
+local HumanoidDisplayDistanceType;
+---@diagnostic disable-next-line
+---@alias HumanoidDisplayDistanceType Enum.HumanoidDisplayDistanceType
+---@class Enum.HumanoidHealthDisplayType
+---@field public DisplayWhenDamaged number | '0'
+---@field public AlwaysOn number | '1'
+---@field public AlwaysOff number | '2'
+---Controls when the `Humanoid`'s health bar is displayed. This works in conjunction with the `Humanoid`'s `MaxHealth` property, which must have a value higher than zero or the health bar doesn't display.
+local HumanoidHealthDisplayType;
+---@diagnostic disable-next-line
+---@alias HumanoidHealthDisplayType Enum.HumanoidHealthDisplayType
+---@class Enum.HumanoidOnlySetCollisionsOnStateChange
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---Specifies the behavior of the Humanoid when setting the collisions for parts
+---with the Humanoid.
+local HumanoidOnlySetCollisionsOnStateChange;
+---@diagnostic disable-next-line
+---@alias HumanoidOnlySetCollisionsOnStateChange Enum.HumanoidOnlySetCollisionsOnStateChange
+---@class Enum.HumanoidRigType
+---@field public R6 number | '0'
+---@field public R15 number | '1'
+---Describes whether or not a character is using the new R15 rig, or the legacy
+---R6 rig. This is the type returned by Humanoid's RigType property, which
+---indicates whether the Humanoid is R6 or R15.
+local HumanoidRigType;
+---@diagnostic disable-next-line
+---@alias HumanoidRigType Enum.HumanoidRigType
+---@class Enum.HumanoidStateType
+---@field public FallingDown number | '0'
+---@field public Running number | '8'
+---@field public RunningNoPhysics number | '10'
+---@field public Climbing number | '12'
+---@field public StrafingNoPhysics number | '11'
+---@field public Ragdoll number | '1'
+---@field public GettingUp number | '2'
+---@field public Jumping number | '3'
+---@field public Landed number | '7'
+---@field public Flying number | '6'
+---@field public Freefall number | '5'
+---@field public Seated number | '13'
+---@field public PlatformStanding number | '14'
+---@field public Dead number | '15'
+---@field public Swimming number | '4'
+---@field public Physics number | '16'
+---@field public None number | '18'
+---Identifies, reads and sets the physics control state of a `Humanoid`.
+---`Humanoid/GetState` and `Humanoid/ChangeState` methods, as well as the
+---`Humanoid/StateChanged` event currently use this Enum.
+---
+---Some states only allow manual setting, and allow a developer to make the
+---Humanoid relinquish control of its character.
+---
+---When altering the Humanoid of a player, this should be done from a
+---`LocalScript` ran by that player on their local client. Certain states only
+---work when set by the owner process (client or server). (Dead for example)
+local HumanoidStateType;
+---@diagnostic disable-next-line
+---@alias HumanoidStateType Enum.HumanoidStateType
+---@class Enum.IKCollisionsMode
+---@field public NoCollisions number | '0'
+---@field public OtherMechanismsAnchored number | '1'
+---@field public IncludeContactedMechanisms number | '2'
+local IKCollisionsMode;
+---@diagnostic disable-next-line
+---@alias IKCollisionsMode Enum.IKCollisionsMode
+---@class Enum.IXPLoadingStatus
+---@field public None number | '0'
+---@field public Pending number | '1'
+---@field public Initialized number | '2'
+---@field public ShutOff number | '3'
+---@field public ErrorTimedOut number | '7'
+---@field public ErrorConnection number | '5'
+---@field public ErrorJsonParse number | '6'
+---@field public ErrorInvalidUser number | '4'
+local IXPLoadingStatus;
+---@diagnostic disable-next-line
+---@alias IXPLoadingStatus Enum.IXPLoadingStatus
+---@class Enum.InOut
+---@field public Edge number | '0'
+---@field public Inset number | '1'
+---@field public Center number | '2'
+---The InOut Enum is used to set where the object is on the side of its parent.
+local InOut;
+---@diagnostic disable-next-line
+---@alias InOut Enum.InOut
+---@class Enum.InfoType
+---@field public Asset number | '0'
+---@field public Product number | '1'
+---@field public GamePass number | '2'
+---@field public Subscription number | '3'
+---@field public Bundle number | '4'
+---Used to represent the possible information formats returnable by
+---`MarketplaceService/GetProductInfo`.
+local InfoType;
+---@diagnostic disable-next-line
+---@alias InfoType Enum.InfoType
+---@class Enum.InitialDockState
+---@field public Top number | '0'
+---@field public Bottom number | '1'
+---@field public Left number | '2'
+---@field public Right number | '3'
+---@field public Float number | '4'
+---Describes the initial docking state of a `DockWidgetPluginGui`.
+local InitialDockState;
+---@diagnostic disable-next-line
+---@alias InitialDockState Enum.InitialDockState
+---@class Enum.InputType
+---@field public NoInput number | '0'
+---@field public Constant number | '12'
+---@field public Sin number | '13'
+---The InputType Enum controls the SurfaceInputs of `Part`. Several parameters
+---here are left-overs from 2005, before Roblox was a multiplayer game, and have
+---no known functionality.
+---
+---The following animation is of the Sin InputType: 
+---
+---![Animation of the Sin
+---InputType](assets/bltf0a4aa99ce7d70e1/Enum_InputType_Sin.gif)
+local InputType;
+---@diagnostic disable-next-line
+---@alias InputType Enum.InputType
+---@class Enum.InterpolationThrottlingMode
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+local InterpolationThrottlingMode;
+---@diagnostic disable-next-line
+---@alias InterpolationThrottlingMode Enum.InterpolationThrottlingMode
+---@class Enum.JointCreationMode
+---@field public All number | '0'
+---@field public Surface number | '1'
+---@field public None number | '2'
+---The way joints are created between two surfaces.
+local JointCreationMode;
+---@diagnostic disable-next-line
+---@alias JointCreationMode Enum.JointCreationMode
+---@class Enum.KeyCode
+---@field public Unknown number | '0'
+---@field public Backspace number | '8'
+---@field public Tab number | '9'
+---@field public Clear number | '12'
+---@field public Return number | '13'
+---@field public Pause number | '19'
+---@field public Escape number | '27'
+---@field public Space number | '32'
+---@field public QuotedDouble number | '34'
+---@field public Hash number | '35'
+---@field public Dollar number | '36'
+---@field public Percent number | '37'
+---@field public Ampersand number | '38'
+---@field public Quote number | '39'
+---@field public LeftParenthesis number | '40'
+---@field public RightParenthesis number | '41'
+---@field public Asterisk number | '42'
+---@field public Plus number | '43'
+---@field public Comma number | '44'
+---@field public Minus number | '45'
+---@field public Period number | '46'
+---@field public Slash number | '47'
+---@field public Zero number | '48'
+---@field public One number | '49'
+---@field public Two number | '50'
+---@field public Three number | '51'
+---@field public Four number | '52'
+---@field public Five number | '53'
+---@field public Six number | '54'
+---@field public Seven number | '55'
+---@field public Eight number | '56'
+---@field public Nine number | '57'
+---@field public Colon number | '58'
+---@field public Semicolon number | '59'
+---@field public LessThan number | '60'
+---@field public Equals number | '61'
+---@field public GreaterThan number | '62'
+---@field public Question number | '63'
+---@field public At number | '64'
+---@field public LeftBracket number | '91'
+---@field public BackSlash number | '92'
+---@field public RightBracket number | '93'
+---@field public Caret number | '94'
+---@field public Underscore number | '95'
+---@field public Backquote number | '96'
+---@field public A number | '97'
+---@field public B number | '98'
+---@field public C number | '99'
+---@field public D number | '100'
+---@field public E number | '101'
+---@field public F number | '102'
+---@field public G number | '103'
+---@field public H number | '104'
+---@field public I number | '105'
+---@field public J number | '106'
+---@field public K number | '107'
+---@field public L number | '108'
+---@field public M number | '109'
+---@field public N number | '110'
+---@field public O number | '111'
+---@field public P number | '112'
+---@field public Q number | '113'
+---@field public R number | '114'
+---@field public S number | '115'
+---@field public T number | '116'
+---@field public U number | '117'
+---@field public V number | '118'
+---@field public W number | '119'
+---@field public X number | '120'
+---@field public Y number | '121'
+---@field public Z number | '122'
+---@field public LeftCurly number | '123'
+---@field public Pipe number | '124'
+---@field public RightCurly number | '125'
+---@field public Tilde number | '126'
+---@field public Delete number | '127'
+---@field public KeypadZero number | '256'
+---@field public KeypadOne number | '257'
+---@field public KeypadTwo number | '258'
+---@field public KeypadThree number | '259'
+---@field public KeypadFour number | '260'
+---@field public KeypadFive number | '261'
+---@field public KeypadSix number | '262'
+---@field public KeypadSeven number | '263'
+---@field public KeypadEight number | '264'
+---@field public KeypadNine number | '265'
+---@field public KeypadPeriod number | '266'
+---@field public KeypadDivide number | '267'
+---@field public KeypadMultiply number | '268'
+---@field public KeypadMinus number | '269'
+---@field public KeypadPlus number | '270'
+---@field public KeypadEnter number | '271'
+---@field public KeypadEquals number | '272'
+---@field public Up number | '273'
+---@field public Down number | '274'
+---@field public Right number | '275'
+---@field public Left number | '276'
+---@field public Insert number | '277'
+---@field public Home number | '278'
+---@field public End number | '279'
+---@field public PageUp number | '280'
+---@field public PageDown number | '281'
+---@field public LeftShift number | '304'
+---@field public RightShift number | '303'
+---@field public LeftMeta number | '310'
+---@field public RightMeta number | '309'
+---@field public LeftAlt number | '308'
+---@field public RightAlt number | '307'
+---@field public LeftControl number | '306'
+---@field public RightControl number | '305'
+---@field public CapsLock number | '301'
+---@field public NumLock number | '300'
+---@field public ScrollLock number | '302'
+---@field public LeftSuper number | '311'
+---@field public RightSuper number | '312'
+---@field public Mode number | '313'
+---@field public Compose number | '314'
+---@field public Help number | '315'
+---@field public Print number | '316'
+---@field public SysReq number | '317'
+---@field public Break number | '318'
+---@field public Menu number | '319'
+---@field public Power number | '320'
+---@field public Euro number | '321'
+---@field public Undo number | '322'
+---@field public F1 number | '282'
+---@field public F2 number | '283'
+---@field public F3 number | '284'
+---@field public F4 number | '285'
+---@field public F5 number | '286'
+---@field public F6 number | '287'
+---@field public F7 number | '288'
+---@field public F8 number | '289'
+---@field public F9 number | '290'
+---@field public F10 number | '291'
+---@field public F11 number | '292'
+---@field public F12 number | '293'
+---@field public F13 number | '294'
+---@field public F14 number | '295'
+---@field public F15 number | '296'
+---@field public World0 number | '160'
+---@field public World1 number | '161'
+---@field public World2 number | '162'
+---@field public World3 number | '163'
+---@field public World4 number | '164'
+---@field public World5 number | '165'
+---@field public World6 number | '166'
+---@field public World7 number | '167'
+---@field public World8 number | '168'
+---@field public World9 number | '169'
+---@field public World10 number | '170'
+---@field public World11 number | '171'
+---@field public World12 number | '172'
+---@field public World13 number | '173'
+---@field public World14 number | '174'
+---@field public World15 number | '175'
+---@field public World16 number | '176'
+---@field public World17 number | '177'
+---@field public World18 number | '178'
+---@field public World19 number | '179'
+---@field public World20 number | '180'
+---@field public World21 number | '181'
+---@field public World22 number | '182'
+---@field public World23 number | '183'
+---@field public World24 number | '184'
+---@field public World25 number | '185'
+---@field public World26 number | '186'
+---@field public World27 number | '187'
+---@field public World28 number | '188'
+---@field public World29 number | '189'
+---@field public World30 number | '190'
+---@field public World31 number | '191'
+---@field public World32 number | '192'
+---@field public World33 number | '193'
+---@field public World34 number | '194'
+---@field public World35 number | '195'
+---@field public World36 number | '196'
+---@field public World37 number | '197'
+---@field public World38 number | '198'
+---@field public World39 number | '199'
+---@field public World40 number | '200'
+---@field public World41 number | '201'
+---@field public World42 number | '202'
+---@field public World43 number | '203'
+---@field public World44 number | '204'
+---@field public World45 number | '205'
+---@field public World46 number | '206'
+---@field public World47 number | '207'
+---@field public World48 number | '208'
+---@field public World49 number | '209'
+---@field public World50 number | '210'
+---@field public World51 number | '211'
+---@field public World52 number | '212'
+---@field public World53 number | '213'
+---@field public World54 number | '214'
+---@field public World55 number | '215'
+---@field public World56 number | '216'
+---@field public World57 number | '217'
+---@field public World58 number | '218'
+---@field public World59 number | '219'
+---@field public World60 number | '220'
+---@field public World61 number | '221'
+---@field public World62 number | '222'
+---@field public World63 number | '223'
+---@field public World64 number | '224'
+---@field public World65 number | '225'
+---@field public World66 number | '226'
+---@field public World67 number | '227'
+---@field public World68 number | '228'
+---@field public World69 number | '229'
+---@field public World70 number | '230'
+---@field public World71 number | '231'
+---@field public World72 number | '232'
+---@field public World73 number | '233'
+---@field public World74 number | '234'
+---@field public World75 number | '235'
+---@field public World76 number | '236'
+---@field public World77 number | '237'
+---@field public World78 number | '238'
+---@field public World79 number | '239'
+---@field public World80 number | '240'
+---@field public World81 number | '241'
+---@field public World82 number | '242'
+---@field public World83 number | '243'
+---@field public World84 number | '244'
+---@field public World85 number | '245'
+---@field public World86 number | '246'
+---@field public World87 number | '247'
+---@field public World88 number | '248'
+---@field public World89 number | '249'
+---@field public World90 number | '250'
+---@field public World91 number | '251'
+---@field public World92 number | '252'
+---@field public World93 number | '253'
+---@field public World94 number | '254'
+---@field public World95 number | '255'
+---@field public ButtonX number | '1000'
+---@field public ButtonY number | '1001'
+---@field public ButtonA number | '1002'
+---@field public ButtonB number | '1003'
+---@field public ButtonR1 number | '1004'
+---@field public ButtonL1 number | '1005'
+---@field public ButtonR2 number | '1006'
+---@field public ButtonL2 number | '1007'
+---@field public ButtonR3 number | '1008'
+---@field public ButtonL3 number | '1009'
+---@field public ButtonStart number | '1010'
+---@field public ButtonSelect number | '1011'
+---@field public DPadLeft number | '1012'
+---@field public DPadRight number | '1013'
+---@field public DPadUp number | '1014'
+---@field public DPadDown number | '1015'
+---@field public Thumbstick1 number | '1016'
+---@field public Thumbstick2 number | '1017'
+---The KeyCode Enum contains a list of Byte keycodes that represent the button
+---used in a user input.
+---
+---Note, KeyCode keyboard values refer to the physical position of buttons on a
+---standard QWERTY keyboard. This means that, provided the user's system is
+---configured correctly, the location of keys (such as `WASD`) will remain the
+---same on other keyboard types, such as Dvorak keyboards (where it would map to
+---`,AOE`).
+---
+---This enum also includes buttons and axes present on gamepads, and 96 `World``
+---values for non-standard buttons.
+---
+---The keypad is a cluster of keys that is present on many desktop keyboards, but
+---is rare for laptops to have.
+---
+---See also:
+---
+--- - `InputObject` - used for keyboard and gamepad input.
+local KeyCode;
+---@diagnostic disable-next-line
+---@alias KeyCode Enum.KeyCode
+---@class Enum.KeyInterpolationMode
+---@field public Constant number | '0'
+---@field public Linear number | '1'
+---@field public Cubic number | '2'
+---Describes the interpolation method for a FloatCurve or RotationCurve segment between the key for which this mode is set and the next key in the curve.
+local KeyInterpolationMode;
+---@diagnostic disable-next-line
+---@alias KeyInterpolationMode Enum.KeyInterpolationMode
+---@class Enum.KeywordFilterType
+---@field public Include number | '0'
+---@field public Exclude number | '1'
+---Determines if a filter is 'inclusive' or 'exclusive'.
+local KeywordFilterType;
+---@diagnostic disable-next-line
+---@alias KeywordFilterType Enum.KeywordFilterType
+---@class Enum.LSPMethodType
+---@field public Initialize number | '1'
+---@field public Initialized number | '2'
+---@field public CancelRequest number | '3'
+---@field public TextDocument_didOpen number | '4'
+---@field public TextDocument_didChange number | '5'
+---@field public TextDocument_didClose number | '6'
+---@field public TextDocument_foldingRange number | '7'
+---@field public TextDocument_onTypeFormatting number | '8'
+---@field public TextDocument_formatting number | '9'
+---@field public TextDocument_rangeFormatting number | '10'
+---@field public TextDocument_hover number | '11'
+---@field public TextDocument_signatureHelp number | '12'
+---@field public Workspace_DidChangeConfiguration number | '13'
+---@field public ShutdownRequest number | '14'
+---@field public Completion number | '15'
+---@field public Declaration number | '16'
+---@field public DocumentSymbols number | '17'
+---@field public TextDocument_publishDiagnostics number | '18'
+---@field public Window_showMessage number | '19'
+---@field public Window_showMessageRequest number | '20'
+---@field public Roblox_registerSyntaxCategories number | '21'
+---@field public Roblox_signalQuiescence number | '22'
+---@field public Roblox_syntaxHighlight number | '23'
+---@field public Roblox_suggestExtraSelections number | '24'
+---@field public Roblox_findExecutablePosition number | '25'
+---@field public Roblox_findColor3 number | '26'
+local LSPMethodType;
+---@diagnostic disable-next-line
+---@alias LSPMethodType Enum.LSPMethodType
+---@class Enum.Language
+---@field public Default number | '0'
+local Language;
+---@diagnostic disable-next-line
+---@alias Language Enum.Language
+---@class Enum.LeftRight
+---@field public Left number | '0'
+---@field public Center number | '1'
+---@field public Right number | '2'
+---The LeftRight Enum is used to set where the object is on the side of its
+---parent.
+local LeftRight;
+---@diagnostic disable-next-line
+---@alias LeftRight Enum.LeftRight
+---@class Enum.LevelOfDetailSetting
+---@field public Low number | '0'
+---@field public Medium number | '1'
+---@field public High number | '2'
+local LevelOfDetailSetting;
+---@diagnostic disable-next-line
+---@alias LevelOfDetailSetting Enum.LevelOfDetailSetting
+---@class Enum.Limb
+---@field public Head number | '0'
+---@field public Torso number | '1'
+---@field public LeftArm number | '2'
+---@field public RightArm number | '3'
+---@field public LeftLeg number | '4'
+---@field public RightLeg number | '5'
+---@field public Unknown number | '6'
+---Describes which limb a particular Instance belongs to (assuming the Instance
+---is part of a Humanoid). Passing an Instance to the Humanoid:GetLimb() function
+---will return the Limb for the Instance.
+local Limb;
+---@diagnostic disable-next-line
+---@alias Limb Enum.Limb
+---@class Enum.LineJoinMode
+---@field public Round number | '0'
+---@field public Bevel number | '1'
+---@field public Miter number | '2'
+---This enum is used by `UIStroke/LineJoinMode` to determine how corners are interpreted.
+---
+---See also:
+---
+---For a more detailed walkthrough of the UIStroke object, take a look at the Applying Strokes article.
+local LineJoinMode;
+---@diagnostic disable-next-line
+---@alias LineJoinMode Enum.LineJoinMode
+---@class Enum.ListDisplayMode
+---@field public Horizontal number | '0'
+---@field public Vertical number | '1'
+---Used to set the scrolling mode of the Advanced Objects tab.
+local ListDisplayMode;
+---@diagnostic disable-next-line
+---@alias ListDisplayMode Enum.ListDisplayMode
+---@class Enum.ListenerType
+---@field public Camera number | '0'
+---@field public CFrame number | '1'
+---@field public ObjectPosition number | '2'
+---@field public ObjectCFrame number | '3'
+local ListenerType;
+---@diagnostic disable-next-line
+---@alias ListenerType Enum.ListenerType
+---@class Enum.LoadCharacterLayeredClothing
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---Indicates whether characters spawning into an experience will have layered
+---clothing accessories equipped on them (Although `MeshPartHeadsAndAccessories`
+---also need to be enabled). This is set in
+---`StarterPlayer.LoadCharacterLayeredClothing`.
+local LoadCharacterLayeredClothing;
+---@diagnostic disable-next-line
+---@alias LoadCharacterLayeredClothing Enum.LoadCharacterLayeredClothing
+---@class Enum.Material
+---@field public Plastic number | '256'
+---@field public SmoothPlastic number | '272'
+---@field public Neon number | '288'
+---@field public Wood number | '512'
+---@field public WoodPlanks number | '528'
+---@field public Marble number | '784'
+---@field public Basalt number | '788'
+---@field public Slate number | '800'
+---@field public CrackedLava number | '804'
+---@field public Concrete number | '816'
+---@field public Limestone number | '820'
+---@field public Granite number | '832'
+---@field public Pavement number | '836'
+---@field public Brick number | '848'
+---@field public Pebble number | '864'
+---@field public Cobblestone number | '880'
+---@field public Rock number | '896'
+---@field public Sandstone number | '912'
+---@field public CorrodedMetal number | '1040'
+---@field public DiamondPlate number | '1056'
+---@field public Foil number | '1072'
+---@field public Metal number | '1088'
+---@field public Grass number | '1280'
+---@field public LeafyGrass number | '1284'
+---@field public Sand number | '1296'
+---@field public Fabric number | '1312'
+---@field public Snow number | '1328'
+---@field public Mud number | '1344'
+---@field public Ground number | '1360'
+---@field public Asphalt number | '1376'
+---@field public Salt number | '1392'
+---@field public Ice number | '1536'
+---@field public Glacier number | '1552'
+---@field public Glass number | '1568'
+---@field public ForceField number | '1584'
+---@field public Air number | '1792'
+---@field public Water number | '2048'
+local Material;
+---@diagnostic disable-next-line
+---@alias Material Enum.Material
+---@class Enum.MaterialPattern
+---@field public Regular number | '0'
+---@field public Organic number | '1'
+---Describes the pattern of material. Affects texture tiling method.
+local MaterialPattern;
+---@diagnostic disable-next-line
+---@alias MaterialPattern Enum.MaterialPattern
+---@class Enum.MembershipType
+---@field public None number | '0'
+---@field public BuildersClub number | '1'
+---@field public TurboBuildersClub number | '2'
+---@field public OutrageousBuildersClub number | '3'
+---@field public Premium number | '4'
+---The membership type of a Player.
+local MembershipType;
+---@diagnostic disable-next-line
+---@alias MembershipType Enum.MembershipType
+---@class Enum.MeshPartDetailLevel
+---@field public DistanceBased number | '0'
+---@field public Level01 number | '1'
+---@field public Level02 number | '2'
+---@field public Level03 number | '3'
+---@field public Level04 number | '4'
+---The level of detail of `MeshParts` displayed in Studio. Used to visually
+---verify the quality of MeshParts at lower level of detail at close range.
+---Level01 being the highest detail and Level04 being the lowest detail.
+local MeshPartDetailLevel;
+---@diagnostic disable-next-line
+---@alias MeshPartDetailLevel Enum.MeshPartDetailLevel
+---@class Enum.MeshPartHeadsAndAccessories
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---Controls the `Workspace/MeshPartHeadsAndAccessories` feature.
+local MeshPartHeadsAndAccessories;
+---@diagnostic disable-next-line
+---@alias MeshPartHeadsAndAccessories Enum.MeshPartHeadsAndAccessories
+---@class Enum.MeshScaleUnit
+---@field public Stud number | '0'
+---@field public Meter number | '1'
+---@field public CM number | '2'
+---@field public MM number | '3'
+---@field public Foot number | '4'
+---@field public Inch number | '5'
+local MeshScaleUnit;
+---@diagnostic disable-next-line
+---@alias MeshScaleUnit Enum.MeshScaleUnit
+---@class Enum.MeshType
+---@field public Head number | '0'
+---@field public Torso number | '1'
+---@field public Wedge number | '2'
+---@field public Sphere number | '3'
+---@field public Cylinder number | '4'
+---@field public FileMesh number | '5'
+---@field public Brick number | '6'
+---@field public Prism number | '7'
+---@field public Pyramid number | '8'
+---@field public ParallelRamp number | '9'
+---@field public RightAngleRamp number | '10'
+---@field public CornerWedge number | '11'
+---The MeshType Enum is used to set what type of mesh the `SpecialMesh` is.
+local MeshType;
+---@diagnostic disable-next-line
+---@alias MeshType Enum.MeshType
+---@class Enum.MessageType
+---@field public MessageOutput number | '0'
+---@field public MessageInfo number | '1'
+---@field public MessageWarning number | '2'
+---@field public MessageError number | '3'
+---A message can be a simple diagnostic or a sign of a system instability or
+---failure. The channel that the message appears in indicates its severity. The
+---MessageType indicates which channel the message displays in.
+local MessageType;
+---@diagnostic disable-next-line
+---@alias MessageType Enum.MessageType
+---@class Enum.ModelLevelOfDetail
+---@field public Automatic number | '0'
+---@field public StreamingMesh number | '1'
+---@field public Disabled number | '2'
+local ModelLevelOfDetail;
+---@diagnostic disable-next-line
+---@alias ModelLevelOfDetail Enum.ModelLevelOfDetail
+---@class Enum.ModifierKey
+---@field public Alt number | '2'
+---@field public Ctrl number | '1'
+---@field public Meta number | '3'
+---@field public Shift number | '0'
+local ModifierKey;
+---@diagnostic disable-next-line
+---@alias ModifierKey Enum.ModifierKey
+---@class Enum.MouseBehavior
+---@field public Default number | '0'
+---@field public LockCenter number | '1'
+---@field public LockCurrentPosition number | '2'
+---Used with the `UserInputService/MouseBehavior` property of `UserInputService`
+---to set how the user's mouse behaves.
+local MouseBehavior;
+---@diagnostic disable-next-line
+---@alias MouseBehavior Enum.MouseBehavior
+---@class Enum.MoveState
+---@field public Stopped number | '0'
+---@field public Coasting number | '1'
+---@field public Pushing number | '2'
+---@field public Stopping number | '3'
+---@field public AirFree number | '4'
+---Represents the state of a `SkateboardPlatform`.
+local MoveState;
+---@diagnostic disable-next-line
+---@alias MoveState Enum.MoveState
+---@class Enum.NameOcclusion
+---@field public OccludeAll number | '2'
+---@field public EnemyOcclusion number | '1'
+---@field public NoOcclusion number | '0'
+---The NameOcclusion Enum is used to set the `Humanoid/NameOcclusion` property.
+local NameOcclusion;
+---@diagnostic disable-next-line
+---@alias NameOcclusion Enum.NameOcclusion
+---@class Enum.NetworkOwnership
+---@field public Automatic number | '0'
+---@field public Manual number | '1'
+---@field public OnContact number | '2'
+---Defines how to determine which client has ownership of a part for a server
+---(network).
+local NetworkOwnership;
+---@diagnostic disable-next-line
+---@alias NetworkOwnership Enum.NetworkOwnership
+---@class Enum.NewAnimationRuntimeSetting
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+local NewAnimationRuntimeSetting;
+---@diagnostic disable-next-line
+---@alias NewAnimationRuntimeSetting Enum.NewAnimationRuntimeSetting
+---@class Enum.NormalId
+---@field public Top number | '1'
+---@field public Bottom number | '4'
+---@field public Back number | '2'
+---@field public Front number | '5'
+---@field public Right number | '0'
+---@field public Left number | '3'
+---The NormalId Enum sets which side/face of a Part is used.
+local NormalId;
+---@diagnostic disable-next-line
+---@alias NormalId Enum.NormalId
+---@class Enum.OrientationAlignmentMode
+---@field public OneAttachment number | '0'
+---@field public TwoAttachment number | '1'
+---The OrientationAlignmentMode Enum is used to select the number of
+---`Attachment`s used in an alignment.
+local OrientationAlignmentMode;
+---@diagnostic disable-next-line
+---@alias OrientationAlignmentMode Enum.OrientationAlignmentMode
+---@class Enum.OutfitSource
+---@field public All number | '1'
+---@field public Created number | '2'
+---@field public Purchased number | '3'
+local OutfitSource;
+---@diagnostic disable-next-line
+---@alias OutfitSource Enum.OutfitSource
+---@class Enum.OutputLayoutMode
+---@field public Horizontal number | '0'
+---@field public Vertical number | '1'
+---Sets the layout mode of the output.
+local OutputLayoutMode;
+---@diagnostic disable-next-line
+---@alias OutputLayoutMode Enum.OutputLayoutMode
+---@class Enum.OverrideMouseIconBehavior
+---@field public None number | '0'
+---@field public ForceShow number | '1'
+---@field public ForceHide number | '2'
+---Overrides the behavior of the mouse icon to either force that it is
+---always shown or force that it is always hidden.
+local OverrideMouseIconBehavior;
+---@diagnostic disable-next-line
+---@alias OverrideMouseIconBehavior Enum.OverrideMouseIconBehavior
+---@class Enum.PackagePermission
+---@field public None number | '0'
+---@field public NoAccess number | '1'
+---@field public Revoked number | '2'
+---@field public UseView number | '3'
+---@field public Edit number | '4'
+---@field public Own number | '5'
+---The `PackagePermission` indicates the current user's or group roleset's
+---permission to the package.
+local PackagePermission;
+---@diagnostic disable-next-line
+---@alias PackagePermission Enum.PackagePermission
+---@class Enum.PartType
+---@field public Ball number | '0'
+---@field public Block number | '1'
+---@field public Cylinder number | '2'
+---The PartType Enum controls the `Part/Shape` of an object.
+---
+---<img alt="Block, sphere, and cylinder parts" src="/assets/bltcb9ef55958be7a0e/PartTypes.jpg" width="40%"/>
+local PartType;
+---@diagnostic disable-next-line
+---@alias PartType Enum.PartType
+---@class Enum.ParticleEmitterShape
+---@field public Box number | '0'
+---@field public Sphere number | '1'
+---@field public Cylinder number | '2'
+---@field public Disc number | '3'
+local ParticleEmitterShape;
+---@diagnostic disable-next-line
+---@alias ParticleEmitterShape Enum.ParticleEmitterShape
+---@class Enum.ParticleEmitterShapeInOut
+---@field public Outward number | '0'
+---@field public Inward number | '1'
+---@field public InAndOut number | '2'
+local ParticleEmitterShapeInOut;
+---@diagnostic disable-next-line
+---@alias ParticleEmitterShapeInOut Enum.ParticleEmitterShapeInOut
+---@class Enum.ParticleEmitterShapeStyle
+---@field public Volume number | '0'
+---@field public Surface number | '1'
+local ParticleEmitterShapeStyle;
+---@diagnostic disable-next-line
+---@alias ParticleEmitterShapeStyle Enum.ParticleEmitterShapeStyle
+---@class Enum.ParticleFlipbookLayout
+---@field public None number | '0'
+---@field public TwoByTwo number | '1'
+---@field public FourByFour number | '2'
+---@field public EightByEight number | '3'
+local ParticleFlipbookLayout;
+---@diagnostic disable-next-line
+---@alias ParticleFlipbookLayout Enum.ParticleFlipbookLayout
+---@class Enum.ParticleFlipbookMode
+---@field public Loop number | '0'
+---@field public OneShot number | '1'
+---@field public PingPong number | '2'
+---@field public Random number | '3'
+local ParticleFlipbookMode;
+---@diagnostic disable-next-line
+---@alias ParticleFlipbookMode Enum.ParticleFlipbookMode
+---@class Enum.ParticleOrientation
+---@field public FacingCamera number | '0'
+---@field public FacingCameraWorldUp number | '1'
+---@field public VelocityParallel number | '2'
+---@field public VelocityPerpendicular number | '3'
+local ParticleOrientation;
+---@diagnostic disable-next-line
+---@alias ParticleOrientation Enum.ParticleOrientation
+---@class Enum.PathStatus
+---@field public Success number | '0'
+---@field public ClosestNoPath number | '1'
+---@field public ClosestOutOfRange number | '2'
+---@field public FailStartNotEmpty number | '3'
+---@field public FailFinishNotEmpty number | '4'
+---@field public NoPath number | '5'
+---The success of a `Path` generated by `PathfindingService`.
+local PathStatus;
+---@diagnostic disable-next-line
+---@alias PathStatus Enum.PathStatus
+---@class Enum.PathWaypointAction
+---@field public Walk number | '0'
+---@field public Jump number | '1'
+---@field public Custom number | '2'
+---Describes the action to take when a `PathWaypoint` is reached.
+local PathWaypointAction;
+---@diagnostic disable-next-line
+---@alias PathWaypointAction Enum.PathWaypointAction
+---@class Enum.PermissionLevelShown
+---@field public Game number | '0'
+---@field public RobloxGame number | '1'
+---@field public RobloxScript number | '2'
+---@field public Studio number | '3'
+---@field public Roblox number | '4'
+---Used to set the highest permission level that APIs have to have in order to be
+---shown in the Object Browser.
+local PermissionLevelShown;
+---@diagnostic disable-next-line
+---@alias PermissionLevelShown Enum.PermissionLevelShown
+---@class Enum.PhysicsSimulationRate
+---@field public Fixed240Hz number | '0'
+---@field public Fixed120Hz number | '1'
+---@field public Fixed60Hz number | '2'
+local PhysicsSimulationRate;
+---@diagnostic disable-next-line
+---@alias PhysicsSimulationRate Enum.PhysicsSimulationRate
+---@class Enum.PhysicsSteppingMethod
+---@field public Default number | '0'
+---@field public Fixed number | '1'
+---@field public Adaptive number | '2'
+local PhysicsSteppingMethod;
+---@diagnostic disable-next-line
+---@alias PhysicsSteppingMethod Enum.PhysicsSteppingMethod
+---@class Enum.Platform
+---@field public Windows number | '0'
+---@field public OSX number | '1'
+---@field public IOS number | '2'
+---@field public Android number | '3'
+---@field public XBoxOne number | '4'
+---@field public PS4 number | '5'
+---@field public PS3 number | '6'
+---@field public XBox360 number | '7'
+---@field public WiiU number | '8'
+---@field public NX number | '9'
+---@field public Ouya number | '10'
+---@field public AndroidTV number | '11'
+---@field public Chromecast number | '12'
+---@field public Linux number | '13'
+---@field public SteamOS number | '14'
+---@field public WebOS number | '15'
+---@field public DOS number | '16'
+---@field public BeOS number | '17'
+---@field public UWP number | '18'
+---@field public None number | '19'
+---The Platform Enum is used to determine the operating system of the client.
+---Currently this can only be used in `CoreScript`s.
+local Platform;
+---@diagnostic disable-next-line
+---@alias Platform Enum.Platform
+---@class Enum.PlaybackState
+---@field public Begin number | '0'
+---@field public Delayed number | '1'
+---@field public Playing number | '2'
+---@field public Paused number | '3'
+---@field public Completed number | '4'
+---@field public Cancelled number | '5'
+---Used by the `Tween/PlaybackState` property to describe the current state of
+---the playback of a `Tween`.
+local PlaybackState;
+---@diagnostic disable-next-line
+---@alias PlaybackState Enum.PlaybackState
+---@class Enum.PlayerActions
+---@field public CharacterForward number | '0'
+---@field public CharacterBackward number | '1'
+---@field public CharacterLeft number | '2'
+---@field public CharacterRight number | '3'
+---@field public CharacterJump number | '4'
+---References a movement action taken by a player.
+local PlayerActions;
+---@diagnostic disable-next-line
+---@alias PlayerActions Enum.PlayerActions
+---@class Enum.PlayerChatType
+---@field public All number | '0'
+---@field public Team number | '1'
+---@field public Whisper number | '2'
+---Used by Roblox's Chat to determine the style of a chat message. If you want to
+---check for this kind of stuff, see `Player/Chatted`.
+local PlayerChatType;
+---@diagnostic disable-next-line
+---@alias PlayerChatType Enum.PlayerChatType
+---@class Enum.PoseEasingDirection
+---@field public Out number | '1'
+---@field public InOut number | '2'
+---@field public In number | '0'
+local PoseEasingDirection;
+---@diagnostic disable-next-line
+---@alias PoseEasingDirection Enum.PoseEasingDirection

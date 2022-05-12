@@ -1,0 +1,12712 @@
+---@class RotateV : DynamicRotate, JointInstance, Instance
+---A RotateV object joins two parts together and allows rotation about a set
+---axis. This object is most commonly created by the Motor
+---`Enum/SurfaceType`. If created through a script, a RotateV's behavior is
+---still governed by the SurfaceInput of `JointInstance/Part0`.
+---
+---The three inputs of note are as follows:
+---
+---- NoInput: The joint will not rotate under its own power. It can still be
+---  rotated by external forces (such as from a character pushing one of the
+---  parts).
+---- Constant: The joint will rotate based on the ParamB property of
+---  `JointInstance/Part0`. This rotation is measured in radians per physics
+---  frame (which is approximately 1/60th of a second).
+---- Sin: The joint will rotate based on the ParamA and ParamB properties of
+---  `JointInstance/Part0`. The rotation measured in radians per physics
+---  frame is calculated by the function: RotationRate = ParamA _
+---  sin(distributedGameTime _ ParamB). distributedGameTime is the current
+---  time of the game measured in seconds.
+---
+local RotateV;
+---@class RotationCurve : Instance
+---@field public Length int
+---This class holds a sorted list of `RotationCurveKey`s that represent a
+---sequence of rotations. The shape of the interpolation curve between two
+---RotationCurveKeys is determined by the RotationCurveKey interpolation
+---type. RotationCurve provides a sampling method `GetValueAtTime` returning
+---its result as the rotation component of a CFrame.
+---
+local RotationCurve;
+---@param keys Array
+---@return int
+---Resets this curve keys using the RotationCurveKey array passed as
+---argument. Keys in the keysArray are sorted in ascending time order before
+---insertion. Keys at duplicated times are removed in a stable manner.
+---Returns the number of keys actually inserted. Keys previously stored in
+---this curve are removed before the keys passed as arguments are added.
+---
+RotationCurve.SetKeys = function(self, keys) end;
+---@param time float
+---@return CoordinateFrame?
+---Samples the RotationCurve at a given time and returns the corresponding
+---rotation as a CFrame. Empty RotationCurves are evaluated as identity.
+---
+RotationCurve.GetValueAtTime = function(self, time) end;
+---@param time float
+---@return Array
+---The first returned value is the index of the last key with
+---`key.time <= time` (or `min(1,length`) if no key was found). The second
+---returned value is the index of the first key with `key.time >= time` (or
+---the length of the curve if no key was found satisfying the inequality).
+---
+RotationCurve.GetKeyIndicesAtTime = function(self, time) end;
+---@return Array
+---Returns a copy of all the keys in the RotationCurve as a Lua array of
+---RotationCurveKey.
+---
+RotationCurve.GetKeys = function(self) end;
+---@param startingIndex int
+---@param count int
+---@return int
+---Removes a given number of Keys starting from a given index. Returns the
+---number of keys that were removed.
+---
+RotationCurve.RemoveKeyAtIndex = function(self, startingIndex, count) end;
+---@param key RotationCurveKey
+---@return Array
+---Adds the key passed as argument to this curve. If a key at the same time
+---is found it will be replaced. First return value is true if a key was
+---added, false if a previous key was replaced. Second return value is the
+---index at which the marker was added.
+---
+RotationCurve.InsertKey = function(self, key) end;
+---@param index int
+---@return RotationCurveKey
+---Returns a copy of a key at a given index.
+---
+RotationCurve.GetKeyAtIndex = function(self, index) end;
+---@class RunService : Instance
+---@field public ClientGitHash string
+---@field public Heartbeat fun(deltaTime: double): RbxScriptSignal
+---@field public PostSimulation fun(deltaTime: double): RbxScriptSignal
+---@field public PreAnimation fun(deltaTime: double): RbxScriptSignal
+---@field public PreRender fun(deltaTime: double): RbxScriptSignal
+---@field public PreSimulation fun(deltaTime: double): RbxScriptSignal
+---@field public RenderStepped fun(deltaTime: double): RbxScriptSignal
+---@field public Stepped fun(time: double, deltaTime: double): RbxScriptSignal
+---**RunService** contains methods and events for time-management as well as
+---for managing the context in which a game or script is running. Methods
+---like `RunService/IsClient|IsClient`, `RunService/IsServer|IsServer`,
+---`RunService/IsStudio|IsStudio`, can help you determine under what context
+---code is running. These methods are useful for ModuleScripts that may be
+---required by both client and server scripts. Furthermore,
+---`RunService/IsStudio|IsStudio` can be used to add special behaviors for
+---in-studio testing.
+---
+---RunService also houses events that allow your code to adhere to Roblox's
+---frame-by-frame loop, such as `RunService/Stepped|Stepped`,
+---`RunService/Heartbeat|Heartbeat` and
+---`RunService/RenderStepped|RenderStepped`. Selecting the proper event to
+---use for any case is important, so you should read Task Scheduler to make
+---an informed decision.
+---
+local RunService;
+---@return bool
+---This function returns whether the current environment is running on the
+---client.
+---
+---If the code that invoked this method is running in a client context (in a
+---`LocalScript` or a `ModuleScript` required by a `LocalScript`) then this
+---method will return _true_. In all other cases, this function will return
+---_false_.
+---
+---If this function returns true, then the current environment can access
+---client-only features like `RunService/RenderStepped` or
+---`Players/LocalPlayer`.
+---
+---#### RunService test function results
+---
+---<table>
+---  <thead>
+---    <tr>
+---      <th>Environment</th>
+---      <th>IsStudio</th>
+---      <th>IsClient</th>
+---      <th>IsServer</th>
+---      <th>IsEdit</th>
+---      <th>IsRunning</th>
+---      <th>IsRunMode</th>
+---    </tr>
+---  </thead>
+---<tbody>
+---    <tr>
+---      <td>Live Player</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---    </tr>
+---    <tr>
+---      <td>Live Server</td>
+---      <td>false</td>
+---      <td>false</td>
+---      <td>true</td>
+---    </tr>
+---    <tr>
+---      <td>Edit Mode</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>false</td>
+---    </tr>
+---    <tr>
+---      <td>Edit Mode (Team Create)</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>false</td>
+---    </tr>
+---    <tr>
+---      <td>Run Mode</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>true</td>
+---    </tr>
+---    <tr>
+---      <td>Play Mode (Client)</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---    </tr>
+---    <tr>
+---      <td>Play Mode (Server)</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>true</td>
+---    </tr>
+---    <tr>
+---      <td>Team Test Player</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---    </tr>
+---    <tr>
+---      <td>Legacy Play Mode &dagger;</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>true</td>
+---      <td>false</td>
+---      <td>true</td>
+---      <td>false</td>
+---    </tr>
+---  </tbody>
+---</table>
+---&dagger; 'Legacy Play Mode' refers to Play Mode with Accurate Play Solo
+---disabled
+---
+---See also:
+---
+---- `RunService/IsServer`
+---- `RunService/IsStudio`
+---- `RunService/IsEdit`
+---- `RunService/IsRunning`
+---- `RunService/IsRunMode`
+---
+RunService.IsClient = function(self) end;
+---@param focus bool
+---@return void
+RunService.SetRobloxGuiFocused = function(self, focus) end;
+---@return bool
+---This function returns whether the current environment is in 'Edit' mode.
+---For example, Roblox Studio is in 'Edit Mode' when the game is not running.
+---
+---IsEdit will return the inverse of `RunService/IsRunning` with one
+---exception, if the simulation has been 'paused' then both IsEdit and
+---`RunService/IsRunning` will return false.
+---
+---See also:
+---
+---- `RunService/IsClient`
+---- `RunService/IsServer`
+---- `RunService/IsStudio`
+---- `RunService/IsRunning`
+---- `RunService/IsRunMode`
+---
+RunService.IsEdit = function(self) end;
+---@return bool
+---This function returns whether the 'Run' button has been pressed to run the
+---simulation in Roblox Studio.
+---
+---If the user has pressed 'Run', then this function will return _true_. This
+---function will continue to return _true_ if the simulation has been paused
+---using the 'Pause' button. However, once it has been stopped using the
+---'Stop' button it will revert to returning _false_.
+---
+---Roblox Studio only enters run mode when the 'Run' button is pressed, not
+---the 'Play' button. This function will also return false if the simulation
+---was started using `RunService/Run` rather than the 'Run' button.
+---
+---#### RunService test function results
+---
+---See also:
+---
+---- `RunService/IsClient`
+---- `RunService/IsServer`
+---- `RunService/IsStudio`
+---- `RunService/IsRunning`
+---- `RunService/IsEdit`
+---
+RunService.IsRunMode = function(self) end;
+---@return void
+---This function ends the game's simulation if it is running.
+---
+---The simulation can be started using `RunService/Run` or the 'Run' button
+---in Roblox Studio. When the simulation is stopped, `RunService/IsRunning`
+---will return _false_ and `RunService/IsEdit` will return _true_.
+---
+---In contrast to the 'Stop' button in Roblox Studio, calling this function
+---will not restore the game to the state it was in prior to the simulation
+---being run. This means any changes made to the game by the physics
+---simulation and scripts will persist after the simulation has ended.
+---
+---See also:
+---
+---- `RunService/IsRunning`
+---- `RunService/Run`
+---- `RunService/Pause`
+---
+RunService.Stop = function(self) end;
+---@param name string
+---@param priority int
+---@param kw_function Function
+---@return void
+---The `BindToRenderStep` function binds a custom function to be called at a
+---specific time during the render step. There are three main arguments for
+---BindToRenderStep: `name`, `priority`, and `what function to call`.
+---
+---As it is linked to the client's rendering process, BindToRenderStep can
+---only be called on the client.
+---
+---#### Name
+---
+---The `name` parameter is a label for the binding, and can be used with
+---`RunService/UnbindFromRenderStep` if the binding is no longer needed.
+---
+---```lua
+---local RunService = game:GetService("RunService")
+---
+---local function functionToBind() end
+---
+----- Bind the function above to the binding named "tempBinding"
+---RunService:BindToRenderStep("tempBinding", 1, functionToBind)
+----- Unbind the function bound to "tempBinding"
+---RunService:UnbindFromRenderStep("tempBinding")
+---```
+---
+---#### Priority
+---
+---The `priority` of the binding is an integer, and determines when during
+---the render step to call the custom function. The lower this number, the
+---sooner the custom function will be called. If two bindings have the same
+---priority the Roblox engine will randomly pick one to run first. The
+---default Roblox control scripts run with these specific priorities:
+---
+---- Player Input: 100
+---- Camera Controls: 200 For convenience, the `Enum/RenderPriority` enum can
+---  be used to determine the integer value to set a binding. For example, to
+---  make a binding right before the default camera update, simply subtract 1
+---  from the camera priority level.
+---
+---When using Enum.RenderPriority, remember to use **_InlineCode.Value_** at
+---the end of the desired enum. BindToRenderStep will not work if just the
+---enum on its own is used.
+---
+---```lua
+---local RunService = game:GetService("RunService")
+---
+---local function beforeCamera(delta)
+---	-- Code in here will run before the default Roblox camera script
+---end
+---
+---RunService:BindToRenderStep("Before camera", Enum.RenderPriority.Camera.Value - 1, beforeCamera)
+---```
+---
+---#### Custom Function and Delta Time
+---
+---The last argument of BindToRenderStep is the `custom function` to call.
+---This function will be passed one parameter called deltaTime.
+---**_DeltaTime_** shows how much time passed between the beginning of the
+---previous render step and the beginning of the current render step.
+---
+---All rendering updates will wait until the code in the render step
+---finishes. Make sure that any code called by BindToRenderStep runs quickly
+---and efficiently. If code in BindToRenderStep takes too long, then the game
+---visuals will be choppy.
+---
+RunService.BindToRenderStep = function(self, name, priority, kw_function) end;
+---@param name string
+---@return void
+---Given a name of a function sent to
+---`RunService/BindToRenderStep|BindToRenderStep`, this method will unbind
+---the function from being called during RenderStepped. This is used to
+---unbind bound functions once they are no longer needed, or when they no
+---longer need to fire every _step_.
+---
+---If there is no bound function by the given name, this method raises an
+---error. You can prevent such an error from being raised by using `pcall`.
+---For example, if you bind a function named `drawImage` using
+---`RunService/BindToRenderStep|BindToRenderStep`, the following code would
+---unbind the function, suppressing errors if there wasn't already a function
+---with the name `drawImage` bound.
+---
+---````lua
+---local RunService = game:GetService("RunService")
+---
+---local success, message = pcall(function() RunService:UnbindFromRenderStep("drawImage") end)
+---if success then
+---	print("Success: Function unbound!")
+---else
+---	print("An error occurred: "..message)
+---end
+---```"
+---````
+---
+RunService.UnbindFromRenderStep = function(self, name) end;
+---@return bool
+---This function returns whether the current environment is running in Roblox
+---Studio.
+---
+---This function will only return _true_ when using Roblox Studio and can be
+---used to add code to test your game within Studio.
+---
+---See also:
+---
+---- `RunService/IsClient`
+---- `RunService/IsServer`
+---- `RunService/IsStudio`
+---- `RunService/IsEdit`
+---- `RunService/IsRunMode`
+---
+RunService.IsStudio = function(self) end;
+---@param enable bool
+---@return void
+RunService.setThrottleFramerateEnabled = function(self, enable) end;
+---@return void
+---This function pauses the games' simulation if it is running, suspending
+---physics and scripts.
+---
+---The simulation can be started using `RunService/Run` or the 'Run' button
+---in Roblox Studio. When the simulation is paused, `RunService/IsRunning`
+---will return _false_.
+---
+---Pausing the simulation can be used to assist with debugging in Roblox
+---Studio, it cannot be used in real game sessions.
+---
+---See also:
+---
+---- `RunService/IsRunning`
+---- `RunService/Run`
+---- `RunService/Stop`
+---
+RunService.Pause = function(self) end;
+---@return void
+---The Reset function resets the current game to a waypoint set when Run was
+---called. This method should only be used after Run was called.
+---
+RunService.Reset = function(self) end;
+---@return void
+---This function runs the game's simulation, running physics and scripts.
+---
+---When the simulation is running, `RunService/IsRunning` will return _true_.
+---However, `RunService/IsRunMode` will only return _true_ if the simulation
+---was started using the 'Run' button in Roblox Studio. This means when this
+---function is used to start the simulation, IsRunMode will return _false_
+---even though the simulation is running.
+---
+---The simulation can be paused using `RunService/Pause` or the 'Pause'
+---button in Roblox Studio. It can also be ended using `RunService/Stop`.
+---
+---Running the simulation can be used to assist with debugging in Roblox
+---Studio. Currently it is not possible to restore the game to the state it
+---was in prior to running the simulation if the simulation was started using
+---this function. If this is a problem, instead use the 'Run' button in
+---Roblox Studio.
+---
+---See also:
+---
+---- `RunService/IsRunning`
+---- `RunService/Pause`
+---- `RunService/Stop`
+---
+RunService.Run = function(self) end;
+---@return bool
+---Returns whether the game is currently running
+---
+---The game is considered running when it is not in edit mode in Roblox
+---Studio. This means, if the simulation has been run using the 'Run' or
+---'Play' buttons the game is running.
+---
+---IsRunning will always return the inverse of `RunService/IsEdit` with one
+---exception, if the simulation has been 'paused' then both
+---`RunService/IsEdit` and IsRunning will return false.
+---
+---#### RunService test function results
+---
+---See also:
+---
+---- `RunService/IsClient`
+---- `RunService/IsServer`
+---- `RunService/IsStudio`
+---- `RunService/IsEdit`
+---- `RunService/IsRunMode`
+---
+RunService.IsRunning = function(self) end;
+---@return bool
+---This function returns whether the current environment is running on the
+---server.
+---
+---If the code that invoked this method is running in a server context (in a
+---`Script` or a `ModuleScript` required by a `Script`) then this method will
+---return _true_. In all other cases, this function will return _false_.
+---
+---If this function returns true, then the current environment can access
+---server-only features like `ServerStorage` or `ServerScriptService`.
+---
+---See also:
+---
+---- `RunService/IsClient`
+---- `RunService/IsStudio`
+---- `RunService/IsEdit`
+---- `RunService/IsRunning`
+---- `RunService/IsRunMode`
+---
+RunService.IsServer = function(self) end;
+---@param enable bool
+---@return void
+RunService.Set3dRenderingEnabled = function(self, enable) end;
+---@return string
+RunService.GetRobloxVersion = function(self) end;
+---@return string
+RunService.GetCoreScriptVersion = function(self) end;
+---@class RunningAverageItemDouble : StatsItem, Instance
+---A special type of `StatsItem` which measures the runtime average of an
+---internal **double** value.
+---
+local RunningAverageItemDouble;
+---@class RunningAverageItemInt : StatsItem, Instance
+---A special type of `StatsItem` which measures the runtime average of an
+---internal integer value. As of right now, this StatsItem goes unused.
+---
+local RunningAverageItemInt;
+---@class RunningAverageTimeIntervalItem : StatsItem, Instance
+---A special type of `StatsItem` which measures a runtime average time
+---interval. As of right now, this StatsItem goes unused.
+---
+local RunningAverageTimeIntervalItem;
+---@class RuntimeScriptService : Instance
+---An internal service, probably in charge of managing the execution of
+---scripts in run-time.
+---
+local RuntimeScriptService;
+---@class ScreenGui : LayerCollector, GuiBase2d, GuiBase, Instance
+---@field public DisplayOrder int
+---@field public IgnoreGuiInset bool
+---@field public OnTopOfCoreBlur bool
+---The main storage object for 2D `GuiObject` displayed on the player's
+---screen. ScreenGuis will only be shown if parented to a player's
+---`PlayerGui`. To make sure a ScreenGui is displayed to your player, it
+---should be parented into the `StarterGui`, as that service will clone it's
+---contents into each player's `PlayerGui` when they join the game.
+---
+---## Caching static UI for performance improvements
+---
+---A Gui's appearance is cached until one of the following events occurs:
+---
+---- A descendant is added to the Gui.
+---- A descendant is removed from the Gui.
+---- A property of a descendant of the Gui changes.
+---- A property of the Gui changes.
+---
+---If any of these events occur, the Gui's appearance will be recomputed the
+---next frame it gets rendered.
+---
+local ScreenGui;
+---@class Script : BaseScript, LuaSourceContainer, Instance
+---@field public Source ProtectedString
+---A Script is a type of Lua code container that will run its contents on the
+---server. By default, Scripts have `print("Hello, world")` as their
+---contents. The instant that the following conditions are met, a Script's
+---Lua code is run in a new thread:
+---
+---- Disabled property is false
+---- The Script object is a descendant of the `Workspace` or
+---  `ServerScriptService`
+---
+---The Script will continue to run until the above conditions are not met, it
+---terminates or it raises an error (unless that error is raised by a
+---function connected to some event that is firing). Additionally, the thread
+---will be stopped if the Script or one of its ancestors is destroyed. A
+---script will continue to run even if the `Instance/Parent|Parent` property
+---is set to nil (and the Script is not destroyed).
+---
+---It has access to server-side objects, properties and events. For example,
+---Scripts can award badges to players using `BadgeService`, while a
+---`LocalScript` on the client cannot. Actions taken by LocalScripts that are
+---not replicated (due to `Workspace/FilteringEnabled`) will not be visible
+---to Scripts.
+---
+local Script;
+---@return string
+---The GetHash function returns a hash of the script's source.
+---
+---#### What is a Hash
+---
+---A hash is a string of characters produced by a cryptographic algorithm
+---that maps data of arbitrary size, since scripts can be short or long, to
+---data of a fixed size, a string of a fixed length. Although they have
+---several uses, hashes are often used to determine the integrity of data and
+---make it faster to look up data. If you compare two pieces of data and
+---their hashes do not match, then the data has changed.
+---
+---Hashes have three key properties:
+---
+---1.  They are often of fixed lengths. Since the function uses a hashing
+---    algorithm known as MD5, this function always generates hashes
+---    consisting of 32 hexadecimal (number and letter) characters.
+---2.  The same data (e.g. script source) always generates the same hash.
+---3.  Different data (e.g. different script sources) generate unique hashes.
+---    It is highly unlikely that two different sources will generate the
+---    same hash.
+---
+---#### Limitations
+---
+---The hash function has several limitations, including:
+---
+---- If the script's `BaseScript/LinkedSource|LinkedSource` property is set,
+---  then this method will return the empty string.
+---- This item is protected. Attempting to use it in a `Script` or
+---  `LocalScript` will cause an error.
+---
+Script.GetHash = function(self) end;
+---@class ScriptChangeService : Instance
+---@field public ScriptAdded fun(script: LuaSourceContainer): RbxScriptSignal
+---@field public ScriptBeingRemoved fun(script: LuaSourceContainer): RbxScriptSignal
+---@field public ScriptChanged fun(script: LuaSourceContainer, property: string): RbxScriptSignal
+---@field public ScriptFullNameChanged fun(script: LuaSourceContainer): RbxScriptSignal
+---@field public ScriptSourceChanged fun(script: LuaSourceContainer): RbxScriptSignal
+---@field public ScriptSourceEdited fun(script: LuaSourceContainer, edits: Array): RbxScriptSignal
+local ScriptChangeService;
+---@class ScriptCloneWatcher : Instance
+local ScriptCloneWatcher;
+---@class ScriptCloneWatcherHelper : Instance
+local ScriptCloneWatcherHelper;
+---@class ScriptContext : Instance
+---@field public ScriptsDisabled bool
+---@field public Error fun(message: string, stackTrace: string, script: Instance): RbxScriptSignal
+---@field public ErrorDetailed fun(message: string, stackTrace: string, script: Instance, details: string, securityLevel: int): RbxScriptSignal
+---This service controls all `BaseScript` objects. Most of the properties and
+---methods of this service are locked for internal use, however you may use
+---the `ScriptContext/ScriptsDisabled` property to disable all scripts from a
+---thread with normal security access.
+---
+local ScriptContext;
+---@return Array
+ScriptContext.GetCoverageStats = function(self) end;
+---@param name string
+---@param parent Instance
+---@return void
+ScriptContext.AddCoreScriptLocal = function(self, name, parent) end;
+---@param seconds double
+---@return void
+---Limits how long a script is allowed to run without yielding.
+---
+ScriptContext.SetTimeout = function(self, seconds) end;
+---@class ScriptDebugger : Instance
+---@field public CurrentLine int
+---@field public IsDebugging bool
+---@field public IsPaused bool
+---@field public Script Instance
+---@field public BreakpointAdded fun(breakpoint: Instance): RbxScriptSignal
+---@field public BreakpointRemoved fun(breakpoint: Instance): RbxScriptSignal
+---@field public EncounteredBreak fun(line: int, breakReason: BreakReason): RbxScriptSignal
+---@field public Resuming fun(): RbxScriptSignal
+---@field public WatchAdded fun(watch: Instance): RbxScriptSignal
+---@field public WatchRemoved fun(watch: Instance): RbxScriptSignal
+---A ScriptDebugger is used to handle the debugging of a specific script. It
+---can be retrieved from the `DebuggerManager`.
+---
+local ScriptDebugger;
+---@param expression string
+---@return Instance
+---Adds a `DebuggerWatch` with the given expression.
+---
+ScriptDebugger.AddWatch = function(self, expression) end;
+---@return Objects
+---Returns a list with all the `DebuggerWatch` instances for this debugger.
+---
+ScriptDebugger.GetWatches = function(self) end;
+---@param name string
+---@param value Variant
+---@param stackFrame int
+---@return void
+---Sets the value of the variable `name` as `value` in the specified stack
+---frame.
+---
+ScriptDebugger.SetLocal = function(self, name, value, stackFrame) end;
+---@return Array
+---Returns an array of all active call stack frames in the script.
+---
+ScriptDebugger.GetStack = function(self) end;
+---@return Objects
+---Returns a list of `DebuggerBreakpoint` present in the script.
+---
+ScriptDebugger.GetBreakpoints = function(self) end;
+---@param name string
+---@param value Variant
+---@param stackFrame int
+---@return void
+---Sets the value of the upvalue _name_ as _value_ in the specified stack
+---frame.
+---
+ScriptDebugger.SetUpvalue = function(self, name, value, stackFrame) end;
+---@param stackFrame int
+---@return Map
+---Returns a dictionary of all upvalues present in the specified stack frame,
+---where the keys are the names of the upvalues, and the values are the
+---actual values of the upvalues.
+---
+ScriptDebugger.GetUpvalues = function(self, stackFrame) end;
+---@param stackFrame int
+---@return Map
+---Returns a dictionary of all local variables in the specified stack frame,
+---where the keys are the names of the variables, and the values are the
+---actual values of the variables.
+---
+ScriptDebugger.GetLocals = function(self, stackFrame) end;
+---@param stackFrame int
+---@return Map
+---Returns a dictionary of all variables that are present in the global
+---environment of the stack frame, where the keys are the names of the
+---variables, and the values are the actual values of the variables.  
+---Each stack frame might see different global variables if function
+---environments are different.
+---
+ScriptDebugger.GetGlobals = function(self, stackFrame) end;
+---@param watch Instance
+---@return Variant
+---Returns the current value of a variable being watched by a
+---`DebuggerWatch`.
+---
+ScriptDebugger.GetWatchValue = function(self, watch) end;
+---@param line int
+---@param isContextDependentBreakpoint bool
+---@return Instance
+---Sets the specified line of the script as a breakpoint. Returns a
+---`DebuggerBreakpoint` that you can use to manage the breakpoint.
+---
+ScriptDebugger.SetBreakpoint = function(self, line, isContextDependentBreakpoint) end;
+---@param name string
+---@param value Variant
+---@param stackFrame int
+---@return void
+---Sets the value of the variable `name` as `value` in the global environment
+---of the specified stack frame.
+---
+ScriptDebugger.SetGlobal = function(self, name, value, stackFrame) end;
+---@class ScriptRegistrationService : Instance
+local ScriptRegistrationService;
+---@param guid string
+---@return LuaSourceContainer
+ScriptRegistrationService.GetSourceContainerByScriptGuid = function(self, guid) end;
+---@class ScriptService : Instance
+---An unimplemented service that has zero functionality, in a similar manner
+---to the `LocalWorkspace` service.
+---
+local ScriptService;
+---@class ScrollingFrame : GuiObject, GuiBase2d, GuiBase, Instance
+---@field public AbsoluteCanvasSize Vector2
+---@field public AbsoluteWindowSize Vector2
+---@field public AutomaticCanvasSize AutomaticSize
+---@field public BottomImage Content
+---@field public CanvasPosition Vector2
+---@field public CanvasSize UDim2
+---@field public ElasticBehavior ElasticBehavior
+---@field public HorizontalBarRect Rect
+---@field public HorizontalScrollBarInset ScrollBarInset
+---@field public MaxCanvasPosition Vector2
+---@field public MidImage Content
+---@field public ScrollBarImageColor3 Color3
+---@field public ScrollBarImageTransparency float
+---@field public ScrollBarThickness int
+---@field public ScrollVelocity Vector2
+---@field public ScrollingDirection ScrollingDirection
+---@field public ScrollingEnabled bool
+---@field public TopImage Content
+---@field public VerticalBarRect Rect
+---@field public VerticalScrollBarInset ScrollBarInset
+---@field public VerticalScrollBarPosition VerticalScrollBarPosition
+---The ScrollingFrame is a special `Frame` that handles all scrolling for
+---you, with a range of different ways to customize how the scrolling works.
+---An in-depth tutorial for the ScrollingFrame can be found
+---<a href="https://developer.roblox.com/articles/Creating-a-Scrolling-Frame-GUI">here</a>.
+---
+local ScrollingFrame;
+---@return void
+ScrollingFrame.ScrollToTop = function(self) end;
+---@return void
+ScrollingFrame.ClearInertialScrolling = function(self) end;
+---@return Vector2
+ScrollingFrame.GetSampledInertialVelocity = function(self) end;
+---@class Seat : Part, FormFactorPart, BasePart, PVInstance, Instance
+---@field public Disabled bool
+---@field public Occupant Humanoid
+---A type of `BasePart` that a player character can 'sit' in. When a
+---character touches an enabled Seat object, it will be attached to the part
+---by a `Weld` and the default character scripts will play a sitting
+---animation.
+---
+---## How do Seats work?
+---
+---When a model containing a `Humanoid` and a `BasePart` called
+---'HumanoidRootPart' (generally a player character) touches a seat, a `Weld`
+---is created between the seat and the part. The `JointInstance/C0|C0` and
+---`JointInstance/C1|C1` properties are configured so that the character is
+---welded 2 studs above the seat. This weld is named 'SeatWeld' and parented
+---to the seat.
+---
+---When sitting the `Seat/Occupant` property is set to the `Humanoid` that is
+---'sitting' in the seat. Furthermore the `Humanoid/SeatPart` property of the
+---humanoid is set to the seat.
+---
+---A character can also be forced to sit in a seat using the `Seat/Sit`
+---function.
+---
+---There are two ways for a character to get out of a seat. When a player
+---jumps, they are removed from the seat. However this can also be done
+---manually by destroying the seat weld, for example:
+---
+---    seat:FindFirstChild("SeatWeld"):Destroy()
+---
+---Note seats have a cooldown (currently 3 seconds) that is on a
+---per-character per-seat basis. This means once a character has gotten out
+---of a seat they cannot sit back on the same seat for 3 seconds. This
+---cooldown behavior may change and should not be relied upon by developers.
+---
+---## What can Seats be used for?
+---
+---Seats have a diverse range of uses, ranging from the obvious to the more
+---unconventional.
+---
+---- Creating chairs or benches without the need for any programming
+---- Allowing characters to 'sit' in moving objects such as vehicles without
+---  getting flung around
+---- Creating interfaces that are controlled by the character in the seat
+---  using the `Seat/Occupant` property
+---
+local Seat;
+---@param humanoid Instance
+---@return void
+---Forces the character with the specified
+---<a href="/reference/engine/classes/Humanoid">Humanoid</a> to sit in the
+---Seat.
+---
+Seat.Sit = function(self, humanoid) end;
+---@class Selection : Instance
+---@field public ActiveInstance Instance
+---@field public SelectionThickness float
+---@field public SelectionChanged fun(): RbxScriptSignal
+---The Selection service controls the `Instance`s that are selected in Roblox
+---Studio.
+---
+---This service is particularly useful when developing `Plugin`s, as it
+---allows the developer to access and manipulate the current selection.
+---
+---Currently selected `Instance`s can be obtained and set using the
+---`Selection/Get` and `Selection/Set` functions. The
+---`Selection/SelectionChanged` event fires whenever the current selection
+---changes.
+---
+---For more information on using `Selection` and `Plugin`s, see `Plugin`.
+---
+---Selection is also often used in the command bar, to set hidden properties
+---or run functions for selected `Instance`s. For example:
+---
+---```
+---game.Selection:Get()[1]:SetPrimaryPartCFrame(CFrame.new()) -- move the selected model to the origin
+---```
+---
+---Note this class only applies to Roblox Studio and has no applicability to
+---games.
+---
+---[1]: https://developer.roblox.com/articles/Intro-to-Plugins
+---
+local Selection;
+---@param selection Objects
+---@return void
+---Sets the currently selected objects in Roblox Studio to `Instance`s in the
+---given array.
+---
+---Calling this function will cause the `Selection/SelectionChanged` event to
+---fire, unless the new selection set is identical to the previous selection.
+---
+---Note this function overwrites the existing selection. However, using
+---`Selection/Get` an `Instance` can be added to the existing selection like
+---so:
+---
+---```
+---local selected = Selection:Get()
+---table.insert(selected, object)
+---Selection:Set(selected)
+---```
+---
+Selection.Set = function(self, selection) end;
+---@param instancesToRemove Objects
+---@return void
+Selection.Remove = function(self, instancesToRemove) end;
+---@return void
+Selection.ClearTerrainSelectionHack = function(self) end;
+---@param instancesToAdd Objects
+---@return void
+Selection.Add = function(self, instancesToAdd) end;
+---@return Objects
+---Returns an array of currently selected `Instance`s in Roblox Studio.
+---
+---If no `Instance`s are selected, the array returned be empty. This function
+---can be used in conjunction with the `Selection/SelectionChanged` event to
+---get the selection whenever it changes.
+---
+---Note, this function can only be used in `Plugin`s or the command line.
+---
+---For changing the current selection, please see `Selection/Set`.
+---
+Selection.Get = function(self) end;
+---@param center Vector3
+---@param size Vector3
+---@return void
+Selection.SetTerrainSelectionHack = function(self, center, size) end;
+---@class SelectionBox : InstanceAdornment, GuiBase3d, GuiBase, Instance
+---@field public LineThickness float
+---@field public SurfaceColor BrickColor
+---@field public SurfaceColor3 Color3
+---@field public SurfaceTransparency float
+---**SelectionBox** is an object which renders a 3D box around its
+---`PVAdornment/Adornee|Adornee` when it is a descendant of the `Workspace`
+---or anywhere where GUI objects are rendered. The box's geometry consists of
+---rectangular prisms forming an outline/wireframe in addition to a surface
+---for each of its faces. By default, only the outline is visible.
+---
+---<img src="/assets/blta4e1984798842acd/SelectionBox.jpg" alt="A default SelectionBox adorned to a default Part"  />
+---There are several properties available to configure the appearance of the
+---cube. The outline can modified through the
+---`GuiBase3d/Color3|Color3`&dagger;,
+---`GuiBase3d/Transparency|Transparency`&dagger; and
+---`SelectionBox/LineThickness|LineThickness` properties. The faces can be
+---modified through the `SelectionBox/SurfaceColor3|SurfaceColor3` and
+---`SelectionBox/SurfaceTransparency|SurfaceTransparency` properties.
+---Finally, rendering of the box can be toggled with the
+---`GuiBase3d/Visible|Visible`&dagger; property.
+---
+---&dagger; These properties come from this object's superclass, `GuiBase3d`.
+---
+---The SelectionBox object does not capture any form of input; it is solely a
+---visual effect. To capture simple pointer input on the adornee, consider
+---using a `ClickDetector`.
+---
+local SelectionBox;
+---@class SelectionLasso : GuiBase3d, GuiBase, Instance
+---@field public Humanoid Humanoid
+---The SelectionLasso class is an abstract class of which the inheritors are
+---able to be attached to an object of the `Humanoid` class or the `BasePart`
+---class. They can also be attached to a point in the tridimensional space
+---indicated by a Vector3 value.
+---
+local SelectionLasso;
+---@class SelectionPartLasso : SelectionLasso, GuiBase3d, GuiBase, Instance
+---@field public Part BasePart
+---An instance used to display a "lasso" between a `Humanoid` Torso and a
+---`BasePart`. It should be noted that the `GuiBase3d/Transparency` property
+---doesn't currently work.
+---
+local SelectionPartLasso;
+---@class SelectionPointLasso : SelectionLasso, GuiBase3d, GuiBase, Instance
+---@field public Point Vector3
+---A 3D GUI object which displays a lasso between the defined Humanoid and a
+---given Vector3 point.
+---
+local SelectionPointLasso;
+---@class SelectionSphere : PVAdornment, GuiBase3d, GuiBase, Instance
+---@field public SurfaceColor BrickColor
+---@field public SurfaceColor3 Color3
+---@field public SurfaceTransparency float
+---**SelectionSphere** is an object which renders a 3D sphere around its
+---`PVAdornment/Adornee|Adornee` when it is a descendant of the `Workspace`
+---or anywhere where GUI objects are rendered. The sphere's geometry consists
+---of a ring/outline in addition to a surface. By default, only the outline
+---is visible.
+---
+---<img src="/assets/bltb3e8cdfab0891947/SelectionSphere.jpg" alt="A default SelectionSphere adorned to a semi-transparent default Part"  />
+---There are a few properties available to configure the appearance of the
+---sphere. The outline can modified through the
+---`GuiBase3d/Color3|Color3`&dagger; and
+---`GuiBase3d/Transparency|Transparency`&dagger; properties. The surface can
+---be modified through the `SelectionSphere/SurfaceColor3|SurfaceColor3` and
+---`SelectionSphere/SurfaceTransparency|SurfaceTransparency` properties.
+---Finally, rendering of the sphere can be toggled with the
+---`GuiBase3d/Visible|Visible`&dagger; property.
+---
+---&dagger; These properties come from this object's superclass, `GuiBase3d`.
+---
+---The SelectionSphere object does not capture any form of input; it is
+---solely a visual effect. To capture simple pointer input on the adornee,
+---consider using a `ClickDetector`.
+---
+local SelectionSphere;
+---@class ServerReplicator : NetworkReplicator, Instance
+---The ServerReplicator's job is to replicate changes from other clients and
+---the server over to a certain client.
+---
+local ServerReplicator;
+---@class ServerScriptService : Instance
+---@field public LoadStringEnabled bool
+---**ServerScriptService** is a container service for `Script`,
+---`ModuleScript` and other scripting-related assets that are only meant for
+---server use. The contents are never replicated to player clients at all,
+---which allows for a secure storage of important game logic. Script objects
+---will run if they are within this service and not
+---`BaseScript/Disabled|Disabled`.
+---
+---This service houses just one property,
+---`ServerScriptService/LoadStringEnabled|LoadStringEnabled`, which
+---determines whether the `loadstring` function in Lua is enabled. It's
+---recommended to keep this disabled for security reasons, as misusing this
+---function can lead to remote code execution vulnerabilities.
+---
+---Scripts running in ServerScriptService may need access to various other
+---assets which are not scripting-related, such as prefabricated models to be
+---`Instance/Clone|cloned`. Such assets should go in `ServerStorage`, which
+---behaves similarly to this service except that `Script` objects will not
+---run even if they are not `BaseScript/Disabled|Disabled`. Assets and
+---`ModuleScript` that are useful to both the server and clients should go in
+---`ReplicatedStorage` instead. Finally, you can further organize objects
+---within this service through the use of `Folder`s without affecting the way
+---it behaves.
+---
+local ServerScriptService;
+---@class ServerStorage : Instance
+---A container whose contents are only accessible on the server. Objects
+---descending from ServerStorage will not replicate to the client and will
+---not be accessible from `LocalScript`s.
+---
+---As ServerStorage is a service it can only be accessed using the
+---`DataModel/GetService` method.
+---
+---By storing large objects such as maps in ServerStorage until they are
+---needed, network traffic will not be used up transmitting these objects to
+---the client when they join the game.
+---
+---`Script`s will not run when they are parented to ServerStorage, although
+---`ModuleScript`s contained within can be accessed and ran. It is
+---recommended developers use `ServerScriptService` to hold `Script`s they
+---wish the server to execute.
+---
+---Note that as the contents of ServerStorage can only be accessed by the
+---server, its contents will need to be parented elsewhere (such as
+---`Workspace`) before clients can access them. Developers who require a
+---container that is accessible by both the server and client are advised to
+---use `ReplicatedStorage` instead.
+---
+local ServerStorage;
+---@class ServiceProvider : Instance
+---@field public Close fun(): RbxScriptSignal
+---@field public CloseLate fun(): RbxScriptSignal
+---@field public ServiceAdded fun(service: Instance): RbxScriptSignal
+---@field public ServiceRemoving fun(service: Instance): RbxScriptSignal
+---A ServiceProvider is an abstract class, which stores, and provides certain
+---singleton classes, depending on what inherited class you are using its
+---members with.
+---
+local ServiceProvider;
+---@generic CLASSNAMEGENERIC : string
+---@param className `CLASSNAMEGENERIC`
+---@return CLASSNAMEGENERIC
+ServiceProvider.service = function(self, className) end;
+---@generic CLASSNAMEGENERIC : string
+---@param className `CLASSNAMEGENERIC`
+---@return CLASSNAMEGENERIC
+ServiceProvider.getService = function(self, className) end;
+---@generic CLASSNAMEGENERIC : string
+---@param className `CLASSNAMEGENERIC`
+---@return CLASSNAMEGENERIC
+---Returns the service specified by the given className if it's already
+---created, errors for an invalid name.
+---
+ServiceProvider.FindService = function(self, className) end;
+---@generic CLASSNAMEGENERIC : string
+---@param className `CLASSNAMEGENERIC`
+---@return CLASSNAMEGENERIC
+---Returns a service with the class name requested. When called with the name
+---of a service (such as `Debris`) it will return the instance of that
+---service. If the service does not yet exist it will be created and the new
+---service is returned. This is the only way to create some services, and can
+---also be used for services that have unusual names, e.g. RunService's name
+---is "Run Service".
+---
+---Note:
+---
+---- This function will return nil if the className parameter is an existing
+---  class, but the class is not a service.
+---- If you attempt to fetch a service that is present under another Object,
+---  an error will be thrown stating that the "singleton serviceName already
+---  exists".
+---
+ServiceProvider.GetService = function(self, className) end;
+---@class SessionService : Instance
+local SessionService;
+---@param sid string
+---@param key string
+---@return void
+SessionService.RemoveMetadata = function(self, sid, key) end;
+---@param sid string
+---@param key string
+---@param value Variant
+---@return void
+SessionService.SetMetadata = function(self, sid, key, value) end;
+---@param sid string
+---@return void
+SessionService.RemoveSession = function(self, sid) end;
+---@param sid string
+---@param tag string
+---@return void
+SessionService.ReplaceSession = function(self, sid, tag) end;
+---@param parentSid string
+---@param childSid string
+---@param tag string
+---@return void
+SessionService.SetSession = function(self, parentSid, childSid, tag) end;
+---@param sid string
+---@param key string
+---@return Variant
+SessionService.GetMetadata = function(self, sid, key) end;
+---@return string
+SessionService.GetRootSID = function(self) end;
+---@param sid string
+---@return int64
+SessionService.GetCreatedTimestampUtcMs = function(self, sid) end;
+---@param sid string
+---@return bool
+SessionService.SessionExists = function(self, sid) end;
+---@class Shirt : Clothing, CharacterAppearance, Instance
+---@field public ShirtTemplate Content
+---<img src="/assets/bltc8da647cb0295112/Shirt.jpg" alt="A default rig wearing a very dapper Shirt (rbxassetid://86896487)"  />
+---The **Shirt** object displays a Shirt texture from the Roblox website on a
+---`Humanoid` rig. Shirts cover the torso and arms, and will take priority
+---over a `Pants` on the torso. To be visible, a Shirt must be a sibling of a
+---Humanoid and have its `Shirt/ShirtTemplate|ShirtTemplate` property set to
+---an appropriate texture (such as `rbxassetid://86896487`, pictured to the
+---right). The shirt texture may be colorized using the `Clothing/Color3`
+---property.
+---
+---Shirts are automatically loaded on `Player` characters if their avatar is
+---wearing one.
+---
+---See also:
+---
+---- `Pants`, an object which works similarly with the torso and legs
+---- [Making Avatar Clothing][1], which goes into detail about creating
+---  Shirts and Pants
+---
+---[1]:
+---  https://developer.roblox.com/articles/How-to-Make-Shirts-and-Pants-for-Roblox-Characters
+---
+local Shirt;
+---@class ShirtGraphic : CharacterAppearance, Instance
+---@field public Color3 Color3
+---@field public Graphic Content
+---The **ShirtGraphic** object applies a texture to the front surface of a
+---character's torso. It is used to display t-shirts.
+---
+local ShirtGraphic;
+---@class SkateboardController : Controller, Instance
+---@field public Steer float
+---@field public Throttle float
+---@field public AxisChanged fun(axis: string): RbxScriptSignal
+---A SkateboardController is an object responsible for translating
+---PlayerActions to movements with a `SkateboardPlatform`.
+---
+local SkateboardController;
+---@class SkateboardPlatform : Part, FormFactorPart, BasePart, PVInstance, Instance
+---@field public Controller SkateboardController
+---@field public ControllingHumanoid Humanoid
+---@field public Steer int
+---@field public StickyWheels bool
+---@field public Throttle int
+---@field public Equipped fun(humanoid: Instance, skateboardController: Instance): RbxScriptSignal
+---@field public MoveStateChanged fun(newState: MoveState, oldState: MoveState): RbxScriptSignal
+---@field public Unequipped fun(humanoid: Instance): RbxScriptSignal
+---@field public equipped fun(humanoid: Instance, skateboardController: Instance): RbxScriptSignal
+---@field public unequipped fun(humanoid: Instance): RbxScriptSignal
+---A SkateboardPlatform can be used to create a skateboard. When characters
+---get on a skateboard, they are stuck to it until they press the escape key.
+---Until then, the character uses skateboard animations and travels faster
+---than a walking character.
+---
+local SkateboardPlatform;
+---@param impulseWorld Vector3
+---@return void
+---Adds ''impulseWorld'' to the SkateboardPlatform's `BasePart/Velocity`.
+---
+SkateboardPlatform.ApplySpecificImpulse = function(self, impulseWorld) end;
+---@class Skin : CharacterAppearance, Instance
+---@field public SkinColor BrickColor
+---The Skin object, when placed into a humanoid model, will change the colors
+---all body parts of the torso, head, etc, to value of the `Skin/SkinColor`
+---property.
+---
+---Superceded by the `BodyColors` class.
+---
+local Skin;
+---@class Sky : Instance
+---@field public CelestialBodiesShown bool
+---@field public MoonAngularSize float
+---@field public MoonTextureId Content
+---@field public SkyboxBk Content
+---@field public SkyboxDn Content
+---@field public SkyboxFt Content
+---@field public SkyboxLf Content
+---@field public SkyboxRt Content
+---@field public SkyboxUp Content
+---@field public StarCount int
+---@field public SunAngularSize float
+---@field public SunTextureId Content
+---The Sky object is an object, when placed inside `Lighting`, will change
+---the appearance of the game's sky. This allows for a custom sky to be used
+---as opposed to the Roblox default sky. The Skybox is composed of six sides,
+---much like that of a cube. If the skybox is changed/customised, the Sun and
+---other objects in the sky will remain visible, unless you turn off the Sky
+---object's `Sky/CelestialBodiesShown` property, which will remove the Sun,
+---Moon, and stars from the sky. The recommended picture dimensions for a
+---Skybox side are 256x256 pixels. By adjusting the `Sky/StarCount` property
+---of the Sky object, you can change how many stars will appear in the sky at
+---night.
+---
+local Sky;
+---@class SlidingBallConstraint : Constraint, Instance
+---@field public ActuatorType ActuatorType
+---@field public CurrentPosition float
+---@field public LimitsEnabled bool
+---@field public LinearResponsiveness float
+---@field public LowerLimit float
+---@field public MotorMaxAcceleration float
+---@field public MotorMaxForce float
+---@field public Restitution float
+---@field public ServoMaxForce float
+---@field public Size float
+---@field public Speed float
+---@field public TargetPosition float
+---@field public UpperLimit float
+---@field public Velocity float
+---The base class for constraints that allow their attachments to slide along
+---an axis.
+---
+local SlidingBallConstraint;
+---@class Smoke : Instance
+---@field public Color Color3
+---@field public Enabled bool
+---@field public Opacity float
+---@field public RiseVelocity float
+---@field public Size float
+---@field public TimeScale float
+---Smoke is one of several particle-emitting classes. Like other particle
+---emitters of its kind, Smoke objects emit particles when parented to a
+---`BasePart` (such as a `Part`) or an `Attachment` within such a `BasePart`.
+---Compared to the `ParticleEmitter` class, Smoke lacks many different
+---customization properties and special methods, such as
+---`ParticleEmitter/Lifetime` or `ParticleEmitter/Emit`. It is useful to
+---create a quick special effect in a pinch; for more detailed work it is
+---preferable to use a `ParticleEmitter` instead.
+---
+---![Smoke rising from the part to which it was parented][1]
+---
+---When `Smoke/Enabled` is toggled off, particles emit by this object will
+---continue to render until their lifetime expires. When a Smoke object's
+---`Instance/Parent` is set to nil (and/or `Instance/Destroy`ed), all
+---particles will instantly disappear. If this effect is not desired, try
+---hiding the parent object at a far away position, then removing the Smoke
+---after a few seconds using `Debris` to give the last particles a chance to
+---expire. This object does not have a `ParticleEmitter/Clear` method, but it
+---is possible to set the `Instance/Parent` to nil and back to the exact same
+---object for the same effect.
+---
+---Smoke particles are only emit from the center of `BasePart` to which they
+---are parented. Parenting a Smoke object to an `Attachment` instead allows
+---customization of the particles' start position.
+---
+---[1]: /assets/blt3634602492a8e3eb/Smoke.png
+---
+local Smoke;
+---@class Snap : JointInstance, Instance
+---An object that holds two objects rigidly together. Most commonly created
+---when `BasePart/MakeJoints` is called on parts where Inlet and Stud
+---`Enum/SurfaceType` are touching.
+---
+---Functionally identical to `Weld`.
+---
+---See also `WeldConstraint` for a newer alternative using the
+---[constraints](/building-and-visuals/physics/mechanical-constraints) system
+---that does not require `JointInstance/C0|C0` or `JointInstance/C1|C1`
+---properties to be manually set.
+---
+---## Root part
+---
+---Every Assembly has a root part, see `BasePart/GetRootPart`. When a Snap's
+---`JointInstance/C0|C0`/`JointInstance/C1|C1` is modified the root part will
+---stay where it was.
+---
+---## Directionality
+---
+---Snaps do not have any directionality. `JointInstance/Part0|Part0` or
+---`JointInstance/Part1|Part1`, doesn't matter. You can imagine rigid joints
+---forming a tree branching down from the root part. All the parts down the
+---tree from root will move, and their welded “children” in this tree will
+---move with them.
+---
+local Snap;
+---@class SocialService : Instance
+---@field public GameInvitePromptClosed fun(player: Instance, recipientIds: Array): RbxScriptSignal
+---@field public PromptInviteRequested fun(player: Instance): RbxScriptSignal
+---SocialService facilitates social functions that impact relationships made
+---on the Roblox platform. Developers are able to
+---`SocialService/PromptGameInvite|prompt` their players to send game
+---invitation requests to players' friends and leverage signals when users
+---invite their friends to their games
+---
+---Below is the Invitation Popup players will see:
+---
+---![Invitation Popup][1]
+---
+---And the chat message that invited players will see:
+---
+---![Invite Message][2]
+---
+---[1]: /assets/blt51ac7d9be72e807e/GameInvitePopup.jpeg
+---[2]: /assets/blt785eca775b5936ec/GameInviteMessage.png
+---
+local SocialService;
+---@param player Instance
+---@return bool
+---**CanSendGameInviteAsync** indicates whether the given `Player` can invite
+---other players to the current game. If they can, it returns true.
+---
+---You should always use the result of this function before the
+---`SocialService/PromptGameInvite|PromptGameInvite` function, since the
+---ability to invite players can vary depending on the platform or player.
+---Only after determining that invites are possible for this player, should
+---you allow the player to opt-in (eg, a button press) to inviting others
+---using the `PromptGameInvite` function.
+---
+SocialService.CanSendGameInviteAsync = function(self, player) end;
+---@param player Instance
+---@param recipientIds Array
+---@return void
+SocialService.InvokeGameInvitePromptClosed = function(self, player, recipientIds) end;
+---@param player Instance
+---@return void
+---**PromptGameInvite** will display an invite screen to the given `Player`.
+---On this screen, the player may invite their friends to the current game.
+---
+---Before using this function, you should use the
+---`SocialService/CanSendGameInviteAsync|CanSendGameInviteAsync` function to
+---determine whether a player can send a game invite, as this can vary
+---depending on the platform or player. After determining that invites are
+---possible for this player, allow the player to opt-in to inviting others.
+---For example, the player clicked on an "Invite Friends" button, shown after
+---`CanSendGameInviteAsync` returned true.`
+---
+SocialService.PromptGameInvite = function(self, player) end;
+---@class SolidModelContentProvider : CacheableContentProvider, Instance
+---An internal `ContentProvider` for preloading solid models.
+---
+local SolidModelContentProvider;
+---@class Sound : Instance
+---@field public ChannelCount int
+---@field public EmitterSize float
+---@field public IsLoaded bool
+---@field public IsPaused bool
+---@field public IsPlaying bool
+---@field public Looped bool
+---@field public MaxDistance float
+---@field public MinDistance float
+---@field public Pitch float
+---@field public PlayOnRemove bool
+---@field public PlaybackLoudness double
+---@field public PlaybackSpeed float
+---@field public Playing bool
+---@field public RollOffMaxDistance float
+---@field public RollOffMinDistance float
+---@field public RollOffMode RollOffMode
+---@field public SoundGroup SoundGroup
+---@field public SoundId Content
+---@field public TimeLength double
+---@field public TimePosition double
+---@field public UsageContextPermission UsageContext
+---@field public Volume float
+---@field public isPlaying bool
+---@field public DidLoop fun(soundId: string, numOfTimesLooped: int): RbxScriptSignal
+---@field public Ended fun(soundId: string): RbxScriptSignal
+---@field public Loaded fun(soundId: string): RbxScriptSignal
+---@field public Paused fun(soundId: string): RbxScriptSignal
+---@field public Played fun(soundId: string): RbxScriptSignal
+---@field public Resumed fun(soundId: string): RbxScriptSignal
+---@field public Stopped fun(soundId: string): RbxScriptSignal
+---A `Sound` is an object that emits sound.
+---
+---## 2D and 3D Sound
+---
+---A sound placed in a `BasePart` or an `Attachment` will emit its sound from
+---that part's `BasePart/Position` or the attachment's
+---`Attachment/WorldPosition`. A sound exhibits the Doppler effect, meaning
+---its frequency and pitch varies with the relative motion of whatever
+---attachment or part it is attached to. The volume of the sound will be
+---determined by the distance between the client's sound listener (by default
+---the `Camera` position) and the position of the sound's parent. For more
+---information on this see `Sound/RollOffMode`.
+---
+---A sound is considered "global" if it is not parented to a `BasePart` or an
+---`Attachment`. In this case, the sound will play at the same volume
+---throughout the entire place.
+---
+---## Sound Replication
+---
+---Sound playback is not filtered. If a particular client starts playing a
+---sound, all of the other clients will also play it unless
+---`SoundService/RespectFilteringEnabled` is set to true.
+---
+---Important:
+---
+---- While the playback of sounds will replicate, other properties such as
+---  the playback speed, pitch, volume, etc. will **not** replicate. This
+---  behavior can be avoided by creating all sounds locally on the client, as
+---  instancing sounds will not replicate to the server.
+---- `Sound/TimePosition`, `Sound/TimeLength`, and `Sound/Playing` all
+---  properly replicate when set from the server.
+---
+local Sound;
+---@return void
+Sound.stop = function(self) end;
+---@return void
+---Resumes the `Sound`. Sets `Sound/Playing` to true. Does not alter
+---`Sound/TimePosition` and thus can be used to resume the playback of a
+---sound stopped using `Sound/Pause`.
+---
+---The impact of the different sound functions on `Sound/Playing` and
+---`Sound/TimePosition` are shown below.
+---
+---  <table>
+---    <thead>
+---      <tr>
+---        <th>Function</th>
+---        <th>Sound.Playing</th>
+---        <th>Sound.TimePosition</th>
+---      </tr>
+---    </thead>
+---    <tbody>
+---      <tr>
+---        <td>Sound:Play()</td>
+---        <td>True</td>
+---        <td>Last value set in Lua (default 0)</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Pause()</td>
+---        <td>False</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Resume()</td>
+---        <td>True</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Stop()</td>
+---        <td>False</td>
+---        <td>0</td>
+---      </tr>
+---    </tbody>
+---  </table>
+---
+Sound.Resume = function(self) end;
+---@return void
+---Sets `Sound/Playing` to false. This pauses the playback of the `Sound` if
+---the sound is playing. Unlike `Sound/Stop` it does not reset
+---`Sound/TimePosition` meaning the sound can be resumed using
+---`Sound/Resume`.
+---
+---The impact of the different Sound functions on `Sound/Playing` and
+---`Sound/TimePosition` are shown below.
+---
+---  <table>
+---    <thead>
+---      <tr>
+---        <th>Function</th>
+---        <th>Sound.Playing</th>
+---        <th>Sound.TimePosition</th>
+---      </tr>
+---    </thead>
+---    <tbody>
+---      <tr>
+---        <td>Sound:Play()</td>
+---        <td>True</td>
+---        <td>Last value set in Lua (default 0)</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Pause()</td>
+---        <td>False</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Resume()</td>
+---        <td>True</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Stop()</td>
+---        <td>False</td>
+---        <td>0</td>
+---      </tr>
+---    </tbody>
+---  </table>
+---
+Sound.Pause = function(self) end;
+---@return void
+Sound.play = function(self) end;
+---@return void
+---Stops the `Sound`. Sets `Sound/Playing` to false then sets
+---`Sound/TimePosition` to 0.
+---
+---The impact of the different sound functions on `Sound/Playing` and
+---`Sound/TimePosition` are shown below.
+---
+---  <table>
+---    <thead>
+---      <tr>
+---        <th>Function</th>
+---        <th>Sound.Playing</th>
+---        <th>Sound.TimePosition</th>
+---      </tr>
+---    </thead>
+---    <tbody>
+---      <tr>
+---        <td>Sound:Play()</td>
+---        <td>True</td>
+---        <td>Last value set in Lua (default 0)</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Pause()</td>
+---        <td>False</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Resume()</td>
+---        <td>True</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Stop()</td>
+---        <td>False</td>
+---        <td>0</td>
+---      </tr>
+---    </tbody>
+---  </table>
+---
+Sound.Stop = function(self) end;
+---@return void
+Sound.pause = function(self) end;
+---@return void
+---Plays the `Sound`. Sets `Sound/TimePosition` to the last value set by a
+---`Script` (or 0 if it has not been set), and then sets `Sound/Playing` to
+---true.
+---
+---The impact of the different `Sound` functions on `Sound/Playing` and
+---`Sound/TimePosition` are shown below.
+---
+---  <table>
+---    <thead>
+---      <tr>
+---        <th>Function</th>
+---        <th>Sound.Playing</th>
+---        <th>Sound.TimePosition</th>
+---      </tr>
+---    </thead>
+---    <tbody>
+---      <tr>
+---        <td>Sound:Play()</td>
+---        <td>True</td>
+---        <td>Last value set in Lua (default 0)</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Pause()</td>
+---        <td>False</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Resume()</td>
+---        <td>True</td>
+---        <td>-</td>
+---      </tr>
+---      <tr>
+---        <td>Sound:Stop()</td>
+---        <td>False</td>
+---        <td>0</td>
+---      </tr>
+---    </tbody>
+---  </table>
+---
+Sound.Play = function(self) end;
+---@class SoundEffect : Instance
+---@field public Enabled bool
+---@field public Priority int
+---SoundEffect is the base class that all other sound effects derive from. A
+---SoundEffect can be applied to either a `Sound` or `SoundGroup` by being
+---parented to either. Multiple effects can be applied to the same Sound or
+---SoundGroup. The order the effects will be applied in is determined by that
+---effect's Priority.
+---
+local SoundEffect;
+---@class SoundGroup : Instance
+---@field public Volume float
+---A `SoundGroup` is used to manage the volume and effects on multiple
+---`Sound`s at once. Every sound in the sound group will have its volume
+---adjusted by the group's `SoundGroup/Volume` property. If the SoundGroup
+---has any `SoundEffect`s as children, those effects will be applied to all
+---of the `Sound`s in the group.
+---
+---The `SoundGroup/Volume` property acts as a multiplier, and thus sounds in
+---a SoundGroup will retain their relative volumes when it is set. This means
+---if a sound's volume is 0.5 and it is assigned to a SoundGroup with a
+---volume of 0.5, its effective volume will be 0.25.
+---
+---Grouping sounds of the same category has several uses for developers. One
+---common usage of a sound group is to assign all of the music that can play
+---in game to a SoundGroup called "music." Players could then easily toggle
+---all music on or off.
+---
+---## Setting sound groups
+---
+---A `Sound` is added to a `SoundGroup` by setting the `Sound/SoundGroup`
+---property of the `Sound`. A `Sound` can only be in one `SoundGroup` at a
+---time. Whilst they can be parented elsewhere, it is recommended to keep
+---SoundGroups parented to the `SoundService`. In the below example, a sound
+---is parented to a SoundGroup called 'Music'.
+---
+---    Sound.SoundGroup = game:GetService("SoundService"):FindFirstChild("Music")
+---
+local SoundGroup;
+---@class SoundService : Instance
+---@field public AmbientReverb ReverbType
+---@field public DistanceFactor float
+---@field public DopplerScale float
+---@field public RespectFilteringEnabled bool
+---@field public RolloffScale float
+---@field public DeviceListChanged fun(newDevices: Tuple): RbxScriptSignal
+---A service that determines various aspects of how `Sound`s play in the
+---game. SoundService is also often used to store `SoundGroup`s although this
+---is not mandatory for `SoundGroup`s to work.
+---
+---## What can SoundService do?
+---
+---SoundService properties such as `SoundService/AmbientReverb`,
+---`SoundService/DistanceFactor`, `SoundService/DopplerScale` and
+---`SoundService/RolloffScale` can be used to change how all `Sound`s play in
+---the game.
+---
+---The `SoundService/SetListener` function allows developers to set the
+---position where sounds are heard from.
+---
+---`SoundService/PlayLocalSound` can be used to play a sound locally
+---regardless of where it is parented to.
+---
+---Developers looking to find out more about how sound works in Roblox should
+---consult the documentation provided for the [FMOD sound engine][1].
+---
+---[1]: https://www.fmod.com/docs/api/content/generated/overview/3dsound.html
+---
+local SoundService;
+---@param sound Instance
+---@return void
+---Plays a `Sound` locally, meaning the sound will only be heard by the
+---client calling this function, regardless of where it's parented to. This
+---function is most useful for playing a `Sound` locally in the Studio
+---client, for instance in a `Script` for a `Plugin`.
+---
+SoundService.PlayLocalSound = function(self, sound) end;
+---@return Tuple
+---This function returns `SoundService|SoundService's` current listener type
+---and what is set as listener.
+---
+---The first result returned is the `Enum/ListenerType` of the listener, the
+---second result is dependent on the ListenerType:
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>ListenerType</th>
+---            <th>Description</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td>Enum.ListenerType.Camera</td>
+---            <td>Does not return a listener object as <code>Workspace/CurrentCamera</code> is always used</td>
+---        </tr>
+---        <tr>
+---            <td>Enum.ListenerType.CFrame</td>
+---            <td>Returns the <code>DataType/CFrame</code> used in <code>SoundService/SetListener</code></td>
+---        </tr>
+---        <tr>
+---            <td>Enum.ListenerType.ObjectPosition</td>
+---            <td>Returns the <code>BasePart</code> used in <code>SoundService/SetListener</code></td>
+---        </tr>
+---        <tr>
+---            <td>Enum.ListenerType.ObjectCFrame</td>
+---            <td>Returns the BasePart used in SetListener()</td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---The listener can be changed using `SoundService/SetListener`.
+---
+---```lua
+---local SoundService = game:GetService("SoundService")
+---SoundService:SetListener(Enum.ListenerType.CFrame, CFrame.new(0, 0, 0))
+---local listenerType, listener = SoundService:GetListener()
+---print(listenerType, listener)
+---```
+---
+---#### What is a listener?
+---
+---The listener determines the point from which audio in the game is being
+---'heard' by the player. For 3D `Sound|Sounds` (Sounds parented to a
+---BasePart or `Attachment`) the listener influences the volume and
+---left/right balance of a playing sound. Listeners have no influence on the
+---playback of 2D sounds as they have no position of emission.
+---
+---By default, the listener is set to the CurrentCamera. However, a range of
+---different types of listeners can be used.
+---
+SoundService.GetListener = function(self) end;
+---@return Dictionary
+SoundService.GetRecordingDevices = function(self) end;
+---@return Tuple
+SoundService.GetOutputDevice = function(self) end;
+---@param listenerType ListenerType
+---@param listener Tuple
+---@return void
+---Sets the listener used by the client.
+---
+---The first parameter is the `Enum/ListenerType` of the listener, the second
+---paramater is dependent on the listener type.
+---
+---- Camera ListenerType - Does not return a listener object as
+---  `Workspace/CurrentCamera` is always used
+---- CFrame ListenerType - The `DataType/CFrame` to be used
+---- ObjectPosition ListenerType - The `BasePart` to be used
+---- ObjectCFrame ListenerType - The BasePart to be used
+---
+---The listener can be retrieved using `SoundService/GetListener`:
+---
+---```lua
+---local SoundService = game:GetService("SoundService")
+---SoundService:SetListener(Enum.ListenerType.CFrame, CFrame.new(0, 0, 0))
+---local listenerType, listener = SoundService:GetListener()
+---print(listenerType, listener)
+---```
+---
+---#### What is a listener?
+---
+---The `SoundService`'s listener determines the point from which audio in the
+---game is being 'heard' by the player. For 3D `Sounds` (sounds parented to a
+---BasePart or `Attachment`) the listener influences the volume and
+---left/right balance of a playing sound. Listeners have no influence on the
+---playback of 2D sounds as they have no position of emission.
+---
+---By default, the listener is set to the CurrentCamera. However, a range of
+---different types of listeners can be used.
+---
+SoundService.SetListener = function(self, listenerType, listener) end;
+---@return Tuple
+SoundService.GetOutputDevices = function(self) end;
+---@return Dictionary
+SoundService.EndRecording = function(self) end;
+---@param deviceIndex int
+---@return bool
+SoundService.SetRecordingDevice = function(self, deviceIndex) end;
+---@return Dictionary
+SoundService.GetSoundMemoryData = function(self) end;
+---@param name string
+---@param guid string
+---@return void
+SoundService.SetOutputDevice = function(self, name, guid) end;
+---@return bool
+SoundService.BeginRecording = function(self) end;
+---@class Sparkles : Instance
+---@field public Color Color3
+---@field public Enabled bool
+---@field public SparkleColor Color3
+---@field public TimeScale float
+---Sparkles is one of several particle-emitting classes. Like other particle
+---emitters of its kind, Sparkles objects emit particles when parented to a
+---`BasePart` (such as a `Part`) or an `Attachment` within such a `BasePart`.
+---Compared to the `ParticleEmitter` class, Sparkles lacks many different
+---customization properties and special methods, such as
+---`ParticleEmitter/Lifetime` or `ParticleEmitter/Emit`. It is useful to
+---create a quick special effect in a pinch; for more detailed work it is
+---preferable to use a `ParticleEmitter` instead.
+---
+---![Sparkles emitting from a part][1]
+---
+---When `Sparkles/Enabled` is toggled off, particles emit by this object will
+---continue to render until their lifetime expires. When a Sparkles object's
+---`Instance/Parent` is set to nil (and/or `Instance/Destroy`ed), all
+---particles will instantly disappear. If this effect is not desired, try
+---hiding the parent object at a far away position, then removing the
+---Sparkles after a few seconds using `Debris` to give the last particles a
+---chance to expire. This object does not have a `ParticleEmitter/Clear`
+---method, but it is possible to set the `Instance/Parent` to nil and back to
+---the exact same object for the same effect.
+---
+---Sparkles particles are only emit from the center of `BasePart` to which
+---they are parented. Parenting a Sparkles object to an `Attachment` instead
+---allows customization of the particles' start position.
+---
+---[1]: /assets/bltb4fd95f7dbbb308a/Sparkles.png
+---
+local Sparkles;
+---@class SpawnLocation : Part, FormFactorPart, BasePart, PVInstance, Instance
+---@field public AllowTeamChangeOnTouch bool
+---@field public Duration int
+---@field public Enabled bool
+---@field public Neutral bool
+---@field public TeamColor BrickColor
+---SpawnLocations, or "spawns" determine where a `Player` respawns when they
+---die. They can be configured to allow only certain players to use each
+---spawn, using `Team|Teams`. They also control how `ForceField|ForceFields`
+---are set up for newly-spawned players.
+---
+---SpawnLocations can be used as checkpoints, such as in an obstacle course,
+---using the `SpawnLocation/AllowTeamChangeOnTouch` property, so that when a
+---player touches it, they will change teams to the SpawnLocation's team. In
+---this case, only the first `Team` should have `Team/AutoAssignable` set to
+---true, else players will not start at the first checkpoint.
+---
+---Note if a SpawnLocation is added to the `Workspace` in Studio with
+---`SpawnLocation/Neutral` set to false a Team will be created corresponding
+---to `SpawnLocation/TeamColor` if it does not already exist. This behavior
+---does not occur when spawns are created in-game using a `Script` or if the
+---properties of the SpawnLocation are changed after already being added. It
+---is recommended that developers always set up their teams manually and not
+---rely on this behavior.
+---
+---## Spawning Rules
+---
+---There are several rules that come into play for a given SpawnLocation when
+---a player respawns:
+---
+---- When `SpawnLocation/Neutral` is set to false only `Player|Players` with
+---  `Player/TeamColor` matching `SpawnLocation/TeamColor` will respawn above
+---  it
+---- When `SpawnLocation/Neutral` is set to true any Player can spawn above
+---  it regardless of `SpawnLocation/TeamColor`
+---- If multiple eligible spawns are available to a `Player`, a random one
+---  will be chosen
+---- Players will spawn at different points on top of a SpawnLocation, but
+---  currently, they may still spawn on top of each other if they spawn right
+---  after one and other
+---
+---See also:
+---
+---- If you'd like to configure how long it takes for a player to respawn,
+---  take a look at the `Players/RespawnTime|RespawnTime` property
+---
+local SpawnLocation;
+---@class SpawnerService : Instance
+---An internal service that is responsible for the behavior or
+---`SpawnLocation`s. Its functionality is not accessible to developers.
+---
+local SpawnerService;
+---@class Speaker : Instance
+---@field public ChannelCount int
+---@field public PlaybackLoudness double
+---@field public RollOffMaxDistance float
+---@field public RollOffMinDistance float
+---@field public RollOffMode RollOffMode
+---@field public SoundGroup SoundGroup
+---@field public Source Instance
+---@field public Volume float
+local Speaker;
+---@class SpecialMesh : FileMesh, DataModelMesh, Instance
+---@field public MeshType MeshType
+---The SpecialMesh is an object that allows developers to provide a standard
+---template or user uploaded mesh to a `BasePart`.
+---
+---## What does a SpecialMesh do?
+---
+---The SpecialMesh object applies a mesh to a `BasePart` depending on the the
+---`SpecialMesh/MeshType` property. A number of options are available.
+---
+---- **Brick** - A block shape, equivalent to a `BlockMesh`
+---- **Cylinder** - A cylinder, identical to a `Part` with a `Part/Shape` of
+---  'Cylinder'
+---- **FileMesh** - A user uploaded Mesh, equivalent to `FileMesh` that a
+---  texture can be applied to using the `FileMesh/TextureId` property
+---- **Head** - A character head shape
+---- **Sphere** - A sphere shape, similar to a `Part` with a `Part/Shape` of
+---  'Ball' but can be freely resized on all axis
+---- **Wedge** - A wedge shape, identical to a `WedgePart`
+---- **Torso** - A block with sloped sides, due to be deprecated
+---
+---Note, each `SpecialMesh/MeshType` will scale differently when using
+---`DataModelMesh/Scale`, for more information on this please see the page on
+---`DataModelMesh/Scale`. The SpecialMesh object also exposes the
+---`DataModelMesh/Offset` property.
+---
+---It is important to remember that when using a SpecialMesh, only the
+---appearance of a part changes. The collision model of the part remains the
+---same. For example, a character will not be able to walk correctly over a
+---mesh as the mesh geometry is not taken into account.
+---
+---## SpecialMesh or MeshPart?
+---
+---There are currently two ways of using a developer created mesh. They are
+---using a SpecialMesh with the `SpecialMesh/FileType` set to 'FileMesh', or
+---by using a `MeshPart`. Although, on the whole, the `MeshPart` object has
+---superseded the SpecialMesh there are some differences developers should be
+---aware of.
+---
+---- `BasePart/Material` displays correctly on the mesh when using a
+---  `MeshPart` and not when using a SpecialMesh
+---- `MeshPart`s include the `MeshPart/CollisionFidelity` property, meaning
+---  the collision model of a `MeshPart` can be set to resemble the geometry
+---  of the mesh. The SpecialMesh object by contrast, uses the parent
+---  `BasePart`s collision model
+---- The mesh of a `MeshPart` scales on all axis depending on the
+---  `BasePart/Size|Size` property of the `MeshPart`, the mesh of a
+---  SpecialMesh does not
+---- The SpecialMesh object includes the `DataModelMesh/Offset|Offset` and
+---  `DataModelMesh/Scale|Scale` properties whereas `MeshPart`s do not
+---- The `FileMesh/MeshId|MeshId` property of a `SpecialMesh` can be changed
+---  by a `Script` or `LocalScript` during runtime. The
+---  `MeshPart/MeshId|MeshId` property of a `MeshPart` can not.
+---
+---In most, but not all cases, using a `MeshPart` is more suitable. As
+---`MeshPart`s are a relatively new feature however, developers should expect
+---some of the above behaviour to change.
+---
+---## Uploading a custom mesh
+---
+---Although a developer uploaded mesh can be used on a `SpecialMesh`, meshes
+---can currently only be be uploaded using `MeshPart`s or the game explorer.
+---For more information, see [Meshes](/building-and-visuals/modeling/meshes).
+---
+local SpecialMesh;
+---@class SphereHandleAdornment : HandleAdornment, PVAdornment, GuiBase3d, GuiBase, Instance
+---@field public Radius float
+---For handles to be interactive, they must be parented to a player's
+---PlayerGui or the CoreGui. The **SphereHandleAdornment** is a sphere that
+---can be adorned to a `BasePart`. This adornment can listen to input events
+---and is commonly used to make dragger tools.
+---
+local SphereHandleAdornment;
+---@class SpotLight : Light, Instance
+---@field public Angle float
+---@field public Face NormalId
+---@field public Range float
+---A spotlight emits light of a specified `Light/Color|Color` and
+---`Light/Brightness|Brightness` in the shape of a cone with a spherical
+---base. This object is ideal for **directional** light sources like
+---flashlights and headlights.
+---
+---`SpotLight/Range|Range` controls the distance of illumination and
+---`SpotLight/Angle|Angle` defines the angle of light emission from the
+---cone's apex as illustrated below.
+---
+---A spotlight must be a direct child of a `BasePart` or `Attachment` and
+---will exhibit the following behavior:
+---
+---- When the spotlight is parented to a `BasePart`, the `SpotLight/Face`
+---  property determines the face of the part from which light emanates.
+---- Although `Attachment|Attachments` don't have faces, the `SpotLight/Face`
+---  property determines the axis of the attachment from which light
+---  emanates; **-Z** is front, **+X** is right, **+Y** is top, etc.
+---
+---<img src="/assets/blt13afe21744db416b/LightingDiagram-SpotLight.jpg" />
+---
+---See also:
+---
+---- `SurfaceLight`
+---- `PointLight`
+---
+local SpotLight;
+---@class SpringConstraint : Constraint, Instance
+---@field public Coils float
+---@field public CurrentLength float
+---@field public Damping float
+---@field public FreeLength float
+---@field public LimitsEnabled bool
+---@field public MaxForce float
+---@field public MaxLength float
+---@field public MinLength float
+---@field public Radius float
+---@field public Stiffness float
+---@field public Thickness float
+---A **SpringConstraint** applies a force to its `Attachment|Attachments`
+---based on spring and damper behavior. Assuming the constraint has
+---`SpringConstraint/Stiffness`, it will apply forces based on how far apart
+---the attachments are. If the attachments are further apart than the
+---constraint's `SpringConstraint/FreeLength`, the attachments will be forced
+---together. If they are closer than the `SpringConstraint/FreeLength`, the
+---attachments will be forced apart. In addition, if
+---`SpringConstraint/Damping` is set, there will be a damping component to
+---the applied force that scales with the velocity of the attachments.
+---
+---This constraint, along with a `CylindricalConstraint`, is ideal for
+---building vehicle suspension.
+---
+---Note that if this constraint attaches one part (**A**) to another part
+---(**B**) that is anchored or connected to an anchored part (**Z**), part
+---**A** will not be locally simulated when interacting with a player.
+---
+---## Calculating SpringConstraint Force
+---
+---The following helper function exhibits how the force of a
+---`SpringConstraint` is calculated based on various properties of the
+---constraint and its attachments.
+---
+---```lua
+---local function getSpringForce(spring)
+---	if not spring:IsA("SpringConstraint") then
+---		warn(spring .. " is not a spring constraint!")
+---		return
+---	end
+---
+---	local currentLength = spring.CurrentLength
+---	local freeLength = spring.FreeLength
+---	if (spring.LimitsEnabled) then
+---		currentLength = math.clamp(currentLength, spring.MinLength, spring.MaxLength)
+---		freeLength = math.clamp(freeLength, spring.MinLength, spring.MaxLength)
+---	end
+---	local springLength = currentLength - freeLength
+---
+---	local axis = spring.Attachment0.WorldPosition - spring.Attachment1.WorldPosition
+---	if axis.Magnitude > 0 then
+---		axis = axis.Unit
+---	end
+---	local effectiveVelocity = spring.Attachment0.Parent.Velocity - spring.Attachment1.Parent.Velocity
+---
+---	-- https://en.wikipedia.org/wiki/Harmonic_oscillator
+---	-- f = -k * x - c * dx/dt + fext
+---	-- Gravity may not be all of the external forces; friction may affect this, but it's harder to account for
+---	local forceExternal = Vector3.new(0, -workspace.Gravity, 0)
+---	local force = -spring.Stiffness * springLength - spring.Damping * axis:Dot(effectiveVelocity) + axis:Dot(forceExternal)
+---
+---	force = math.clamp(force, -spring.MaxForce, spring.MaxForce)
+---	return force
+---end
+---```
+---
+local SpringConstraint;
+---@class StackFrame : Instance
+---@field public FrameId int
+---@field public FrameName string
+---@field public FrameType DebuggerFrameType
+---@field public Globals DebuggerVariable
+---@field public Line int
+---@field public Locals DebuggerVariable
+---@field public Populated bool
+---@field public Script string
+---@field public Upvalues DebuggerVariable
+local StackFrame;
+---@class StandalonePluginScripts : Instance
+---**StandalonePluginScripts** is a container of `Script|Scripts` to be run
+---in a standalone plugin `DataModel` when Roblox Studio starts (it is not
+---useful outside the context of plugins). When a place to be edited is
+---loaded in Roblox Studio, scripts inside this container are not run.
+---
+local StandalonePluginScripts;
+---@class StandardPages : Pages, Instance
+---A generic version of the Pages class, which may contain variable data,
+---depending on what method it was returned from. See the `Pages` class for
+---more information.
+---
+local StandardPages;
+---@class StarterCharacterScripts : StarterPlayerScripts, Instance
+---The StarterCharacterScripts class stores scripts to be parented in a
+---player's `Player.Character`, when they spawn. Unlike scripts stored in the
+---<a href="/reference/engine/classes/PlayerScripts">PlayerScripts</a>
+---folder, these scripts will not persist when the player respawns.
+---
+---If a script named **Animate**, **Sound** or **Health** is placed in this
+---folder, they will replace the default scripts that are added to each
+---`Player.Character` that is created.
+---
+local StarterCharacterScripts;
+---@class StarterGear : Instance
+---StarterGear is a container that is automatically inserted into each
+---`Player` when the player joins the game. When a player spawns, the
+---contents of that player's StarterGear is copied into the player's
+---`Backpack`. Additionally, when a player connects to a game that permits
+---gear, all of the appropriate gear `Tool` objects that the player owns are
+---inserted into that player's StarterGear.
+---
+---Unlike `StarterPack`, StarterGear is not a service but rather a child of
+---each `Player` object -- this means that its contents are player-specific
+---so that each player can have different `Tool`s within their `StarterGear`.
+---It is not replicated to any client, including the owning player.
+---
+---## Accessing StarterGear
+---
+---Listening to the `Players/PlayerAdded` event is useful for
+---
+---```
+---local Players = game:GetService("Players")
+---
+---local toolExamplePrefab = Instance.new("Tool")
+---toolExamplePrefab.Name = "Example Tool"
+---
+----- Accessing StarterGear from Server Script
+---local function onPlayerAdded(player)
+---	-- Wait for the StarterGear to be added
+---	local starterGear = player:WaitForChild("StarterGear")
+---	-- Add a Tool to the StarterGear
+---	local toolExample = toolExamplePrefab:Clone()
+---	toolExample.Parent = starterGear
+---end
+---
+---Players.PlayerAdded:connect(onPlayerAdded)
+---```
+---
+---## Allowing Gear
+---
+---Whether or not gear can be permitted is determined in a place's settings
+---page under 'Permissions'. On the permissions page gear can be disabled and
+---enabled by genre and type. To disable gear, ensure all the gear types are
+---not selected.
+---
+---Individual gear can also be added to a game using the 'Add to game'
+---feature in the Roblox catalog. This option can be found on the page of any
+---gear that is on sale. When gear is added to a game in this manner it will
+---appear under the 'Store' heading on the game's page. The owner of the game
+---(group or user) receives a commission when gear is sold in this manner.
+---
+---## Gameplay Considerations
+---
+---Before adding any gear to a game, consider the implication of doing so.
+---Gear includes `Script`s and allows the player to perform actions that the
+---developer may not have considered. For example, a navigational gear may
+---allow the player to access a part of the map the developer does not want
+---to be accessed. Weapons allow players with gear to damage other players,
+---possibly without the ability to retaliate. Always play-test games after
+---adding gear to them to make sure there are no abuse cases.
+---
+local StarterGear;
+---@class StarterGui : BasePlayerGui, Instance
+---@field public ProcessUserInput bool
+---@field public ResetPlayerGuiOnSpawn bool
+---@field public ScreenOrientation ScreenOrientation
+---@field public ShowDevelopmentGui bool
+---@field public VirtualCursorMode VirtualCursorMode
+---@field public CoreGuiChangedSignal fun(coreGuiType: CoreGuiType, enabled: bool): RbxScriptSignal
+---The StarterGui service is a container object designed to hold
+---`LayerCollector|GUI objects` such as `ScreenGui|ScreenGuis`.
+---
+---## StarterGui as a container
+---
+---When a `Player|Players'` `Player/Character|character` respawns, the
+---contents of their `PlayerGui` is emptied. Children of the `StarterGui` are
+---then copied along with their descendants into the `PlayerGui`.
+---
+---`LayerCollector|GUI objects` such as `ScreenGui|ScreenGuis` with their
+---`LayerCollector/ResetOnSpawn|ResetOnSpawn` property set to false will only
+---be placed into each `Player|Player's` `PlayerGui` once and will not be
+---deleted when the `Player` respawns.
+---
+---## StarterGui as an interface
+---
+---The StarterGui also includes a range of functions allowing you to interact
+---with the `CoreGui`. For example `StarterGui/SetCoreGuiEnabled` can be used
+---to disable elements of the `CoreGui`. `StarterGui/SetCore` can perform a
+---range of functions including creating notifications and system messages.
+---
+local StarterGui;
+---@param parameterName string
+---@return Variant
+---GetCore returns data set or made available by Roblox's
+---`CoreScript|CoreScripts`. The first and only parameter is a string that
+---selects the information to be fetched. The following sections describe the
+---strings and the data they return by this function.
+---
+---Each of these is registered by a CoreScript and calling this function may
+---yield. Many of these also register an equivalent
+---`StarterGui/SetCore|SetCore` function (these are marked with an asterisk).
+---
+---#### PointsNotificationsActive\*
+---
+---Returns true if player point notifications are enabled.
+---
+---#### BadgesNotificationsActive\*
+---
+---Returns true if badge notifications are enabled.
+---
+---#### AvatarContextMenuEnabled\*
+---
+---Returns true if the Avatar Context Menu is enabled.
+---
+---#### ChatActive\*
+---
+---Returns whether the chat is active or not. This is indicated by the
+---selection state of the top bar's chat icon.
+---
+---#### ChatWindowSize\*
+---
+---Returns the size of the chat window as a UDim2.
+---
+---#### ChatWindowPosition\*
+---
+---Returns the size of the chat window as a UDim2.
+---
+---#### ChatBarDisabled\*
+---
+---Returns true if the chat bar is disabled.
+---
+---#### GetBlockedUserIds
+---
+---Returns a list of `Player/UserId`s associated with users that have been
+---blocked by the local player.
+---
+---#### PlayerBlockedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is blocked by the
+---local player.
+---
+---#### PlayerUnblockedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is unblocked by
+---the local player.
+---
+---#### PlayerMutedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is muted by the
+---local player.
+---
+---#### PlayerUnmutedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is unmuted by the
+---local player.
+---
+---#### PlayerFriendedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is friended by the
+---local player.
+---
+---#### PlayerUnfriendedEvent
+---
+---Returns a BindableEvent that is fired whenever a player is unfriended by
+---the local player.
+---
+---#### DeveloperConsoleVisible\*
+---
+---Returns true if the developer console is visible.
+---
+---#### VRRotationIntensity
+---
+---Returns a string describing the camera rotation sensitivity in VR: `Low`,
+---`High` and `Smooth`. _This will not be available unless
+---`VRService/VREnabled` is true._
+---
+StarterGui.GetCore = function(self, parameterName) end;
+---@param coreGuiType CoreGuiType
+---@param enabled bool
+---@return void
+---This function sets whether the `CoreGui` element associated with the given
+---`Enum/CoreGuiType` is enabled or disabled.
+---
+---The top bar can not be disabled using this function. To disable the top
+---bar, set _TopbarEnabled_ to _false_ using `StarterGui/SetCore`. This will
+---also disable the element associated with all
+---`Enum/CoreGuiType|CoreGuiTypes`.
+---
+StarterGui.SetCoreGuiEnabled = function(self, coreGuiType, enabled) end;
+---@param parameterName string
+---@param getFunction Function
+---@return void
+StarterGui.RegisterGetCore = function(self, parameterName, getFunction) end;
+---@param coreGuiType CoreGuiType
+---@return bool
+---This function returns whether the given `Enum/CoreGuiType` is enabled or
+---if it has been disabled using `StarterGui/SetCoreGuiEnabled`.
+---
+---This function should be called on the client and is used by the core
+---scripts to help determine which core GUI elements to show.
+---
+---GetCoreGuiEnabled only returns _false_ if the given `Enum/CoreGuiType` has
+---been disabled using `StarterGui/SetCoreGuiEnabled`. Setting
+---_TopbarEnabled_ to _false_ using `StarterGui/SetCore` hides all
+---`Enum/CoreGuiType|CoreGuiTypes` and does not affect the result of
+---function.
+---
+StarterGui.GetCoreGuiEnabled = function(self, coreGuiType) end;
+---@param parameterName string
+---@param setFunction Function
+---@return void
+StarterGui.RegisterSetCore = function(self, parameterName, setFunction) end;
+---@param parameterName string
+---@param value Variant
+---@return void
+---SetCore (not to be confused with
+---`StarterGui/SetCoreGuiEnabled|SetCoreGuiEnabled`) exposes a variety of
+---functionality defined by Roblox's `CoreScript|CoreScripts`, such as
+---sending notifications, toggling notifications for badges/points, defining
+---a callback for the reset button or toggling the topbar. The first
+---parameter to SetCore is a string that selects the functionality with which
+---the call will interact: a CoreScript must have registered such a string
+---already (if one hasn't, an error is raised). It may be necessary to make
+---multiple calls to SetCore using `pcall` in case the respective CoreScript
+---has yet to load (or if it has been disabled entirely).
+---
+---The following table describes the strings that may be accepted as the
+---first parameter in a call to SetCore. The parameters that should follow
+---are dependent on the functionality that will be used and are described in
+---sub-tables.
+---
+---#### ChatActive
+---
+---Controls whether the chat is active
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>	
+---    </tr>
+---	</thead>
+---  <tbody>
+---	<tr>
+---    <td><code>active</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the chat should be made active</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### PointsNotificationsActive
+---
+---Controls whether notifications for earned player points will appear
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---	</thead>
+---  <tbody>
+---	<tr>
+---    <td><code>active</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether notifications for earned player points will appear</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### BadgesNotificationsActive
+---
+---Controls whether notifications for earned badges will appear
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---      </tr>
+---	</thead>
+---  <tbody>
+---	<tr>
+---    <td><code>active</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether notifications for earned badges
+---will appear</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### ResetButtonCallback
+---
+---Determines the behavior, if any, of the reset button given a bool or a
+---`BindableEvent` to be `BindableEvent/Fire|fired` when a player requests to
+---reset.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---		</thead>
+---    <tbody>
+---	<tr>
+---    <td><code>enabled</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the reset button retains its default behavior</td>
+---  </tr>
+---	<tr>
+---    <td colspan="5">OR</td>
+---  </tr>
+---	<tr>
+---    <td><code>callback</code></td>
+---    <td>BindableEvent</td>
+---    <td>Required</td>
+---    <td>A BindableEvent to be fired when the player confirms they want to reset</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### ChatMakeSystemMessage
+---
+---Display a formatted message in the chat.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---      </tr>
+---	</thead>
+---  <tbody>
+---	<tr>
+---    <td><code>configTable</code></td>
+---    <td>dictionary</td>
+---    <td>Required</td>
+---    <td>A dictionary of information describing the message (see below)</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>Text</code></td>
+---    <td>string</td>
+---    <td>Required</td>
+---    <td>The message to display</td>
+---  </tr>
+---	<tr>
+---    <td><code>Color</code></td>
+---    <td>Color3</td>
+---    <td><code>Color3.fromRGB(255, 255, 243)</code></td>
+---    <td>The TextColor3 of the message</td>
+---  </tr>
+---	<tr>
+---    <td><code>Font</code></td>
+---    <td><code>Enum.Font</code></td>
+---    <td><code>SourceSansBold</code></td>
+---    <td>The TextLabel/Font|Font of the message</td>
+---  </tr>
+---	<tr>
+---    <td><code>TextSize</code></td>
+---    <td><code>Integer</code></td>
+---    <td><code>18</code></td>
+---    <td>The TextSize of the message</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### ChatWindowSize
+---
+---Determines the `GuiObject/Size|size` of the chat window.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>windowSize</code></td>
+---    <td>UDim2</td>
+---    <td>Required</td>
+---    <td>Determines the size of the chat window</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### ChatWindowPosition
+---
+---Determines the `GuiObject/Position|position` of the chat window.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>windowPosition</code></td>
+---    <td>UDim2</td>
+---    <td>Required</td>
+---    <td>Determines the position of the chat window</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### ChatBarDisabled
+---
+---Determines whether the player is able to type a message into the chat.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>disabled</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the chat's TextBox input is visible.</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### SendNotification
+---
+---Causes a non-intrusive notification to appear at the bottom right of the
+---screen. The notification may have up to two buttons.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---  <tbody>
+---	<tr>
+---    <td><code>configTable</code></td>
+---    <td>dictionary</td>
+---    <td>Required</td>
+---    <td>A dictionary of information describing the notification (see below)</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>Title</code></td>
+---    <td>string</td>
+---    <td>Required</td>
+---    <td>The title of the notification</td>
+---  </tr>
+---	<tr>
+---    <td><code>Text</code></td>
+---    <td>string</td>
+---    <td>Required</td>
+---    <td>The main text of the notification</td>
+---  </tr>
+---	<tr>
+---    <td><code>Icon</code></td>
+---    <td>string</td>
+---    <td>Optional</td>
+---    <td>The image to display with the notification</td>
+---  </tr>
+---	<tr>
+---    <td><code>Duration</code></td>
+---    <td>number</td>
+---    <td>5</td>
+---    <td>Duration (in seconds) the notification should stay visible</td>
+---  </tr>
+---	<tr>
+---    <td><code>Callback</code></td>
+---    <td>BindableFunction</td>
+---    <td>Optional</td>
+---    <td>A BindableFunction that should be invoked with the text of the button pressed by the player.</td>
+---  </tr>
+---	<tr>
+---    <td><code>Button1</code></td>
+---    <td>string</td>
+---    <td>Optional</td>
+---    <td>The text to display on the first button</td>
+---  </tr>
+---	<tr>
+---    <td><code>Button2</code></td>
+---    <td>string</td>
+---    <td>Optional</td>
+---    <td>The text to display on the second button</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### TopbarEnabled
+---
+---Determines whether the topbar is displayed. Disabling the topbar will also
+---disable all CoreGuis, such as the chat, inventory and player list (i.e.
+---those set with `StarterGui/SetCoreGuiEnabled|SetCoreGuiEnabled`).
+---
+---When disabled, the region the topbar once occupied will still capture
+---mouse events; however, `TextButton|buttons` placed there will not respond
+---to `GuiButton/MouseButton1Click|clicks`. The origin of GUI space will
+---still be offset 36 pixels from the top of the screen.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>enabled</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the topbar should be visible</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### DevConsoleVisible
+---
+---Determines whether the Developer Console is visible.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>visibility</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the developer console is visible</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### PromptSendFriendRequest
+---
+---Prompts the current player to send a friend request to the given `Player`.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>player</code></td>
+---    <td>Player</td>
+---    <td>Required</td>
+---    <td>The player to which the friend request should be sent</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### PromptUnfriend
+---
+---Prompts the current player to remove a given `Player` from their friends
+---list.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>player</code></td>
+---    <td>Player</td>
+---    <td>Required</td>
+---    <td>The player who should be unfriended</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### PromptBlockPlayer
+---
+---Prompts the current player to block the given `Player`.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>player</code></td>
+---    <td>Player</td>
+---    <td>Required</td>
+---    <td>The player who should be blocked</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### PromptUnblockPlayer
+---
+---Prompts the current player to unblock the given `Player`.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+--- </thead>
+--- <tbody>
+---	<tr>
+---    <td><code>player</code></td>
+---    <td>Player</td>
+---    <td>Required</td>
+---    <td>The player who should be unblocked</td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### AvatarContextMenuEnabled
+---
+---Determines whether the
+---[Avatar Context Menu](/avatar/characters/context-menu) is enabled.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>enabled</code></td>
+---    <td>bool</td>
+---    <td>Required</td>
+---    <td>Determines whether the Avatar Context Menu is enabled</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### AvatarContextMenuTarget
+---
+---Forcibly opens the [Avatar Context Menu](/avatar/characters/context-menu).
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>player</code></td>
+---    <td><code>Player</code></td>
+---    <td>Required</td>
+---    <td>The player on whom the ACM will be opened.</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### AddAvatarContextMenuOption
+---
+---Adds an option to the
+---[Avatar Context Menu](/avatar/characters/context-menu).
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>option</code></td>
+---    <td><code>Enum.AvatarContextMenuOption</code></td>
+---    <td>Required</td>
+---    <td><code>Friend</code> (send friend request), <code>Chat</code> (start private chat), or <code>Emote</code> (wave)</td>
+---  </tr>
+---	<tr>
+---    <td colspan="5">OR</td>
+---  </tr>
+---	<tr>
+---    <td><code>option</code></td>
+---    <td>table</td>
+---    <td>Required</td>
+---    <td>A two-element table, where the first is the name of the custom action, and the second is a BindableEvent which will be fired with a player was selected when the option was activated.</td>
+---  </tr>
+---</tbody>
+---</table>
+---
+---#### RemoveAvatarContextMenuOption
+---
+---Removes an option to the
+---[Avatar Context Menu](/avatar/characters/context-menu). The `option`
+---argument must be the same as what was used with
+---**AddAvatarContextMenuOption** (see above).
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Default</th>
+---			<th>Description</th>
+---    </tr>
+---</thead>
+---<tbody>
+---	<tr>
+---    <td><code>option</code></td>
+---    <td>Variant</td>
+---    <td>Required</td>
+---    <td>The same value provided to <b>AddAvatarContextMenuOption</b></td>
+---  </tr>
+---  </tbody>
+---</table>
+---
+---#### AvatarContextMenuTheme
+---
+---Configures the customizable Avatar Context Menu (ACM) which is an opt-in
+---feature that allows easy player-to-player social interaction via custom
+---actions, such as initiating trades, battles, and more.
+---
+---For more info on the ACM including how to customize its theme and use it
+---in your game, see the
+---[Avatar Context Menu](/avatar/characters/context-menu) article.
+---
+---#### CoreGuiChatConnections
+---
+---Sets up a bindable gateway connection between the CoreGui topbar's chat
+---button and the Lua Chat System. The second parameter must be a table of
+---`BindableEvent|BindableEvents` and `BindableFunction|BindableFunctions`.
+---See the example below for more clarification.
+---
+---```lua
+----- Create the Bindable objects
+---local ChatConnections = {}
+---
+---local function AddObjects(bindableClass,targetName,...)
+---	local target = ChatConnections[targetName]
+---	if not target then
+---		target = {}
+---		ChatConnections[targetName] = target
+---	end
+---	local names = {...}
+---	for _,name in pairs(names) do
+---		local signal = Instance.new(bindableClass)
+---		signal.Name = targetName .. "_" .. name
+---		signal.Parent = script
+---		target[name] = signal
+---	end
+---end
+---
+---AddObjects("BindableEvent","ChatWindow",
+---	---------------------------
+---	-- Fired from the CoreGui
+---	---------------------------
+---	"ToggleVisibility", -- Fired when the CoreGui chat button is pressed.
+---	"SetVisible", -- Fired when the CoreGui wants to directly change the visiblity state of the chat window.
+---	"FocusChatBar", -- Fired when the CoreGui wants to capture the Chatbar's Focus.
+---	"TopbarEnabledChanged", -- Fired when the visibility of the Topbar is changed.
+---	"SpecialKeyPressed", -- Fired when the reserved ChatHotkey is pressed.
+---	"CoreGuiEnabled", -- Fired when a user changes the SetCoreGuiEnabled state of the Chat Gui.
+---
+---	---------------------------
+---	-- Fired to the CoreGui
+---	---------------------------
+---	"ChatBarFocusChanged",
+---		-- ^ Fire this with 'true' when you want to assure the CoreGui that the ChatBar is being focused on.
+---
+---	"VisibilityStateChanged",
+---		-- ^ Fire this with 'true' when the user shows or hides the chat.
+---
+---	"MessagesChanged",
+---		-- ^ Fire this with a number to change the number of messages that have been recorded by the chat window.
+---		--   If the CoreGui thinks the chat window isn't visible, it will display the recorded difference between
+---		--   the number of messages that was displayed when it was visible, and the number you supply.
+---
+---	"MessagePosted"
+---		-- ^ Fire this to make the player directly chat under Roblox's C++ API.
+---		--	 This will fire the LocalPlayer's Chatted event.
+---		--   Please only fire this on the player's behalf. If you attempt to spoof a player's chat
+---		--   to get them in trouble, you could face serious moderation action.
+---)
+---
+---AddObjects("BindableFunction","ChatWindow",
+---	"IsFocused" -- This will be invoked by the CoreGui when it wants to check if the chat window is active.
+---)
+---
+----- The following events are fired if the user calls StarterGui:SetCore(string name, Variant data)
+----- Note that you can only hook onto these ones specifically.
+---AddObjects("BindableEvent","SetCore",
+---	"ChatMakeSystemMessage",
+---	"ChatWindowPosition",
+---	"ChatWindowSize",
+---	"ChatBarDisabled"
+---)
+---
+----- The following functions are invoked if the user calls StarterGui:GetCore(string name)
+----- Note that you can only hook onto these ones specifically.
+---AddObjects("BindableFunction","GetCore",
+---	"ChatWindowPosition", -- Should return a UDim2 representing the position of the chat window.
+---	"ChatWindowSize", -- Should return a UDim2 representing the size of the chat window.
+---	"ChatBarDisabled" -- Should return true if the chat bar is currently disabled.
+---)
+---
+----- Connect ChatConnections to the CoreGui.
+---local StarterGui = game:GetService("StarterGui")
+---local tries = 0
+---local maxAttempts = 10
+---
+---while (tries < maxAttempts) do
+---	local success,result = pcall(function ()
+---		StarterGui:SetCore("CoreGuiChatConnections",ChatConnections)
+---	end)
+---	if success then
+---		break
+---	else
+---		tries = tries + 1
+---		if tries == maxAttempts then
+---			error("Error calling SetCore CoreGuiChatConnections: " .. result)
+---		else
+---			wait()
+---		end
+---	end
+---end
+---
+---while wait(0.2) do
+---	local isVisible = (math.random() > 0.5)
+---	ChatConnections.ChatWindow.VisibilityStateChanged:Fire(isVisible)
+---	if not isVisible then
+---		local messageCount = math.random(1,120)
+---		ChatConnections.ChatWindow.MessagesChanged:Fire(messageCount)
+---	end
+---end
+---```
+---
+StarterGui.SetCore = function(self, parameterName, value) end;
+---@class StarterPack : Instance
+---A service-level container whose contents are copied into each `Player`'s
+---`Backpack` when the player spawns. It is generally used to hold `Tools`,
+---but is sometimes used to hold `LocalScript`s to ensure that each player
+---gets a copy.
+---
+---When a player's character spawns, the contents of the StarterPack and
+---their `StarterGear` are copied into their `Backpack`. Once a character
+---dies, the `Backpack` is removed and a new one is created -- populating it
+---using the contents of `StarterPack` and `StarterGear`.
+---
+---The StarterPack is used to determine a set of `Tool`s that _all_ players
+---will spawn with. If a developer wants to ensure that certain `Tool`s are
+---available to specific players, then they will need to parent the `Tool`s
+---directly to the player's `Backpack` instead.
+---
+---Note: while normally the contents of `StarterPack` are predefined, the
+---contents can be changed while the game is running by adding and removing
+---`Tool`s accordingly. These updates will pass onto a player's backpack when
+---they respawn and their backpacks are reloaded. Changes to the StarterPack
+---should be made by the server.
+---
+---A tool can be added to the StarterPack using the following code.
+---
+---    Tool.Parent = game:GetService("StarterPack")
+---
+local StarterPack;
+---@class StarterPlayer : Instance
+---@field public AllowCustomAnimations bool
+---@field public AutoJumpEnabled bool
+---@field public CameraMaxZoomDistance float
+---@field public CameraMinZoomDistance float
+---@field public CameraMode CameraMode
+---@field public CharacterJumpHeight float
+---@field public CharacterJumpPower float
+---@field public CharacterMaxSlopeAngle float
+---@field public CharacterUseJumpPower bool
+---@field public CharacterWalkSpeed float
+---@field public DevCameraOcclusionMode DevCameraOcclusionMode
+---@field public DevComputerCameraMovementMode DevComputerCameraMovementMode
+---@field public DevComputerMovementMode DevComputerMovementMode
+---@field public DevTouchCameraMovementMode DevTouchCameraMovementMode
+---@field public DevTouchMovementMode DevTouchMovementMode
+---@field public EnableMouseLockOption bool
+---@field public GameSettingsAssetIDFace int64
+---@field public GameSettingsAssetIDHead int64
+---@field public GameSettingsAssetIDLeftArm int64
+---@field public GameSettingsAssetIDLeftLeg int64
+---@field public GameSettingsAssetIDPants int64
+---@field public GameSettingsAssetIDRightArm int64
+---@field public GameSettingsAssetIDRightLeg int64
+---@field public GameSettingsAssetIDShirt int64
+---@field public GameSettingsAssetIDTeeShirt int64
+---@field public GameSettingsAssetIDTorso int64
+---@field public GameSettingsAvatar GameAvatarType
+---@field public GameSettingsR15Collision R15CollisionType
+---@field public GameSettingsScaleRangeBodyType NumberRange
+---@field public GameSettingsScaleRangeHead NumberRange
+---@field public GameSettingsScaleRangeHeight NumberRange
+---@field public GameSettingsScaleRangeProportion NumberRange
+---@field public GameSettingsScaleRangeWidth NumberRange
+---@field public HealthDisplayDistance float
+---@field public LoadCharacterAppearance bool
+---@field public aecfabaffdec LoadCharacterLayeredClothing
+---@field public NameDisplayDistance float
+---@field public UserEmotesEnabled bool
+---A service which allows the defaults of properties in the `Player` object
+---to be set. When a player enters the server, each property of the player
+---object is set to the current value of the corresponding property in
+---StarterPlayer.
+---
+---Additionally, you may add four objects to this service:
+---
+---- A `StarterPlayerScripts` instance, with scripts that run once for each
+---  player.
+---- A `StarterCharacterScripts` instance, with scripts to add to each
+---  player's character every time they spawn.
+---- A `Humanoid` instance named **StarterHumanoid**, which will be used as
+---  the default humanoid for each player's character.
+---- A `Model` instance named **StarterCharacter**, which will be used as the
+---  character model for all players
+---
+---A typical structure may look something like this: ![StarterPlayer Tree][1]
+---
+---[1]: /assets/blt358e3811e54dff0c/StarterPlayerTree.png
+---
+local StarterPlayer;
+---@return void
+StarterPlayer.ClearDefaults = function(self) end;
+---@class StarterPlayerScripts : Instance
+---The StarterPlayerScripts is a container object located within the
+---`StarterPlayer` service. It contains `LocalScript`s and other objects to
+---be copied to the `PlayerScripts` container once when a `Player` joins the
+---game. For example, if you want to create special effects on the client
+---when certain conditions are met, you can place a `LocalScript` within this
+---object to do that.
+---
+---This object is also a good place for `LocalScript`s that define additional
+---inputs with `ContextActionService`. For inputs that are only relevant when
+---a player has spawned in, you can use `ContextActionService/BindAction`
+---when the `Players/LocalPlayer` character spawns. Then, use
+---`ContextActionService/UnbindAction` when they die or despawn.
+---
+---When a game is run, this object will also house the default multi-platform
+---Roblox control scripts for the camera and character. If `LocalScript`s
+---named "CameraScript" or "ControlScript" are placed within this folder,
+---they will **replace** the Roblox defaults for those scripts respectively.
+---You can add empty LocalScripts for each of these to simply disable them
+---altogether. This is useful for games that do not follow the usual control
+---paradigms of a 3rd person game.
+---
+local StarterPlayerScripts;
+---@class Stats : Instance
+---@field public ContactsCount int
+---@field public DataReceiveKbps float
+---@field public DataSendKbps float
+---@field public HeartbeatTimeMs float
+---@field public InstanceCount int
+---@field public MovingPrimitivesCount int
+---@field public PhysicsReceiveKbps float
+---@field public PhysicsSendKbps float
+---@field public PhysicsStepTimeMs float
+---@field public PrimitivesCount int
+---Stats is a service that provides real-time performance information about
+---the current running game instance. Its primary purpose is to provide
+---developers with an end point to measure where resources are being
+---consumed, as well as how much memory is being consumed overall.
+---
+---The service also stores a tree of `StatsItem`, which can have their values
+---read by plugins.
+---
+local Stats;
+---@param queryType TextureQueryType
+---@param pageIndex int
+---@param pageSize int
+---@return Dictionary
+Stats.GetPaginatedMemoryByTexture = function(self, queryType, pageIndex, pageSize) end;
+---@param tag DeveloperMemoryTag
+---@return float
+---Returns the number of megabytes that are being consumed in the specified
+---`DeveloperMemoryTag` category.
+---
+Stats.GetMemoryUsageMbForTag = function(self, tag) end;
+---@return float
+---Returns the total amount of memory being consumed by the current game
+---session, in megabytes.
+---
+Stats.GetTotalMemoryUsageMb = function(self) end;
+---@return string
+Stats.GetBrowserTrackerId = function(self) end;
+---@class StatsItem : Instance
+---@field public DisplayName string
+---A StatsItem is an internal measurement item that is created by the engine
+---to benchmark many of the backend components of Roblox. It cannot be
+---created using `Instance.new`, but its value can be read by plugins. They
+---can be found stored inside of the `Stats` service.
+---
+local StatsItem;
+---@return double
+---Returns the StatsItem's value.
+---
+StatsItem.GetValue = function(self) end;
+---@return string
+---Returns the StatsItem's value as a formatted string.
+---
+StatsItem.GetValueString = function(self) end;
+---@class Status : Model, PVInstance, Instance
+---Used as a storage for custom Humanoid statuses. This object would've been
+---officially used in the RbxStatus library, but remains unfinished.
+---
+local Status;
+---@class StopWatchReporter : Instance
+local StopWatchReporter;
+---@param reportName string
+---@param taskName string
+---@return int
+StopWatchReporter.StartTask = function(self, reportName, taskName) end;
+---@param reportName string
+---@return void
+StopWatchReporter.SendReport = function(self, reportName) end;
+---@param taskId int
+---@return void
+StopWatchReporter.FinishTask = function(self, taskId) end;
+---@class StringValue : ValueBase, Instance
+---@field public Value string
+---@field public Changed fun(value: string): RbxScriptSignal
+---@field public changed fun(value: string): RbxScriptSignal
+---A StringValue is an object whose purpose is to store a single [Lua
+---string][1]. The length of the string can't be more than 200,000 characters
+---(this will cause a "String too long" error). Like all "-Value" objects,
+---this single value is stored in the Value property. The Changed event for
+---this (and other objects like it) will fire with the new value being stored
+---in the object, instead of a string representing the property being
+---changed.
+---
+---If the string is too long to be displayed in the Value field within
+---Properties window, it will partially show the string contents followed by
+---an ellipsis (...).
+---
+---[1]: https://www.lua.org/pil/2.4.html
+---
+local StringValue;
+---@class Studio : Instance
+---@field public debdcdfcbaedb Color3
+---@field public ffafdedbfaedfed Color3
+---@field public bfdeadcae Color3
+---@field public abcaccbecededc Color3
+---@field public fdeebebcabaaf Color3
+---@field public aaebcbceebc Color3
+---@field public feabcfbbccffde Color3
+---@field public aebbefde bool
+---@field public bbdfcdbebf bool
+---@field public aedecefccd bool
+---@field public fdcfabbaafdbab bool
+---@field public fcecfacedeea bool
+---@field public cdeacbbacdf AutoIndentRule
+---@field public bafeceaebbfbceefb bool
+---@field public cbcefbdaabde int
+---@field public abadbcbabfede QDir
+---@field public bafddbabaf Color3
+---@field public ecbcdfcafeeace ListDisplayMode
+---@field public dbcacbbcca Color3
+---@field public dcdfceaadda Color3
+---@field public acdebd Color3
+---@field public eddcde float
+---@field public ffaecdfaffed float
+---@field public cebeebdfcbdcdeca float
+---@field public dfbcfeacdd bool
+---@field public daeafeabbbb bool
+---@field public CommandBarLocalState bool
+---@field public accffaeaeaacbe Color3
+---@field public bbbabccfbdaef Color3
+---@field public cbfdeefdbccd Color3
+---@field public fbacdcecbccb Color3
+---@field public DefaultScriptFileDir QDir
+---@field public DeprecatedObjectsShown bool
+---@field public DisplayLanguage string
+---@field public bdadedadeceeae Color3
+---@field public feafbbdffadeab bool
+---@field public ecddecfaaddba bool
+---@field public bedeffaadca bool
+---@field public baeebafacfeaeac bool
+---@field public bcbdddfaeafcaefb bool
+---@field public bdcfbbddfdecde bool
+---@field public feefdeecffe bool
+---@field public cfccbcadcebfdd bool
+---@field public adeddedbbcaeeb bool
+---@field public edcbccbae bool
+---@field public dababfff bool
+---@field public bedfbcffbac bool
+---@field public febeeeebcbf bool
+---@field public cbaddcefbbebcedf bool
+---@field public EnableOnTypeAutocomplete bool
+---@field public aecadefecadaddcfcbd Color3
+---@field public cfaafbdaab Color3
+---@field public Font QFont
+---@field public cfbabdfbaabdd bool
+---@field public cafbee bool
+---@field public aeabdbbacfabc Color3
+---@field public aadedfdbcafbc bool
+---@field public bddfaeecbeca bool
+---@field public ccfafbcfabcaadeade HoverAnimateSpeed
+---@field public dfeafcee float
+---@field public fdebeaabfded Color3
+---@field public bddcfeacababb bool
+---@field public bedceeeababfef Color3
+---@field public efcbeaaaddc float
+---@field public LocalAssetsFolder QDir
+---@field public LuaDebuggerEnabled bool
+---@field public LuaDebuggerEnabledAtStartup bool
+---@field public bbcadebcfbfe Color3
+---@field public efdecbaecfdee Color3
+---@field public fbffeaadcadae int
+---@field public eceeafaefac Color3
+---@field public ddbfbcd Color3
+---@field public abdaabfbbcedfebbfdb Color3
+---@field public beefbbcdbdfedf bool
+---@field public fdedfdccaf Color3
+---@field public ccefdfacbe QFont
+---@field public eebfaeeafbb OutputLayoutMode
+---@field public OverrideCoreScripts bool
+---@field public OverrideCoreScriptsDir QDir
+---@field public PermissionLevelShown PermissionLevelShown
+---@field public badcbadecedafbdf bool
+---@field public decbdbabcbbfa Color3
+---@field public PluginDebuggingEnabled bool
+---@field public PluginsDir QDir
+---@field public bfbebadbfceed Color3
+---@field public dbedfbeffb Color3
+---@field public bbcdefaaefdba int
+---@field public bdcddbace bool
+---@field public dedaabdbcebb Color3
+---@field public Rulers string
+---@field public RuntimeUndoBehavior RuntimeUndoBehavior
+---@field public bfdebbacfd StudioScriptEditorColorPresets
+---@field public fcaafbbcdfccc Color3
+---@field public bbeafbadafca Color3
+---@field public ScriptEditorMenuBorderColor Color3
+---@field public ScriptEditorShouldShowPluginMethods bool
+---@field public ScriptTimeoutLength int
+---@field public ccdeccaafeb bool
+---@field public caaebffdab bool
+---@field public cecaccbbfb Color3
+---@field public aaddefaeaea Color3
+---@field public bccadbecedb Color3
+---@field public fcfeddfbecafae Color3
+---@field public bffcaedda Color3
+---@field public ddbabbeecdfc Color3
+---@field public ecababfa Color3
+---@field public fdbffbfbbdaaeb float
+---@field public afbbcafeffc ServerAudioBehavior
+---@field public caedaeabcceca bool
+---@field public bfdefabdfabfdc bool
+---@field public abacbbaafbbcacfd bool
+---@field public aebebdbed bool
+---@field public adfebbfbbedacef bool
+---@field public fdabddbfeedc bool
+---@field public efeecabdaaeee bool
+---@field public bfbcbabffffbeb bool
+---@field public bbedbbceadffecc bool
+---@field public adbafbafbab bool
+---@field public bcdeeafdbcea bool
+---@field public cefaccbaff bool
+---@field public bdeaecdadfc bool
+---@field public abcabbbdbcac bool
+---@field public efcacacbee bool
+---@field public ShowCorePackagesInExplorer bool
+---@field public cdbedcdacebcdfd bool
+---@field public cbcfdacdac Color3
+---@field public accedcfcaaeda int
+---@field public ddbdbfbaabb Color3
+---@field public dafcaecfbeed bool
+---@field public Theme Instance
+---@field public adefababaeffdc UITheme
+---@field public cedadaed bool
+---@field public dcdfedabdbcbfeb Color3
+---@field public adbabbaccacab Color3
+---@field public ThemeChanged fun(): RbxScriptSignal
+---The Studio object is a settings object that is exclusive to Roblox Studio.
+---It can be found in Roblox Studio's settings under the Studio tab.
+---
+local Studio;
+---@return Array
+---The **GetAvailableThemes()** function returns a list of
+---`StudioTheme|StudioThemes` available in `Studio`. You can access the
+---function via:
+---
+---```
+---settings().Studio:GetAvailableThemes()
+---```
+---
+Studio.GetAvailableThemes = function(self) end;
+---@class StudioAssetService : Instance
+local StudioAssetService;
+---@param instances Objects
+---@return string
+StudioAssetService.SerializeInstances = function(self, instances) end;
+---@class StudioData : Instance
+---@field public EnableScriptCollabByDefaultOnLoad bool
+---@field public EnableTeamCreateStreamingOnLoad bool
+---@field public SrcPlaceId int64
+---@field public SrcUniverseId int64
+local StudioData;
+---@class StudioDeviceEmulatorService : Instance
+---@field public CurrentDeviceIdChanged fun(): RbxScriptSignal
+---@field public OrientationChanged fun(): RbxScriptSignal
+local StudioDeviceEmulatorService;
+---@return string
+StudioDeviceEmulatorService.GetCurrentDeviceId = function(self) end;
+---@return ScreenOrientation
+StudioDeviceEmulatorService.GetCurrentOrientation = function(self) end;
+---@param orientation ScreenOrientation
+---@return void
+StudioDeviceEmulatorService.SetCurrentOrientation = function(self, orientation) end;
+---@param deviceId string
+---@return void
+StudioDeviceEmulatorService.SetCurrentDeviceId = function(self, deviceId) end;
+---@param deviceId string
+---@param resolution Vector2
+---@return bool
+StudioDeviceEmulatorService.EmulatePCDeviceWithResolution = function(self, deviceId, resolution) end;
+---@param deviceId string
+---@return bool
+StudioDeviceEmulatorService.HasDeviceWithId = function(self, deviceId) end;
+---@class StudioHighDpiService : Instance
+local StudioHighDpiService;
+---@return bool
+StudioHighDpiService.IsNotHighDPIAwareBuild = function(self) end;
+---@class StudioPublishService : Instance
+local StudioPublishService;
+---@param universeId int64
+---@param placeId int64
+---@param groupId int64
+---@param isPublish bool
+---@param publishParameters Variant
+---@return void
+StudioPublishService.PublishAs = function(self, universeId, placeId, groupId, isPublish, publishParameters) end;
+---@param placeName string
+---@param universeName string
+---@return void
+StudioPublishService.SetUploadNames = function(self, placeName, universeName) end;
+---@param shouldTurnOnTcOnPublish bool
+---@param newPlaceName string
+---@return void
+StudioPublishService.SetTeamCreateOnPublishInfo = function(self, shouldTurnOnTcOnPublish, newPlaceName) end;
+---@class StudioScriptDebugEventListener : Instance
+local StudioScriptDebugEventListener;
+---@class StudioService : Instance
+---@field public ActiveScript Instance
+---@field public AlignDraggedObjects bool
+---@field public DraggerSolveConstraints bool
+---@field public DrawConstraintsOnTop bool
+---@field public GridSize float
+---@field public HoverInstance Instance
+---@field public InstalledPluginData string
+---@field public PivotSnapToGeometry bool
+---@field public RotateIncrement float
+---@field public ShowActiveInstanceHighlight bool
+---@field public ShowConstraintDetails bool
+---@field public StudioLocaleId string
+---@field public UseLocalSpace bool
+---@field public GameNameUpdated fun(name: string): RbxScriptSignal
+---@field public GamePublishFinished fun(success: bool, gameId: int64): RbxScriptSignal
+---@field public OnConvertToPackageResult fun(isSuccessful: bool, errorMessage: string): RbxScriptSignal
+---@field public OnImportFromRoblox fun(): RbxScriptSignal
+---@field public OnOpenConvertToPackagePlugin fun(instances: Objects, name: string): RbxScriptSignal
+---@field public OnOpenGameSettings fun(pageIdentifier: string): RbxScriptSignal
+---@field public OnOpenManagePackagePlugin fun(userId: int64, assetId: int64): RbxScriptSignal
+---@field public OnPluginInstalledFromToolbox fun(): RbxScriptSignal
+---@field public OnPluginInstalledFromWeb fun(pluginId: string): RbxScriptSignal
+---@field public OnPublishAsPlugin fun(instances: Objects): RbxScriptSignal
+---@field public OnPublishPlaceToRoblox fun(isOverwritePublish: bool): RbxScriptSignal
+---@field public OnSaveOrPublishPlaceToRoblox fun(showGameSelect: bool, isPublish: bool, closeMode: StudioCloseMode): RbxScriptSignal
+---@field public OnSaveToRoblox fun(instances: Objects): RbxScriptSignal
+---@field public PromptTransformPluginCheckEnable fun(): RbxScriptSignal
+---@field public SaveLocallyAsComplete fun(success: bool): RbxScriptSignal
+---StudioService provides access to configuration of Roblox Studio, allows
+---importing files from the user's file system, and other miscellaneous
+---information. It is intended to be used by `Plugin`s in order to provide a
+---consistent user experience.
+---
+---- Plugins that allow the user to move objects may find
+---  `StudioService/GridSize|GridSize`,
+---  `StudioService/RotateIncrement|RotateIncrement` and
+---  `StudioService/UseLocalSpace|UseLocalSpace` useful.
+---- Plugins that require the user to import files should use
+---  `StudioService/PromptImportFile|PromptImportFile` or
+---  `StudioService/PromptImportFiles|PromptImportFiles` in order to receive
+---  `File` objects.
+---- Plugins that display icons of Instance classes can use
+---  `StudioService/GetClassIcon|GetClassIcon`.
+---- Plugins that care about which script is currently being edited (if any)
+---  can read this from `StudioService/ActiveScript|ActiveScript`.
+---
+local StudioService;
+---@param className string
+---@return Dictionary
+---**GetClassIcon** provides a dictionary that allows the display of a class'
+---Explorer window icon, e.g. calling this function with "Part" returns
+---property values that display the part icon from the Explorer window.
+---
+---Below is a literal table representation of the value returned when this
+---function is called with `"Part"`.
+---
+---```
+---{
+---	Image = "rbxasset://textures/ClassImages.png",
+---	ImageRectOffset = Vector2.new(16, 0),
+---	ImageRectSize = Vector2.new(16, 16)
+---}
+---```
+---
+---The utility function below may prove useful when displaying class icons:
+---
+---```lua
+---local StudioService = game:GetService("StudioService")
+---local imageLabel = script.Parent
+---local function displayClassIcon(image, className)
+---	for k, v in pairs(StudioService:GetClassIcon(className)) do
+---		image[k] = v -- Set property
+---	end
+---end
+---displayClassIcon(imageLabel, "Part")
+---```
+---
+StudioService.GetClassIcon = function(self, className) end;
+---@return string
+StudioService.GetStartupAssetId = function(self) end;
+---@param universeId int64
+---@param placeId int64
+---@param groupId int64
+---@return void
+StudioService.PublishAs = function(self, universeId, placeId, groupId) end;
+---@return string
+StudioService.GetStartupPluginId = function(self) end;
+---@return string
+StudioService.GetTermsOfUseUrl = function(self) end;
+---@param assetId int64
+---@param assetVersionId int64
+---@return void
+StudioService.TryInstallPlugin = function(self, assetId, assetVersionId) end;
+---@param id int64
+---@return void
+StudioService.AnimationIdSelected = function(self, id) end;
+---@return void
+StudioService.RefreshDocumentDisplayName = function(self) end;
+---@param closeMode StudioCloseMode
+---@return void
+StudioService.RequestClose = function(self, closeMode) end;
+---@param uploadUrl string
+---@return void
+StudioService.ConvertToPackageUpload = function(self, uploadUrl) end;
+---@param instances Objects
+---@return string
+StudioService.SerializeInstances = function(self, instances) end;
+---@return int64
+---Returns the studio user's userId if they're logged in, otherwise
+---returns 0.
+---
+StudioService.GetUserId = function(self) end;
+---@param stringToCopy string
+---@return void
+StudioService.CopyToClipboard = function(self, stringToCopy) end;
+---@return bool
+StudioService.GetUserIsInTeamCreateToggleRamp = function(self) end;
+---@param origin Vector3
+---@param direction Vector3
+---@param raycastParams RaycastParams
+---@return RaycastResult
+StudioService.GizmoRaycast = function(self, origin, direction, raycastParams) end;
+---@param newName string
+---@return void
+StudioService.DEPRECATED_SetDocumentDisplayName = function(self, newName) end;
+---@param newName string
+---@return void
+StudioService.SetUniverseDisplayName = function(self, newName) end;
+---@param placeId int64
+---@return void
+StudioService.ShowPlaceVersionHistoryDialog = function(self, placeId) end;
+---@param turnOn bool
+---@return void
+StudioService.DEPRECATED_SetTurnOnTeamCreateOnPublish = function(self, turnOn) end;
+---@return void
+StudioService.ShowPublishToRoblox = function(self) end;
+---@param fileTypeFilter Array
+---@return Objects
+---This function prompts the current Studio user to select one or more files,
+---which will then be loaded as `File|Files`.
+---
+---Throws an error if the fileTypeFilter was an empty list.
+---
+---See also:
+---
+---- `StudioService/PromptImportFile`, the same function but for loading a
+---  single file instead of a list of files
+---
+StudioService.PromptImportFiles = function(self, fileTypeFilter) end;
+---@param showGameSelect bool
+---@param isPublish bool
+---@param closeMode StudioCloseMode
+---@return void
+StudioService.ShowSaveOrPublishPlaceToRoblox = function(self, showGameSelect, isPublish, closeMode) end;
+---@param fileTypeFilter Array
+---@return Instance
+---This function prompts the current Studio user to select one file, which
+---will then be loaded as a `File`.
+---
+---See also:
+---
+---- `StudioService/PromptImportFiles`, the same function but for loading a
+---  list of files instead of a single file
+---
+StudioService.PromptImportFile = function(self, fileTypeFilter) end;
+---@return void
+StudioService.EmitPlacePublishedSignal = function(self) end;
+---@return string
+StudioService.GetBadgeUploadUrl = function(self) end;
+---@param assetId int64
+---@return bool
+StudioService.IsPluginInstalled = function(self, assetId) end;
+---@param badgeId int64
+---@return string
+StudioService.GetBadgeConfigureUrl = function(self, badgeId) end;
+---@param assetId int64
+---@param currentAssetVersion int64
+---@return bool
+StudioService.IsPluginUpToDate = function(self, assetId, currentAssetVersion) end;
+---@param assetId int64
+---@return void
+StudioService.UninstallPlugin = function(self, assetId) end;
+---@return bool
+StudioService.GetPlaceIsPersistedToCloud = function(self) end;
+---@param assetId int64
+---@param state bool
+---@return void
+StudioService.SetPluginEnabled = function(self, assetId, state) end;
+---@return void
+StudioService.UpdatePluginManagement = function(self) end;
+---@param category string
+---@return Dictionary
+StudioService.GetResourceByCategory = function(self, category) end;
+---@return bool
+StudioService.HasInternalPermission = function(self) end;
+---@param url string
+---@return void
+StudioService.OpenInBrowser_DONOTUSE = function(self, url) end;
+---@class StudioTheme : Instance
+local StudioTheme;
+---@param styleguideitem StudioStyleGuideColor
+---@param modifier StudioStyleGuideModifier
+---@return Color3
+---The **GetColor()** function returns the `DataType/Color3` corresponding to
+---the arguments provided. For instance, if you would like to get the
+---`DataType/Color3` of the Studio "MainButton" when it's **disabled**, you
+---can use the following code:
+---
+---````lua
+---settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton, Enum.StudioStyleGuideModifier.Disabled)
+---```lua
+---
+---See the `enum/StudioStyleGuideColor|StudioStyleGuideColor` reference for a list of Studio elements and `enum/StudioStyleGuideModifier|StudioStyleGuideModifier` for a list of modifiers.
+---````
+---
+StudioTheme.GetColor = function(self, styleguideitem, modifier) end;
+---@class SunRaysEffect : PostEffect, Instance
+---@field public Intensity float
+---@field public Spread float
+---The **SunRaysEffect** renders a halo of light around sun. The halo is
+---shaped/blocked by world objects between the `Workspace/CurrentCamera` and
+---the sun.
+---
+---Like other post-processing effects, **SunRaysEffect** will only work while
+---`PostEffect/Enabled|Enabled` and when parented to `Lighting` or
+---`Workspace/CurrentCamera`. Also, it may not render on low-end devices, and
+---it may render differently depending on your Studio settings (see the
+---**Quality Level** settings in **Rendering** &rarr; **Performance**).
+---
+---For more details on this effect and others, see
+---[Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects).
+---
+local SunRaysEffect;
+---@class SurfaceAppearance : Instance
+---@field public AlphaMode AlphaMode
+---@field public ColorMap Content
+---@field public MetalnessMap Content
+---@field public NormalMap Content
+---@field public RoughnessMap Content
+---@field public TexturePack Content
+---SurfaceAppearance objects allow developers to override the appearance of a
+---`MeshPart` with advanced graphics options. Most notably, a
+---SurfaceAppearance can apply a set of PBR textures to a mesh.
+---
+---PBR is short for Physically Based Rendering, which refers to a common
+---texture format for defining extra physical details in games. Because this
+---format is widely used, it's easy to take meshes and textures made in 3rd
+---party editing software and import them into Roblox. It's also easy to find
+---PBR format content from various 3rd party stores such as [SketchFab][1],
+---[TurboSquid][2], [CGTrader][3].
+---
+---For PBR textures to be visible in-game, when you change a texture property
+---of SurfaceAppearance you should wait until you see the "Successfully
+---uploaded compressed SurfaceAppearance." message in the output window. If
+---your PBR textures are not visible, try changing a texture property.
+---
+---Here is a mesh with PBR textures [found on Turbosquid][5] imported into
+---Roblox.
+---
+---![TextureId vs SurfaceAppearance][4]
+---
+---![Pine trees][6]
+---
+---SurfaceAppearance's `SurfaceAppearance/AlphaMode|AlphaMode` property can
+---also be to improve the look of partially transparent textures on MeshParts
+---by fixing various sorting issues.
+---
+---How a MeshPart with a SurfaceAppearance looks to users depends on their
+---device and their graphics quality level. You may want to preview your
+---content with different quality level settings.
+---
+---Note:
+---
+---- Most SurfaceAppearance properties cannot be modified by scripts in-game.
+---  This is because the Roblox engine needs to do some pre-processing to
+---  display a SurfaceAppearance, and this is usually too expensive to
+---  perform in-game.
+---
+---[1]:
+---  https://sketchfab.com/search?q=pbr%20object&sort_by=-relevance&type=models
+---[2]: https://www.turbosquid.com/Search/3D-Models/free/pbr
+---[3]: http://cgtrader.com/pbr-3d-models?polygons=lt_5k
+---[4]: /assets/bltd50936403ef1c135/meshpart-vs-sa.png
+---[5]:
+---  https://www.turbosquid.com/3d-models/3d-model-fantasy-sword---ready/1119210
+---[6]: /assets/bltab4ab6ba1c003d12/pinetrees.png
+---
+local SurfaceAppearance;
+---@class SurfaceGui : LayerCollector, GuiBase2d, GuiBase, Instance
+---@field public Active bool
+---@field public Adornee Instance
+---@field public AlwaysOnTop bool
+---@field public Brightness float
+---@field public CanvasSize Vector2
+---@field public ClipsDescendants bool
+---@field public Face NormalId
+---@field public LightInfluence float
+---@field public PixelsPerStud float
+---@field public SizingMode SurfaceGuiSizingMode
+---@field public ToolPunchThroughDistance float
+---@field public ZOffset float
+---**Note** SurfaceGuis must be descendants of PlayerGui in order to know the
+---player who is interacting with it.Allows for the rendering of GUI elements
+---onto a part's surface in the 3D world, whilst allowing for basic user
+---interaction to occur.
+---
+---##### Caching static UI for performance improvements
+---
+---A Gui's appearance is cached until one of the following events occurs:
+---
+---- A descendant is added to the Gui.
+---- A descendant is removed from the Gui.
+---- A property of a descendant of the Gui changes.
+---- A property of the Gui changes.
+---
+---If any of these events occur, the Gui's appearance will be recomputed the
+---next frame it gets rendered.
+---
+local SurfaceGui;
+---@class SurfaceLight : Light, Instance
+---@field public Angle float
+---@field public Face NormalId
+---@field public Range float
+---A SurfaceLight is a light source that emits illumination of a specified
+---`Light/Color` and `Light/Brightness` from a `SurfaceLight/Face` for a
+---specified `SurfaceLight/Range`.
+---
+---In order for a SurfaceLight to provide illumination, it must be the direct
+---child of a `BasePart` or `Attachment` (the part or attachment itself must
+---be a descendant of the Workspace). If a SurfaceLight is parented to a
+---part, then the light will emanate from the part's selected face(s). If
+---parented to an attachment SurfaceLight is equivalent to a `SpotLight`.
+---
+---For more light types, please see the **see also** section.
+---
+---## See Also
+---
+---- `PointLight`
+---- `SpotLight`
+---
+local SurfaceLight;
+---@class SurfaceSelection : PartAdornment, GuiBase3d, GuiBase, Instance
+---@field public TargetSurface NormalId
+---A **SurfaceSelection** highlights a particular face, the
+---`SurfaceSelection/TargetSurface|TargetSurface`, of its
+---`PartAdornment/Adornee|Adornee`. The highlight's color is configurable
+---using the `GuiBase3d/Color3|Color3` property.
+---
+---<img src="/assets/blt883782a763fb7fbd/SurfaceSelection.jpg" alt="A screenshot of a SurfaceSelection" width="302" height="153" />
+---
+---The SurfaceSelection object is typically used by `Plugin` when the user is
+---selecting the face of a Part. However, it is not limited to plugin use.
+---
+local SurfaceSelection;
+---@class TaskScheduler : Instance
+---@field public SchedulerDutyCycle double
+---@field public SchedulerRate double
+---@field public ThreadPoolConfig ThreadPoolConfig
+---@field public ThreadPoolSize int
+---TaskScheduler is a read-only settings class responsible for the Task
+---Scheduler feature. Can be found in Roblox Studio's settings with the name
+---_Task Scheduler_.
+---
+local TaskScheduler;
+---@class Team : Instance
+---@field public AutoAssignable bool
+---@field public AutoColorCharacters bool
+---@field public ChildOrder int
+---@field public Score int
+---@field public TeamColor BrickColor
+---@field public PlayerAdded fun(player: Player): RbxScriptSignal
+---@field public PlayerRemoved fun(player: Player): RbxScriptSignal
+---The `Team` class represents a faction in a Roblox place. The only valid
+---parent for a Team is in the `Teams` service. Teams offer a range of
+---features that are useful to developers that can be divided into two rough
+---groups:
+---
+---- Features that work 'out of the box'
+---- Features developers can program into their game.
+---
+---**Built-in Team Behavior **
+---
+---The following functionality of Teams exists by default and does not
+---require the developer to program any custom behavior.
+---
+---- When part of a Team, the name above a `Player`'s character `Model` will
+---  be colored to the `Team/TeamColor`
+---- Changing `Player/TeamColor` will cause `Player/Team` to switch to the
+---  Team with the corresponding `Team/TeamColor`
+---- When using the default player list users will be grouped and displayed
+---  together as a team
+---- Setting `Player/Neutral` to true will cause the `Player` to be
+---  disassociated with the team, however, it will not change `Player/Team`
+---  or `Player/TeamColor`
+---- When a `Player` joins a game, they will be allocated to the team with
+---  `Team/AutoAssignable` set to true that has the fewest players. If no
+---  auto assignable team is available, `Player/Neutral` will be set to true
+---- When `SpawnLocation/Neutral` is set to false, only players whose
+---  `Player/TeamColor` matches `SpawnLocation/TeamColor` can spawn on that
+---  `SpawnLocation`
+---- When `SpawnLocation/AllowTeamChangeOnTouch` is set to true, a `Player`'s
+---  `Player/TeamColor` will change to `SpawnLocation/TeamColor` when their
+---  character touches the `SpawnLocation`
+---
+---**Optional Extended Team Behaviors**
+---
+---Many developers chose to add the following features to teams in their own
+---code.
+---
+---- Implement checks in weapon code to prevent friendly fire.
+---- Implement checks in doors or other features that allow only certain
+---  teams to use them
+---- Periodically reassign teams to maintain team balance
+---
+local Team;
+---@return Objects
+---Returns a list of `Player`s who are assigned to the `Team`. A `Player` is
+---considered assigned if their `Player/Team` property is equal to the `Team`
+---and `Player/Neutral` is false.
+---
+---This function has a number of potential uses, including counting the
+---number of players on a `Team` or giving every `Player` on a `Team` a
+---`Tool`.
+---
+Team.GetPlayers = function(self) end;
+---@class Teams : Instance
+---The Teams service holds a game's `Team` objects. `Team` objects must be
+---parented to the Teams service.
+---
+---Teams offer a range of features that are useful to developers. These can
+---broadly be divided into features that work out-of-the-box and features
+---developers can program into their game.
+---
+---**Built-in team behaviour** The following functionality of Teams exists by
+---default and does not require the developer to program any custom
+---behaviour.
+---
+---- When part of a Team, the name above a `Player`'s character `Model` will
+---  be colored to the `Team/TeamColor`
+---- Changing `Player/TeamColor` will cause `Player/Team` switch to the Team
+---  with the corresponding `Team/TeamColor`
+---- When using the default player list users will be grouped and displayed
+---  by team
+---- Setting `Player/Neutral` to true will cause the `Player` to be
+---  dis-associated with the team, but will not change `Player/Team` or
+---  `Player/TeamColor`
+---- When a `Player` joins a game, they will be allocated to the team with
+---  `Team/AutoAssignable` set to true that has the fewest players. If no
+---  auto assignable team is available, `Player/Neutral` will be set to true
+---- When `SpawnLocation/Neutral` is set to false, only players whose
+---  `Player/TeamColor` matches `SpawnLocation/TeamColor` can spawn on that
+---  `SpawnLocation`
+---- When `SpawnLocation/AllowTeamChangeOnTouch` is set to true, a `Player`'s
+---  `Player/TeamColor` will change to `SpawnLocation/TeamColor` when their
+---  character touches the `SpawnLocation`
+---
+---**Optional extended team behavior** Many developers chose to add the
+---following features to teams in their own code.
+---
+---- Implement checks for team in weapon code to prevent team killing
+---- Implement doors or other features that only certain teams can use
+---- Periodically reassign teams to maintain team balance
+---
+local Teams;
+---@return Objects
+---The GetTeam function returns a table containing the game's `Team` objects.
+---
+---Note this will only return Team objects that are directly parented to the
+---`Teams` service. For this reason it is recommended developers only parent
+---`Team` objects to the `Teams` service and not to other `Instance`s (or to
+---each other).
+---
+Teams.GetTeams = function(self) end;
+---@return void
+---Evens the number of people on each team. This function does not work
+---correctly and should not be used.
+---
+Teams.RebalanceTeams = function(self) end;
+---@class TeleportAsyncResult : Instance
+---@field public PrivateServerId string
+---@field public ReservedServerAccessCode string
+---This class is an instance that is returned by the `TeleportAsync` function
+---with information about the teleport.
+---
+local TeleportAsyncResult;
+---@class TeleportOptions : Instance
+---@field public ReservedServerAccessCode string
+---@field public ServerInstanceId string
+---@field public ShouldReserveServer bool
+---This class is an optional parameter to the `TeleportService/TeleportAsync`
+---function that allows developers to provide arguments for the teleport
+---call.
+---
+---Certain arguments in this class are not compatible with each other and
+---cause an error when passed to `TeleportService/TeleportAsync`:
+---
+---- ReservedServerAccessCode + ServerInstanceId
+---- ShouldReserveServer + ServerInstanceId
+---- ShouldReserveServer + ReservedServerAccessCode
+---
+---See also:
+---
+---For more information on how to teleport players between servers, take a
+---look at the [Teleporting Between Places][1] article.
+---
+---[1]: https://developer.roblox.com/articles/Teleporting-Between-Places
+---
+local TeleportOptions;
+---@param teleportData Variant
+---@return void
+---This is a setter function for data to be passed to the destination place.
+---On the destination place, this data can be retrieved using
+---`Player/GetJoinData` or `TeleportService/GetLocalPlayerTeleportData`.
+---
+---For example, the following snippet would send the `DataModel/PlaceId` and
+---`DataModel/JobId` in a dictionary passing the teleport data in a
+---`TeleportOptions` instance using `TeleportOptions/SetTeleportData`:
+---
+---```lua
+----- Server
+---local teleportOptions = Instance.new(“TeleportOptions”)
+---local teleportData = {
+---    placeId = game.PlaceId,
+---    jobId = game.JobId
+---}
+---teleportOptions:SetTeleportData(teleportData)
+---TeleportService:TeleportAsync(game.PlaceId, {player}, teleportOptions)
+---```
+---
+---This data could then be retrieved upon arrival using the
+---GetLocalPlayerTeleportData() function as follows:
+---
+---```lua
+----- Client
+---local TeleportService = game:GetService("TeleportService")
+---
+---local teleportData = TeleportService:GetLocalPlayerTeleportData()
+---if teleportData then
+---    local placeId = teleportData.placeId
+---    local jobId = teleportData.JobId
+---end)
+---```
+---
+---If no `teleportData` was set in the teleportation function this
+---GetLocalPlayerTeleportData() will return `nil`.
+---
+---See also:
+---
+---For more information on how to teleport players between servers, take a
+---look at the [Teleporting Between Places][1] article.
+---
+---[1]: https://developer.roblox.com/articles/Teleporting-Between-Places
+---
+TeleportOptions.SetTeleportData = function(self, teleportData) end;
+---@return Variant
+---This function returns the teleport data stored in the `TeleportOptions`
+---instance by `TeleportOptions/SetTeleportData`.
+---
+---Once a player has teleported, teleport data can be retrieved using the
+---`Player/GetJoinData` and `TeleportService/GetLocalPlayerTeleportData`
+---functions.
+---
+---See also:
+---
+---For more information on how to teleport players between servers, take a
+---look at the [Teleporting Between Places][1] article.
+---
+---[1]: https://developer.roblox.com/articles/Teleporting-Between-Places
+---
+TeleportOptions.GetTeleportData = function(self) end;
+---@class TeleportService : Instance
+---@field public CustomizedTeleportUI bool
+---@field public LocalPlayerArrivedFromTeleport fun(loadingGui: Instance, dataTable: Variant): RbxScriptSignal
+---@field public TeleportInitFailed fun(player: Instance, teleportResult: TeleportResult, errorMessage: string, placeId: int64, teleportOptions: Instance): RbxScriptSignal
+---TeleportService is responsible for transporting `Player`s between
+---different [places](https://developer.roblox.com/articles/games-and-places)
+---and servers.
+---
+---All teleporting functionality is consolidated into a single
+---`TeleportService/TeleportAsync` function, which is used to:
+---
+---- Teleport players to a different place
+---- Teleport players to a specific server
+---- Teleport players to a reserved server
+---
+---## Studio limitation
+---
+---TeleportService does not work during playtesting in Studio. To test your
+---game's use of TeleportService, you must publish the place and play it with
+---the Roblox application.
+---
+---See also:
+---
+---For an in-depth guide on teleporting players, see the
+---[Teleporting Between Places](https://developer.roblox.com/articles/Teleporting-Between-Places)
+---article.
+---
+local TeleportService;
+---@param setting string
+---@param value Variant
+---@return void
+---This function stores a value under a given key that persists across all
+---teleportations in the same game.
+---
+---This method is intended for use on the client only and should not be used
+---on the server.
+---
+---The stored value can later be retrieved using
+---`TeleportService/GetTeleportSetting`. This will work in the current place
+---and any subsequent places the `Players/LocalPlayer` teleports to, provided
+---they are in the same game.
+---
+---For example, in a game that allowed crouching you could save whether the
+---user is currently crouching prior to teleporting as a teleport setting:
+---
+---```lua
+---local TeleportService = game:GetService("TeleportService")
+---
+---local isCrouching = false
+---TeleportService:SetTeleportSetting("isCrouching", isCrouching)
+---```
+---
+---The stored value can take one of the following forms:
+---
+---- A table without mixed keys (all strings or all integers)
+---- A string
+---- A number
+---- A bool
+---
+---If data is already stored under the given key, the previous value will be
+---overwritten by the new value.
+---
+---#### Differences from GlobalDataStores
+---
+---Although they share some similarities, there are some key differences
+---between teleport settings and datastores:
+---
+---- `GlobalDataStore/SetAsync` stores the data on Roblox servers whereas
+---  SetTeleportSetting stores the data locally
+---- Data stored in a `GlobalDataStore` is preserved after the user leaves
+---  the game universe whereas teleport settings are not
+---- `GlobalDataStore|GlobalDataStores` can only be accessed on the server,
+---  whereas teleport settings can only be accessed on the client
+---- `GlobalDataStore|GlobalDataStores` have usage limits, whereas teleport
+---  settings do not
+---
+---In general teleport settings should be used to preserve client side
+---information within a single play session across different places in a
+---game. `GlobalDataStore|GlobalDataStores` should be used to save important
+---player data that needs to be accessed across player sessions.
+---
+---#### Teleport settings and security
+---
+---As teleport settings are stored locally, it is possible they can be
+---manipulated by malicious users. This risk can be mitigated by employing
+---server side validation.
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.SetTeleportSetting = function(self, setting, value) end;
+---@return Variant
+---This function returns the teleport data the `Players/LocalPlayer` arrived
+---with. It can only be called from the client.
+---
+---Exploiters can spoof teleport data. Send secure data such as player
+---currency through a server-side service such as `DataStoreService` to
+---prevent tampering.
+---
+TeleportService.GetLocalPlayerTeleportData = function(self) end;
+---@return void
+TeleportService.TeleportCancel = function(self) end;
+---@param placeId int64
+---@param players Objects
+---@param teleportOptions Instance
+---@return Instance
+---This function serves as the all-encompassing method to teleport a player
+---or group of players from one server to another.
+---
+---All forms of player teleportation are consolidated into this single
+---function, which is used to:
+---
+---- Teleport players to a different place
+---- Teleport players to a specific server
+---- Teleport players to a reserved server
+---
+---**Group Teleport Limitations**
+---
+---- Groups of players can only be teleported within a single experience.
+---- No more than 50 players can be teleported with a single
+---  `TeleportService/TeleportAsync` call.
+---
+---#### Potential Errors
+---
+---This is a list of potential reasons a teleport may fail, ranging from
+---invalid teleports to network issues.
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Error</th>
+---           	<th>Description</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td>Invalid placeId</td>
+---            <td>The provided placeId is below 0.</td>
+---        </tr>
+---        <tr>
+---            <td>Players empty</td>
+---            <td>The provided list of players to teleport is empty.</td>
+---        </tr>
+---        <tr>
+---            <td>List of players instances is incorrect</td>
+---            <td>Any of the provided players is not a Player object.</td>
+---        </tr>
+---        <tr>
+---            <td>TeleportOptions not of correct type</td>
+---            <td>The provided teleportOption is not a TeleportOptions object.</td>
+---        </tr>
+---        <tr>
+---            <td>TeleportAsync called from Client</td>
+---            <td>The client called TeleportAsync, which can only be called from the server.</td>
+---        </tr>
+---        <tr>
+---            <td>Incompatible Parameters</td>
+---            <td>
+---            Conflicting teleport options were used and TeleportService doesn't know where to send the player:
+---            
+---               - ReservedServerAccessCode + ServerInstanceId
+---               - ShouldReserveServer + ServerInstanceId
+---               - ShouldReserveServer + ReservedServerAccessCode
+---            
+---            </td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---See also:
+---
+---For an in-depth guide on teleporting players and properly handling
+---teleport failures, see the
+---[Teleporting Between Places](https://developer.roblox.com/articles/Teleporting-Between-Places)
+---article.
+---
+TeleportService.TeleportAsync = function(self, placeId, players, teleportOptions) end;
+---@param placeId int64
+---@param instanceId string
+---@param player Instance
+---@param spawnName string
+---@param teleportData Variant
+---@param customLoadingScreen Instance
+---@return void
+---The numerous teleport functions have been combined into a single method,
+---`TeleportService/TeleportAsync|TeleportAsync`, which should be used
+---instead and may be used to:
+---
+---- Teleport any number of players to a Public Server
+---- Follow a Friend to a Different Place
+---- Teleport any number of Players to a Reserved Server
+---
+---This function teleports a `Player` to the place instance associated with
+---the given _placeId_ and _instanceId_. It can only be used to teleport to
+---places in the same game.
+---
+---The _placeId_ is the `DataModel/PlaceId` of the server and the
+---_instanceId_ is the `DataModel/JobId|JobId`.
+---
+---This function can not be used to teleport `Player|Players` to servers
+---created using `TeleportService/ReserveServer` (reserved servers). For
+---this, see `TeleportService/TeleportToPrivateServer`.
+---
+---#### Spawn name
+---
+---An optional _spawnName_ parameter can be provided, which will cause the
+---`Player` to initially spawn at the `SpawnLocation` of that name in the
+---destination place. The `SpawnLocation` must be valid for the `Player` to
+---spawn on. For example, it must be `SpawnLocation/Neutral|neutral` or set
+---to the same `SpawnLocation/TeamColor|TeamColor` as the `Team` the `Player`
+---will be assigned to upon joining the game.
+---
+---#### Teleport data
+---
+---A _teleportData_ parameter can be specified. This is data the client will
+---transmit to the destination place and can be retrieved using
+---`TeleportService/GetLocalPlayerTeleportData`.
+---
+---The _teleportData_ can take any of the following forms:
+---
+---- A table without mixed keys (all keys are strings or integers)
+---- A string
+---- A number
+---- A bool
+---
+---As the _teleportData_ is transmitted by the client it is not secure. For
+---this reason it should only be used for local settings and not sensitive
+---items (such as the users' score or in-game currency).
+---
+---If you need teleport data to persist across multiple teleports, you can
+---use `TeleportService/SetTeleportSetting` and
+---`TeleportService/GetTeleportSetting`.
+---
+---#### Loading screen
+---
+---A _customLoadingScreen_ argument can be specified. This is a `ScreenGui`
+---that is copied (without scripts) into the `CoreGui` of the destination
+---place.
+---
+---Note, `TeleportService/SetTeleportGui` is the preferred alternative to the
+---_customLoadingScreen_ argument as it can be called prior to the teleport.
+---
+---The loading `ScreenGui` can be obtained in the destination place using
+---`TeleportService/GetArrivingTeleportGui`, where developers can parent it
+---to the `PlayerGui`.
+---
+---#### Teleport failure
+---
+---In some circumstances a teleport may fail. This can be due to the
+---developer configuring the teleport incorrectly or issues with Roblox's
+---servers.
+---
+---- If a teleportation request is rejected the
+---  `TeleportService/TeleportInitFailed` event will fire the error message
+---  and a `Enum/TeleportResult` enumerator describing the issue
+---- Teleports can fail 'in transit', after the user has left the server, due
+---  to issues with Roblox's servers. In this case the user will be shown an
+---  error message and be required to rejoin the game
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.TeleportToPlaceInstance = function(self, placeId, instanceId, player, spawnName, teleportData, customLoadingScreen) end;
+---@param placeId int64
+---@param player Instance
+---@param teleportData Variant
+---@param customLoadingScreen Instance
+---@return void
+---The numerous teleport functions have been combined into a single method,
+---`TeleportService/TeleportAsync|TeleportAsync`, which should be used
+---instead and may be used to:
+---
+---- Teleport any number of players to a Public Server
+---- Follow a Friend to a Different Place
+---- Teleport any number of Players to a Reserved Server
+---
+---This function teleports a `Player` to the place associated with the given
+---_placeId_.
+---
+---Teleport can be called both from the client and the server (see examples
+---below).
+---
+---When teleporting from the client, as only the `Players/LocalPlayer` can be
+---teleported, no _player_ argument is required.
+---
+---You may only teleport players to places within the same game or active
+---start places for other games.
+---
+---#### Teleport data
+---
+---A _teleportData_ parameter can be specified. This is data the client will
+---transmit to the destination place and can be retrieved using
+---`TeleportService/GetLocalPlayerTeleportData`.
+---
+---The _teleportData_ can take any of the following forms:
+---
+---- A table without mixed keys (all keys are strings or integers)
+---- A string
+---- A number
+---- A bool
+---
+---As the _teleportData_ is transmitted by the client it is not secure. For
+---this reason it should only be used for local settings and not sensitive
+---items (such as the users' score or in-game currency).
+---
+---If you need teleport data to persist across multiple teleports, you can
+---use `TeleportService/SetTeleportSetting` and
+---`TeleportService/GetTeleportSetting`.
+---
+---#### Loading screen
+---
+---A _customLoadingScreen_ argument can be specified. This is a `ScreenGui`
+---that is copied (without scripts) into the `CoreGui` of the destination
+---place.
+---
+---Note, `TeleportService/SetTeleportGui` is the preferred alternative to the
+---_customLoadingScreen_ argument as it can be called prior to the teleport.
+---
+---The loading `ScreenGui` can be obtained in the destination place using
+---`TeleportService/GetArrivingTeleportGui`, where developers can parent it
+---to the `PlayerGui`. It will not be used if the destination place is in a
+---different game.
+---
+---#### Teleport failure
+---
+---In some circumstances a teleport may fail. This can be due to the
+---developer configuring the teleport incorrectly or issues with Roblox's
+---servers.
+---
+---- If a teleportation request is rejected the
+---  `TeleportService/TeleportInitFailed` event will fire the error message
+---  and a `Enum/TeleportResult` enumerator describing the issue
+---- Teleports can fail 'in transit', after the user has left the server, due
+---  to issues with Roblox's servers. In this case the user will be shown an
+---  error message and be required to rejoin the game
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.Teleport = function(self, placeId, player, teleportData, customLoadingScreen) end;
+---@param gui Instance
+---@return void
+---This function sets the custom `ScreenGui|teleport GUI` that will be shown
+---to the local user during teleportation, prior to the teleport being
+---invoked.
+---
+---Note, the `ScreenGui|teleport GUI` will not be used if the destination
+---place is in a different game. It will also not persist across multiple
+---teleports and will need to be set prior to each one.
+---
+---This function should only be used on the client. If the teleportation
+---function is called from the server (as is the case with
+---`TeleportService/TeleportAsync`) then this function should be called on
+---the client prior to this. One way of doing this is listening to a
+---`RemoteEvent` that fires several seconds before teleportation.
+---
+---#### Loading screen
+---
+---During a teleport, whilst the destination place is loading, the
+---_customLoadingScreen_ is parented to the `CoreGui`. Once the place has
+---loaded the `ScreenGui|loading screen` is `Instance/Parent|parented` to
+---_nil_.
+---
+---This `ScreenGui` can be fetched at the destination place using
+---`TeleportService/GetArrivingTeleportGui`, allowing you to parent it to the
+---`PlayerGui` and perform your own transitions.
+---
+---You are advised to also `Instance/Parent|parent` the `ScreenGui` to the
+---`PlayerGui` in the start place whilst the teleport is initiating.
+---
+---#### Studio Limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.SetTeleportGui = function(self, gui) end;
+---@param setting string
+---@return Variant
+---This function retrieves a teleport setting saved using
+---`TeleportService/SetTeleportSetting` using the given key.
+---
+---This method is intended for use on the client only and should not be used
+---on the server.
+---
+---Teleport settings are preserved across teleportations within the same
+---game. This means data can be saved using
+---`TeleportService/SetTeleportSetting` in one place and retrieved using
+---GetTeleportSetting in another place the user has been teleported to.
+---
+---For example, in a game that allowed crouching you could save whether the
+---user is currently crouching prior to teleporting as a teleport setting.
+---This could then be retrieved in the destination place after the
+---teleportation:
+---
+---```lua
+---local TeleportService = game:GetService("TeleportService")
+---
+---local isCrouching =  TeleportService:GetTeleportSetting("isCrouching")
+---```
+---
+---If no teleport setting exists under the given key, this function will
+---return _nil_.
+---
+---#### Differences from GlobalDataStores
+---
+---Although they share some similarities, there are some key differences
+---between teleport settings and datastores:
+---
+---- `GlobalDataStore/SetAsync` stores the data on Roblox servers whereas
+---  SetTeleportSetting stores the data locally
+---- Data stored in a `GlobalDataStore` is preserved after the user leaves
+---  the game universe whereas teleport settings are not
+---- `GlobalDataStore|GlobalDataStores` can only be accessed on the server,
+---  whereas teleport settings can only be accessed on the client
+---- `GlobalDataStore|GlobalDataStores` have usage limits, whereas teleport
+---  settings do not
+---
+---In general teleport settings should be used to preserve client side
+---information within a single play session across different places in a
+---game. `GlobalDataStore|GlobalDataStores` should be used to save important
+---player data that needs to be accessed across player sessions.
+---
+---#### Teleport settings and security
+---
+---As teleport settings are stored locally, it is possible they can be
+---manipulated by malicious users. This risk can be mitigated by employing
+---server side validation.
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.GetTeleportSetting = function(self, setting) end;
+---@param placeId int64
+---@param players Objects
+---@param teleportData Variant
+---@param customLoadingScreen Instance
+---@return string
+---The numerous teleport functions have been combined into a single method,
+---`TeleportService/TeleportAsync|TeleportAsync`, which should be used
+---instead and may be used to:
+---
+---- Teleport any number of players to a Public Server
+---- Follow a Friend to a Different Place
+---- Teleport any number of Players to a Reserved Server
+---
+---This function teleports a group of `Player|Players` to the same server
+---instance in the given place. It returns the `DataModel/JobId` of the
+---server instance the players were teleported to.
+---
+---This function can only be called from the server.
+---
+---You may only use this function to teleport to a place in the same game.
+---This function can not teleport more than 50 `Player|Players` in a single
+---party.
+---
+---Currently this function may not work reliably when teleporting
+---`Player|Players` to the same place they are currently in.
+---
+---#### Teleport data
+---
+---A _teleportData_ parameter can be specified. This is data the clients will
+---transmit to the destination place and can be retrieved using
+---`TeleportService/GetLocalPlayerTeleportData`.
+---
+---The _teleportData_ can take any of the following forms:
+---
+---- A table without mixed keys (all keys are strings or integers)
+---- A string
+---- A number
+---- A bool
+---
+---As the _teleportData_ is transmitted by the client it is not secure. For
+---this reason it should only be used for local settings and not sensitive
+---items (such as the users' score or in-game currency).
+---
+---#### Loading screen
+---
+---A _customLoadingScreen_ argument can be specified. This is a `ScreenGui`
+---that is copied (without scripts) into the `CoreGui` of the destination
+---place. It can be retrieved at the destination place using
+---`TeleportService/GetArrivingTeleportGui` and will not be used if the
+---destination place is in a different game.
+---
+---You are advised to instead set the loading screen on the client using
+---`TeleportService/SetTeleportGui`. The loading `ScreenGui` should also be
+---parented to the `Player|Players'` `PlayerGui|PlayerGuis` a few seconds
+---before the teleport to ensure a smooth transition using a `RemoteEvent`.
+---For an example of this see
+---`TeleportService/SetTeleportGui|SetTeleportGui`.
+---
+---#### Teleport failure
+---
+---In some circumstances a teleport may fail. This can be due to the
+---developer configuring the teleport incorrectly or issues with Roblox's
+---servers.
+---
+---- If a teleportation request is rejected the
+---  `TeleportService/TeleportInitFailed` event will fire the error message
+---  and a `Enum/TeleportResult` enumerator describing the issue
+---- Teleports can fail 'in transit', after the user has left the server, due
+---  to issues with Roblox's servers. In this case the user will be shown an
+---  error message and be required to rejoin the game
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+---See also:
+---
+---- `Player/GetJoinData` to get the `Player/UserId|UserIds` of
+---  `Player|Players` teleported together
+---
+TeleportService.TeleportPartyAsync = function(self, placeId, players, teleportData, customLoadingScreen) end;
+---@param userId int64
+---@return Tuple
+---This function returns the `DataModel/PlaceId|PlaceId` and
+---`DataModel/JobId|JobId` of the server the user with the given
+---`Player/UserId|UserId` is in, provided it is in the same game as the
+---current place.
+---
+---Then, `TeleportService/TeleportToPlaceInstance` can be called with this
+---information to allow a user to join the target user's server.
+---
+---Upon a successful lookup, the function returns the following values:
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>#</th>
+---			<th>Name</th>
+---			<th>Type</th>
+---			<th>Description</th>
+---		</tr>
+---	</thead>
+---	<tbody>
+---		<tr>
+---			<td><b>1</b></td>
+---   			<td> currentInstance</td>
+---			<td>bool</td>
+---			<td>A bool indicating if the user was found in the current instance</td>
+---		</tr>
+---		<tr>
+---			<td><b>2</b></td>
+---   			<td>error</td>
+---			<td>string</td>
+---			<td>An error message in the event of the lookup failing</td>
+---		</tr>
+---		<tr>
+---			<td><b>3</b></td>
+---   			<td>placeId</td>
+---			<td>int64</td>
+---			<td>The PlaceId of the server the user is in</td>
+---		</tr>
+---		<tr>
+---			<td><b>4</b></td>
+---   			<td>instanceId</td>
+---			<td>string</td>
+---			<td>The JobId of the server the user is in</td>
+---		</tr>
+---	</tbody>
+---</table>
+---
+---If there is a problem during lookup, such as the user being offline, an
+---error is thrown. It is recommended that you wrap calls to this function in
+---`pcall`.
+---
+---#### Limitations
+---
+---You should be aware of the following limitations when using this function:
+---
+---- This function can only be called by the server
+---- This function may fail to return the correct information if the user is
+---  teleporting
+---- It is possible for this function to throw an error, hence developers
+---  should wrap it in a [pcall][1] (see example below)
+---- As this function returns the JobId of the server and not the access code
+---  returned by `TeleportService/ReserveServer`, the id returned is not
+---  appropriate for use with reserved servers
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+---See also:
+---
+---- For the `DataModel/PlaceId|PlaceIds` and `DataModel/JobId|JobIds` of a
+---  `Player|Player's` friends, use `Player/GetFriendsOnline`
+---
+---[1]: /reference/engine/libraries/Lua-Globals#functions
+---
+TeleportService.GetPlayerPlaceInstanceAsync = function(self, userId) end;
+---@param placeId int64
+---@param spawnName string
+---@param player Instance
+---@param teleportData Variant
+---@param customLoadingScreen Instance
+---@return void
+---The numerous teleport functions have been combined into a single method,
+---`TeleportService/TeleportAsync|TeleportAsync`, which should be used
+---instead and may be used to:
+---
+---- Teleport any number of players to a Public Server
+---- Follow a Friend to a Different Place
+---- Teleport any number of Players to a Reserved Server
+---
+---This function behaves the same as `TeleportService/Teleport` with the
+---exception that it includes a _spawnName_ parameter, causing the `Player`
+---to spawn at the `SpawnLocation` of that name at the destination place.
+---
+---The `SpawnLocation` must be valid for the `Player` to spawn on. For
+---example, it must be `SpawnLocation/Neutral|neutral` or set to the same
+---`SpawnLocation/TeamColor|TeamColor` as the `Team` the `Player` will be
+---assigned to upon joining the game.
+---
+---The `Player` will still spawn at the correct `SpawnLocation` even the
+---teleport is to a place in a different universe. The spawn will also be
+---correct if `Players/CharacterAutoLoads` is false in the destination place
+---and the `Player/Character|Character` is loaded manually using
+---`Player/LoadCharacter|LoadCharacter`.
+---
+---The teleportation will only affect the `SpawnLocation` used initially. If
+---the `Player` respawns again subsequently it will not necessarily be at
+---this `SpawnLocation`.
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.TeleportToSpawnByName = function(self, placeId, spawnName, player, teleportData, customLoadingScreen) end;
+---@return Instance
+---This function returns the _customLoadingScreen_ the
+---`Players/LocalPlayer|LocalPlayer` arrived into the place with.
+---
+---Note, the _customLoadingScreen_ will not be used if the destination place
+---is in a different game.
+---
+---#### Loading screen
+---
+---During a teleport, whilst the destination place is loading, the
+---_customLoadingScreen_ is parented to the `CoreGui`. Once the place has
+---loaded the `ScreenGui|loading screen` is `Instance/Parent|parented` to
+---_nil_.
+---
+---If you wish to preserve the _customLoadingScreen_ and perform your own
+---transitions, you will need to parent it to the
+---`Players/LocalPlayer|LocalPlayer's` `PlayerGui`. For an example of this,
+---see the code sample below.
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.GetArrivingTeleportGui = function(self) end;
+---@param placeId int64
+---@param reservedServerAccessCode string
+---@param players Objects
+---@param spawnName string
+---@param teleportData Variant
+---@param customLoadingScreen Instance
+---@return void
+---The numerous teleport functions have been combined into a single method,
+---`TeleportService/TeleportAsync|TeleportAsync`, which should be used
+---instead and may be used to:
+---
+---- Teleport any number of players to a Public Server
+---- Follow a Friend to a Different Place
+---- Teleport any number of Players to a Reserved Server
+---
+---This function teleports one or more `Player|Players` to a reserved server
+---created using `TeleportService/ReserveServer`.
+---
+---The _reservedServerAccessCode_ parameter is the access code returned by
+---`TeleportService/ReserveServer|ReserveServer`.
+---
+---TeleportToPrivateServer can only be called on the server.
+---
+---#### Spawn name
+---
+---An optional _spawnName_ parameter can be provided, which will cause the
+---`Player|Players` to initially spawn at the `SpawnLocation` of that name in
+---the destination place. The `SpawnLocation` must be valid for the
+---`Player|Players` to spawn on. For example, it must be
+---`SpawnLocation/Neutral|neutral` or set to the same
+---`SpawnLocation/TeamColor|TeamColor` as the `Team` the `Player|Players`
+---will be assigned to upon joining the game.
+---
+---#### Teleport data
+---
+---A _teleportData_ parameter can be specified. This is data the clients will
+---transmit to the destination place and can be retrieved using
+---`TeleportService/GetLocalPlayerTeleportData`.
+---
+---The _teleportData_ can take any of the following forms:
+---
+---- A table without mixed keys (all keys are strings or integers)
+---- A string
+---- A number
+---- A bool
+---
+---As the _teleportData_ is transmitted by the client it is not secure. For
+---this reason it should only be used for local settings and not sensitive
+---items (such as the users' score or in-game currency).
+---
+---If you need teleport data to persist across multiple teleports, you can
+---use `TeleportService/SetTeleportSetting` and
+---`TeleportService/GetTeleportSetting`.
+---
+---#### Loading screen
+---
+---A _customLoadingScreen_ argument can be specified. This is a `ScreenGui`
+---that is copied (without scripts) into the `CoreGui` of the destination
+---place.
+---
+---You are advised to instead set the loading screen on the client using
+---`TeleportService/SetTeleportGui`. The loading `ScreenGui` should also be
+---parented to the `Player|Player's` `PlayerGui` a few seconds before the
+---teleport to ensure a smooth transition using a `RemoteEvent`. For an
+---example of this see `TeleportService/SetTeleportGui|SetTeleportGui`
+---
+---The loading `ScreenGui` can be obtained in the destination place using
+---`TeleportService/GetArrivingTeleportGui`, where developers can parent it
+---to the `PlayerGui`.
+---
+---#### Teleport failure
+---
+---In some circumstances a teleport may fail. This can be due to the
+---developer configuring the teleport incorrectly or issues with Roblox's
+---servers.
+---
+---- If a teleportation request is rejected the
+---  `TeleportService/TeleportInitFailed` event will fire the error message
+---  and a `Enum/TeleportResult` enumerator describing the issue
+---- Teleports can fail 'in transit', after the user has left the server, due
+---  to issues with Roblox's servers. In this case the user will be shown an
+---  error message and be required to rejoin the game
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+TeleportService.TeleportToPrivateServer = function(self, placeId, reservedServerAccessCode, players, spawnName, teleportData, customLoadingScreen) end;
+---@param placeId int64
+---@return Tuple
+---This function returns an access code that can be used to teleport players
+---to a reserved server, along with the `DataModel/PrivateServerId` for it.
+---
+---ReserveServer can only be called on the server.
+---
+---#### Reserved Servers
+---
+---The following are characteristics of reserved servers:
+---
+---- They can only be accessed using
+---  `TeleportService/TeleportToPrivateServer`, with the access code
+---  ReserveServer returns
+---- A game server is started when the access code is first used
+---- Access codes remain valid indefinitely, meaning reserved servers can
+---  still be joined if no game server is running (in this case a new game
+---  server will be started)
+---
+---You can see if the current server is a reserved server by using the
+---following code:
+---
+---```lua
+---local isReserved = game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
+---```
+---
+---The `DataModel/PrivateServerId` is constant across all server instances
+---associated with the server access code, the `DataModel/JobId` is not.
+---
+---#### Studio limitation
+---
+---This service does not work during playtesting in Roblox Studio &mdash; To
+---test aspects of your game using it, you must publish the game and play it
+---in the Roblox application.
+---
+---#### Cross-Platform Play
+---
+---Players on Xbox One with cross-platform play disabled will arrive in a
+---different server with players with cross-platform play enabled. This can
+---cause multiple game servers with the same PrivateServerId to exist."
+---
+TeleportService.ReserveServer = function(self, placeId) end;
+---@class TemporaryCageMeshProvider : Instance
+local TemporaryCageMeshProvider;
+---@class TemporaryScriptService : Instance
+local TemporaryScriptService;
+---@class Terrain : BasePart, PVInstance, Instance
+---@field public Decoration bool
+---@field public IsSmooth bool
+---@field public LastUsedModificationMethod TerrainAcquisitionMethod
+---@field public MaterialColors BinaryString
+---@field public MaxExtents Region3int16
+---@field public WaterColor Color3
+---@field public WaterReflectance float
+---@field public WaterTransparency float
+---@field public WaterWaveSize float
+---@field public WaterWaveSpeed float
+---Terrain lets you create dynamically morphable environments with little to
+---no lag. It is currently based on a 4&times;4&times;4 grid of cells, where
+---each cell has a number between 0 and 1 representing how much the geometry
+---should occupy the cell, and the material of the cell. The occupancy
+---determines how the cell will morph together with surrounding cells, and
+---the result is the illusion of having no grid constraint.
+---
+---For more information, see
+---[Terrain](/building-and-visuals/modeling/terrain).
+---
+local Terrain;
+---@param center Vector3
+---@param radius float
+---@param material Material
+---@return void
+---Fills a ball of smooth terrain in a given space.
+---
+Terrain.FillBall = function(self, center, radius, material) end;
+---@param position Vector3
+---@return Vector3
+---Returns the grid cell location that contains the point position,
+---preferring empty grid cells when position is on a grid edge.
+---
+Terrain.WorldToCellPreferEmpty = function(self, position) end;
+---@param region Region3int16
+---@return void
+---_(OBSOLETE)_ No longer does anything.
+---
+Terrain.AutowedgeCells = function(self, region) end;
+---@param cframe CFrame
+---@param size Vector3
+---@param material Material
+---@return void
+---**FillWedge** fills a wedge-shaped volume of Terrain with the given
+---`enum/Material` and the area's CFrame and Size. The orientation of the
+---wedge is the same as an equivalent `WedgePart`.
+---
+---<img src="/assets/bltb36cd8e98c2f3f2f/Terrain.FillWedge.jpg" alt="The results of a call to Terrain:FillWedge with CFrame (0, 50, 0), Size (20, 20, 20), and Material Asphalt" width="537" height="415" />
+---
+---In the image above, a floating chunk of Terrain was created by calling
+---this function as in the following code. A transparent, pink part with the
+---Front surface marked with a Motor indicates the provided CFrame and Size.
+---
+---```lua
+---workspace.Terrain:FillWedge(CFrame.new(0, 50, 0), Vector3.new(20, 20, 20), Enum.Material.Asphalt)
+---```
+---
+Terrain.FillWedge = function(self, cframe, size, material) end;
+---@param position Vector3
+---@return Vector3
+---Returns the grid cell location that contains the point position,
+---preferring non-empty grid cells when position is on a grid edge.
+---
+Terrain.WorldToCellPreferSolid = function(self, position) end;
+---@param region Region3int16
+---@param material CellMaterial
+---@param block CellBlock
+---@param orientation CellOrientation
+---@return void
+---Sets the occupancy of all terrain voxels in the specified region to 1, and
+---sets their materials to the closest smooth terrain material that matches
+---the CellMaterial.
+---
+---CellBlock and CellOrientation have no effect.
+---
+Terrain.SetCells = function(self, region, material, block, orientation) end;
+---@param x int
+---@param y int
+---@param z int
+---@return Tuple
+---Returns the closest CellMaterial from the legacy terrain engine that
+---matches the smooth terrain voxel specified. CellBlock will always be
+---''Solid'' and CellOrientation will always be ''NegZ''.
+---
+Terrain.GetCell = function(self, x, y, z) end;
+---@param region Region3
+---@param resolution float
+---@param materials Array
+---@param occupancy Array
+---@return void
+---Sets a certain region of
+---<a href="https://developer.roblox.com/articles/Intro-To-Terrain">smooth
+---terrain</a> using the
+---<a href="https://developer.roblox.com/articles/Intro-To-Terrain#Reading_and_writing_voxels">table
+---format</a>
+---
+Terrain.WriteVoxels = function(self, region, resolution, materials, occupancy) end;
+---@param material Material
+---@return Color3
+---Returns the current terrain material color for the specified terrain
+---material.
+---
+Terrain.GetMaterialColor = function(self, material) end;
+---@param region Region3
+---@param resolution float
+---@return Tuple
+---Returns a certain region of
+---<a href="https://developer.roblox.com/articles/Intro-To-Terrain">smooth
+---terrain</a> in
+---<a href="https://developer.roblox.com/articles/Scripting-With-Terrain#reading-and-writing-voxels">table
+---format</a>. Both of the returned arrays have an additional `Size`
+---property, a `datatype/Vector3`.
+---
+Terrain.ReadVoxels = function(self, region, resolution) end;
+---@param x int
+---@param y int
+---@param z int
+---@return Vector3
+---Returns the position of the lower-left-forward corner of the grid cell (x,
+---y, z).
+---
+Terrain.CellCornerToWorld = function(self, x, y, z) end;
+---@param position Vector3
+---@return Vector3
+---Returns the grid cell location that contains the point **position**.
+---
+Terrain.WorldToCell = function(self, position) end;
+---@param x int
+---@param y int
+---@param z int
+---@return Tuple
+---Returns if the cell is a water cell. The WaterForce parameter will always
+---be _None_ and the WaterDirection will always be _NegX_.
+---
+Terrain.GetWaterCell = function(self, x, y, z) end;
+---@return void
+---Clears the terrain.
+---
+Terrain.Clear = function(self) end;
+---@param x int
+---@param y int
+---@param z int
+---@param force WaterForce
+---@param direction WaterDirection
+---@return void
+---Sets the specified terrain voxel's material to ''Water'' and sets its
+---occupancy to 1. _WaterDirection_ and _WaterForce_ no longer have any
+---effect.
+---
+---_Note:_ This API was intended for Roblox's old terrain system, which has
+---since been removed from the engine.
+---
+Terrain.SetWaterCell = function(self, x, y, z, force, direction) end;
+---@param cframe CFrame
+---@param height float
+---@param radius float
+---@param material Material
+---@return void
+---Fills a cylinder of smooth terrain in a given space. The space is defined
+---using a CFrame, height, and radius.
+---
+---#### Usage
+---
+---```lua
+---workspace.Terrain:FillCylinder(CFrame.new(0, 50, 0), 5, 30, Enum.Material.Asphalt)
+---```
+---
+Terrain.FillCylinder = function(self, cframe, height, radius, material) end;
+---@return void
+---Transforms the legacy terrain engine into the new terrain engine.
+---
+---All places now automatically use the new terrain engine, so this method is
+---obsolete.
+---
+Terrain.ConvertToSmooth = function(self) end;
+---@param material Material
+---@param value Color3
+---@return void
+---Sets current terrain material color for specified terrain material.
+---Terrain material will shift its base color toward specified color.
+---
+Terrain.SetMaterialColor = function(self, material, value) end;
+---@param x int
+---@param y int
+---@param z int
+---@return bool
+---_(OBSOLETE)_ No longer does anything.
+---
+Terrain.AutowedgeCell = function(self, x, y, z) end;
+---@param region Region3int16
+---@return TerrainRegion
+---Stores a chunk of terrain into a `TerrainRegion` object so it can be
+---loaded back later. Note: `TerrainRegion` data does not replicate between
+---server and client.
+---
+Terrain.CopyRegion = function(self, region) end;
+---@param x int
+---@param y int
+---@param z int
+---@param material CellMaterial
+---@param block CellBlock
+---@param orientation CellOrientation
+---@return void
+---Sets the occupancy of the specified terrain voxel to 1, and sets it's
+---material to the closest smooth terrain material that matches the
+---CellMaterial.
+---
+---CellBlock and CellOrientation have no effect.
+---
+Terrain.SetCell = function(self, x, y, z, material, block, orientation) end;
+---@param region Region3
+---@param resolution float
+---@param sourceMaterial Material
+---@param targetMaterial Material
+---@return void
+---ReplaceMaterial replaces terrain of a certain `enum/Material` within a
+---`datatype/Region3` with another material. Essentially, it is a
+---find-and-replace operation on `Terrain` materials.
+---
+---#### Constraints
+---
+---When calling this method, the `resolution` parameter must be exactly 4.
+---Additionally, the Region3 must be aligned to the terrain materials grid,
+---i.e. the components of the Region3's minimum and maximum points must be
+---divisible by 4. Use `Region3:ExpandToGrid` to make a region compatible
+---with this function.
+---
+Terrain.ReplaceMaterial = function(self, region, resolution, sourceMaterial, targetMaterial) end;
+---@param region Region3
+---@param resolution float
+---@param material Material
+---@return void
+---Fills a <a href="/reference/engine/datatypes/Region3">Region3</a> space
+---with smooth terrain.
+---
+Terrain.FillRegion = function(self, region, resolution, material) end;
+---@return int
+---Returns the number of non-empty cells in the Terrain.
+---
+Terrain.CountCells = function(self) end;
+---@param region TerrainRegion
+---@param corner Vector3int16
+---@param pasteEmptyCells bool
+---@return void
+---Applies a chunk of terrain to the Terrain object. Note: `TerrainRegion`
+---data does not replicate between server and client.
+---
+Terrain.PasteRegion = function(self, region, corner, pasteEmptyCells) end;
+---@param cframe CFrame
+---@param size Vector3
+---@param material Material
+---@return void
+---Fills a block of smooth terrain with a given location, rotation, size, and
+---material.
+---
+Terrain.FillBlock = function(self, cframe, size, material) end;
+---@param x int
+---@param y int
+---@param z int
+---@return Vector3
+---Returns the world position of the center of the terrain cell (x, y, z).
+---
+Terrain.CellCenterToWorld = function(self, x, y, z) end;
+---@class TerrainDetail : Instance
+---@field public ColorMap Content
+---@field public Face TerrainFace
+---@field public MaterialPattern MaterialPattern
+---@field public MetalnessMap Content
+---@field public NormalMap Content
+---@field public RoughnessMap Content
+---@field public StudsPerTile float
+---TerrainDetail has to be a child of a `MaterialVariant|MaterialVariant` object. The `MaterialVariant/BaseMaterial` property of the parent MaterialVariant object need to be one of the supported terrain Material, for example, it can be Basalt but not Plastic.
+---
+---Terrain renders with different textures for it's top(+y), bottom(-y), and side(horizontal to y axis) faces. If a MaterialVariant has no TerrainDetail children, all faces are rendered as MaterialVariant specified. At most 3 TerrainDetail objects can be added to MaterialVariant, one for each face. TerrainDetail overrides the terrain appearance of a certain face.
+---
+---For example, it can achieve this kind of effect: the top surface of Grass has lots of grass. On side surfaces, there are less grass. On bottom surfaces there are no grass.
+---
+local TerrainDetail;
+---@class TerrainRegion : Instance
+---@field public IsSmooth bool
+---@field public SizeInCells Vector3
+---A TerrainRegion is a snapshot of `Terrain` retrieved from the
+---`Terrain:CopyRegion()` method. Can be later pasted into the Terrain using
+---`Terrain:PasteRegion()`.
+---
+local TerrainRegion;
+---@return void
+---Calling this method transforms the TerrainRegion into a `TerrainRegion`
+---usable for `Terrain`. This can only be done from a plugin, when in edit
+---mode.
+---
+---The game can't be running, nor can it have a `NetworkServer`.
+---
+TerrainRegion.ConvertToSmooth = function(self) end;
+---@class TestService : Instance
+---@field public AutoRuns bool
+---@field public Description string
+---@field public ErrorCount int
+---@field public ExecuteWithStudioRun bool
+---@field public Is30FpsThrottleEnabled bool
+---@field public IsPhysicsEnvironmentalThrottled bool
+---@field public IsSleepAllowed bool
+---@field public NumberOfPlayers int
+---@field public SimulateSecondsLag double
+---@field public TestCount int
+---@field public Timeout double
+---@field public WarnCount int
+---@field public ServerCollectConditionalResult fun(condition: bool, text: string, script: Instance, line: int): RbxScriptSignal
+---@field public ServerCollectResult fun(text: string, script: Instance, line: int): RbxScriptSignal
+---The TestService is a service used by Roblox internally to run analytical
+---tests on their engine. It makes it possible to write sophisticated tests
+---right inside a game.
+---
+---## Macros
+---
+---Scripts that are executed inside of the TestService (via
+---`TestService/Run`) have access to special macros that directly invoke
+---functions under the TestService. Macros are essentially substitutions for
+---large blocks of code that shouldn't need to be rewritten each time you
+---want to call them.
+---
+---### RBX_CHECK
+---
+---This macro does tests with calls to the `TestService/Check` function.
+---
+---<table>
+---	<tr>
+---		<th>Macro</th>
+---		<th>Test Condition</th>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK(cond)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_MESSAGE(cond, failMsg)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == false</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_NO_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_EQUAL(a,b)</td>
+---		<td>a == b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_NE(a,b)</td>
+---		<td>a ~= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_GE(a,b)</td>
+---		<td>a &gt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_LE(a,b)</td>
+---		<td>a &lt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_GT(a,b)</td>
+---		<td>a &gt; b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_CHECK_LT(a,b)</td>
+---		<td>a &lt; b</td>
+---	</tr>
+---</table>
+---
+---### RBX_REQUIRE
+---
+---This macro does tests with calls to the `TestService/Require` function.
+---
+---<table>
+---	<tr>
+---		<th>Macro</th>
+---		<th>Test Condition</th>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE(cond)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_MESSAGE(cond, failMsg)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == false</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_NO_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_EQUAL(a,b)</td>
+---		<td>a == b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_NE(a,b)</td>
+---		<td>a ~= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_GE(a,b)</td>
+---		<td>a &gt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_LE(a,b)</td>
+---		<td>a &lt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_GT(a,b)</td>
+---		<td>a &gt; b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_REQUIRE_LT(a,b)</td>
+---		<td>a &lt; b</td>
+---	</tr>
+---</table>
+---
+---### RBX_WARN
+---
+---This macro does tests with calls to the `TestService/Warn` function.
+---
+---<table>
+---	<tr>
+---		<th>Macro</th>
+---		<th>Test Condition</th>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN(cond)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_MESSAGE(cond, failMsg)</td>
+---		<td>cond == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == false</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_NO_THROW(CODE)</td>
+---		<td>pcall(function () CODE end) == true</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_EQUAL(a,b)</td>
+---		<td>a == b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_NE(a,b)</td>
+---		<td>a ~= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_GE(a,b)</td>
+---		<td>a &gt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_LE(a,b)</td>
+---		<td>a &lt;= b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_GT(a,b)</td>
+---		<td>a &gt; b</td>
+---	</tr>
+---	<tr>
+---		<td>RBX_WARN_LT(a,b)</td>
+---		<td>a &lt; b</td>
+---	</tr>
+---</table>
+---
+---### Additional Macros
+---
+---<table>
+---<tr>
+---<th>Macro</th>
+---<th>Description</th>
+---</tr>
+---<tr>
+---<td>RBX_ERROR(msg)</td>
+---<td>Directly calls the `TestService/Error` function.</td>
+---</tr>
+---<tr>
+---<td>RBX_FAIL(msg)</td>
+---<td>Directly calls the `TestService/Fail` function.</td>
+---</tr>
+---<tr>
+---<td>RBX_MESSAGE(msg)</td>
+---<td>Directly calls the `TestService/Message` function.</td>
+---</tr>
+---</table>
+---
+---See also:
+---
+---- <a href="http://blog.roblox.com/2012/04/speeding-roblox-development-with-continuous-testing">Speeding
+---  Roblox Development with Continuous Testing</a>
+---
+local TestService;
+---@param description string
+---@param source Instance
+---@param line int
+---@return void
+---Indicates a fatal error in a TestService run. If this is called inside of
+---a script running inside of the TestService, this will initiate a
+---breakpoint on the line that invoked the error.
+---
+TestService.Fail = function(self, description, source, line) end;
+---@return Dictionary
+TestService.ScopeTime = function(self) end;
+---@param text string
+---@param source Instance
+---@param line int
+---@return void
+---Prints "<samp>Test checkpoint: </samp>", followed by <var>text</var>, to
+---the output, in blue text.
+---
+TestService.Checkpoint = function(self, text, source, line) end;
+---@param condition bool
+---@param description string
+---@param source Instance
+---@param line int
+---@return void
+---If `condition` is true, prints `Require passed: `, followed by
+---`description`, to the output in blue text. Otherwise, prints
+---`Require failed. Test ended: `, followed by `description`, to the output
+---in red text.
+---
+TestService.Require = function(self, condition, description, source, line) end;
+---@param condition bool
+---@param description string
+---@param source Instance
+---@param line int
+---@return void
+---If <var>condition</var> is true, prints <samp>Warning passed: </samp>,
+---followed by <var>description</var>, to the output, in blue text.
+---Otherwise, prints <samp>Warning: </samp>, followed by
+---<var>description</var>, to the output, in yellow text.
+---
+TestService.Warn = function(self, condition, description, source, line) end;
+---@return void
+---Runs scripts which are parented to TestService.
+---
+TestService.Run = function(self) end;
+---@param name string
+---@return bool
+TestService.isFeatureEnabled = function(self, name) end;
+---@return void
+---Prints <samp>Testing Done</samp> to the output, in blue text.
+---
+TestService.Done = function(self) end;
+---@param condition bool
+---@param description string
+---@param source Instance
+---@param line int
+---@return void
+---If condition is true, prints "Check passed: ", followed by description to
+---the output, in blue text. Otherwise, prints "Check failed: ", again,
+---followed by description, but in red text.
+---
+TestService.Check = function(self, condition, description, source, line) end;
+---@param description string
+---@param source Instance
+---@param line int
+---@return void
+---Prints a red message to the output, prefixed by `TestService: `.
+---
+TestService.Error = function(self, description, source, line) end;
+---@param text string
+---@param source Instance
+---@param line int
+---@return void
+---Prints <samp>Test message</samp>, followed by <var>text</var> to the
+---output, in blue text.
+---
+TestService.Message = function(self, text, source, line) end;
+---@class TextBox : GuiObject, GuiBase2d, GuiBase, Instance
+---@field public ClearTextOnFocus bool
+---@field public ContentText string
+---@field public CursorPosition int
+---@field public EnableRealtimeFilteringHints bool
+---@field public Font Font
+---@field public FontFace Font
+---@field public FontSize FontSize
+---@field public LineHeight float
+---@field public ManualFocusRelease bool
+---@field public MaxVisibleGraphemes int
+---@field public MultiLine bool
+---@field public OverlayNativeInput bool
+---@field public PlaceholderColor3 Color3
+---@field public PlaceholderText string
+---@field public ReturnKeyType ReturnKeyType
+---@field public RichText bool
+---@field public SelectionStart int
+---@field public ShowNativeInput bool
+---@field public Text string
+---@field public TextBounds Vector2
+---@field public TextColor BrickColor
+---@field public TextColor3 Color3
+---@field public TextEditable bool
+---@field public TextFits bool
+---@field public TextInputType TextInputType
+---@field public TextScaled bool
+---@field public TextSize float
+---@field public TextStrokeColor3 Color3
+---@field public TextStrokeTransparency float
+---@field public TextTransparency float
+---@field public TextTruncate TextTruncate
+---@field public TextWrap bool
+---@field public TextWrapped bool
+---@field public TextXAlignment TextXAlignment
+---@field public TextYAlignment TextYAlignment
+---@field public FocusLost fun(enterPressed: bool, inputThatCausedFocusLoss: InputObject): RbxScriptSignal
+---@field public Focused fun(): RbxScriptSignal
+---@field public ReturnPressedFromOnScreenKeyboard fun(): RbxScriptSignal
+---<img src="/assets/blt1aeb8750aa338cd7/TextBox.gif" alt="A TextBox being clicked on and typed into in Roblox Studio"  />
+---
+---A **TextBox** allows the player to provide text input. It behaves
+---similarly to a `TextButton`, except that a single TextBox can be put in
+---focus by clicking, tapping or gamepad selection. While in focus, the
+---player can use a keyboard to change the `TextBox/Text|Text` property.
+---
+---- If there is no text, the `TextBox/PlaceholderText|PlaceholderText` will
+---  be visible. This is useful prompting players of the kind or format of
+---  data they should input.
+---- By default, the `TextBox/ClearTextOnFocus|ClearTextOnFocus` property is
+---  enabled and ensures there is no existing text when a TextBox is focused.
+---  This may not be desirable for text that should be editable by the
+---  player.
+---- The `TextBox/MultiLine|MultiLine` property allows players to enter
+---  multiple lines of text with newline characters (`\n`).
+---
+---The `ContextActionService` honors TextBox keybinds and will automatically
+---prevent key press events from being passed to actions bound with
+---`ContextActionService/BindAction`. `UserInputService/InputBegan` and
+---related events will still fire while a TextBox is in focus.
+---
+---## Focus State
+---
+---It is possible to detect and change the focus state of a TextBox:
+---
+---- You can use `TextBox/CaptureFocus|CaptureFocus` when a dialogue appears
+---  so that the player doesn't have to click on a TextBox when it becomes
+---  available; you can use `ContextActionService/BindAction` to bind a
+---  certain key to focus a TextBox using this function. When a TextBox comes
+---  into focus, the `TextBox/Focused|Focused` event fires.
+---- You can detect if a certain TextBox is in focus by using
+---  `TextBox/IsFocused|IsFocused`. Alternatively,
+---  `UserInputService/GetFocusedTextBox` can be used to check if any TextBox
+---  is in focus.
+---- When the player is done inputting text, the
+---  `TextBox/FocusLost|FocusLost` event fires, indicating if the user
+---  pressed <kbd>Enter</kbd> to submit text along with the `InputObject`
+---  that caused the loss of focus. When using on screen keyboards on mobile
+---  and console,
+---  `TextBox/ReturnPressedFromOnScreenKeyboard|ReturnPressedFromOnScreenKeyboard`
+---  may also fire.
+---- If some more important matter comes up during gameplay, you can
+---  `TextBox/ReleaseFocus|ReleaseFocus` of the TextBox so that a player's
+---  keyboard input returns to your game.
+---
+---## Text Editing
+---
+---<img src="/assets/blte51c1caa1e82699e/TextBox-Selection.gif" alt="A TextBox with text being selected, copied and pasted" />
+---
+---A TextBox supports text selection through its
+---`TextBox/CursorPosition|CursorPosition` and
+---`TextBox/SelectionStart|SelectionStart` properties. Using
+---`Instance/GetPropertyChangedSignal|GetPropertyChangedSignal`, you can
+---detect when a selection changes. Additionally, it is possible for players
+---to copy and paste text within a TextBox, enabling basic clipboard support.
+---
+---**Text Filtering Notice** Games that facilitate player-to-player
+---communication using text, such as custom chat or nametags, must properly
+---filter such text using `TextService/FilterStringAsync` or
+---`Chat/FilterStringAsync`. If this is not properly done, your game may
+---receive moderation action.
+---
+local TextBox;
+---@return void
+TextBox.ResetKeyboardMode = function(self) end;
+---@param submitted bool
+---@return void
+---Forces the client to unfocus the TextBox. The `submitted` parameter allows
+---you to over-ride the `enterPressed` parameter in the `TextBox/FocusLost`
+---event.
+---
+---This item should be used with a `LocalScript` in order to work as expected
+---in online mode.
+---
+---The code shown below will force the client to unfocus the 'TextBox' 5
+---seconds after it's selected:
+---
+---```lua
+---local TextBox = script.Parent
+---TextBox.Focused:Connect(function()
+---	wait(5)
+---	TextBox:ReleaseFocus()
+---end)
+---```
+---
+---Please be aware that the above example assumes that it's in a LocalScript,
+---as a child of a TextBox.
+---
+TextBox.ReleaseFocus = function(self, submitted) end;
+---@param text string
+---@return void
+TextBox.SetTextFromInput = function(self, text) end;
+---@return bool
+---Returns true if the textbox is focused, or false if it is not.
+---
+TextBox.IsFocused = function(self) end;
+---@return void
+---Forces the client to focus on the TextBox.
+---
+TextBox.CaptureFocus = function(self) end;
+---@class TextBoxService : Instance
+local TextBoxService;
+---@class TextButton : GuiButton, GuiObject, GuiBase2d, GuiBase, Instance
+---@field public ContentText string
+---@field public Font Font
+---@field public FontFace Font
+---@field public FontSize FontSize
+---@field public LineHeight float
+---@field public LocalizedText string
+---@field public MaxVisibleGraphemes int
+---@field public RichText bool
+---@field public Text string
+---@field public TextBounds Vector2
+---@field public TextColor BrickColor
+---@field public TextColor3 Color3
+---@field public TextFits bool
+---@field public TextScaled bool
+---@field public TextSize float
+---@field public TextStrokeColor3 Color3
+---@field public TextStrokeTransparency float
+---@field public TextTransparency float
+---@field public TextTruncate TextTruncate
+---@field public TextWrap bool
+---@field public TextWrapped bool
+---@field public TextXAlignment TextXAlignment
+---@field public TextYAlignment TextYAlignment
+---A TextButton behaves similarly to `TextLabel` in regards to rendering with
+---the additional behaviors of a `GuiButton`. It defines the same
+---text-rendering properties as a `TextLabel` does.
+---
+---You can disable text rendering by setting `TextButton/TextTransparency`
+---to 1. This will leave you with a plain rectangle that can be used as a
+---button.
+---
+local TextButton;
+---@param text string
+---@return void
+TextButton.SetTextFromInput = function(self, text) end;
+---@class TextChannel : Instance
+---@field public MessageReceived fun(incomingMessage: TextChatMessage): RbxScriptSignal
+---Represents a text chat channel.
+---
+---Contains `TextSource`s as descendants.
+---
+---To send a chat message to the `TextChannel`, call `TextChannel:SendAsync`
+---from a `LocalScript`. The corresponding `TextSource` of the user with
+---`TextSource.CanSend = true` must be in that channel.
+---
+local TextChannel;
+---@param message string
+---@param metadata string
+---@return TextChatMessage
+---Sends a `TextChatMessage` to the server. This can only be used in a
+---`LocalScript`.
+---
+TextChannel.SendAsync = function(self, message, metadata) end;
+---@param systemMessage string
+---@param metadata string
+---@return TextChatMessage
+---Displays a system message to user. This can only be used in a
+---`LocalScript`. Messages are only visible to that user and are not
+---automatically filtered or localized.
+---
+TextChannel.DisplaySystemMessage = function(self, systemMessage, metadata) end;
+---@param userId int64
+---@return Tuple
+---Adds a `TextSource` to the `TextChannel` given userId of the user (with
+---`Player.UserId`).
+---
+---This can only be used in a `Script`.
+---
+---If a `TextSource` representing the user does not exist, this adds a
+---`TextSource`.
+---
+---If a
+---'TextSource`representing the user does exist, this returns the`TextSource`.
+---
+---If the user has chat off or isn't in the server, this returns a tuple
+---`nil`, `false`.
+---
+TextChannel.AddUserAsync = function(self, userId) end;
+---@class TextChatCommand : Instance
+---@field public Enabled bool
+---@field public PrimaryAlias string
+---@field public SecondaryAlias string
+---@field public Triggered fun(originTextSource: TextSource, unfilteredText: string): RbxScriptSignal
+---Represents a text chat command. It must be parented to `TextChatService`
+---as a descendant to function properly.
+---
+local TextChatCommand;
+---@class TextChatConfigurations : Instance
+local TextChatConfigurations;
+---@class TextChatMessage : Instance
+---@field public MessageId string
+---@field public Metadata string
+---@field public PrefixText string
+---@field public Status TextChatMessageStatus
+---@field public Text string
+---@field public TextChannel TextChannel
+---@field public TextSource TextSource
+---@field public Timestamp DateTime
+---Immutable data object representing a text chat message.
+---
+local TextChatMessage;
+---@class TextChatMessageProperties : Instance
+---@field public PrefixText string
+---@field public Text string
+---Overrides `TextChatMessage` properties when returned by callbacks defined
+---in `TextChatService.OnIncomingMessage` or `TextChannel.OnIncomingMessage`.
+---
+---`TextChatMessageProperties` overrides the matching properties of the
+---corresponding `TextChatMessage`.
+---
+---This can be used to add rich text tags to a message.
+---
+local TextChatMessageProperties;
+---@class TextChatService : Instance
+---@field public ChatVersion ChatVersion
+---@field public CreateDefaultCommands bool
+---@field public CreateDefaultTextChannels bool
+---@field public MessageReceived fun(textChatMessage: TextChatMessage): RbxScriptSignal
+---@field public SendingMessage fun(textChatMessage: TextChatMessage): RbxScriptSignal
+---A service handling in-experience text chat. TextChatService handles
+---various text chat related tasks, such as managing channels, decorating
+---messages, filtering text, creating commands, and developing custom chats
+---interfaces.
+---
+local TextChatService;
+---@class TextFilterResult : Instance
+---Represents the result of a call to `TextService/FilterStringAsync`. Used
+---to distribute a filtered string accordingly.
+---
+local TextFilterResult;
+---@param toUserId int64
+---@return string
+---The GetChatForUserAsync function returns the text in a properly filtered
+---manner for the specified `Player/UserId`. This should be used in the
+---context of chats between players, although there are some other cases
+---where text filtering is required.
+---
+---This function returns the string appropriate for sending and displaying to
+---a target user (specified by _toUserId_) from the original sender using the
+---least restrictive filtering appropriate for the target user, with `Chat`
+---privacy settings of both users enforced. This string should only be shown
+---to the target user, as it might not be appropriate for all users.
+---
+---This method throws an error if the two users are not allowed to chat (that
+---is, if `Chat/CanUserChatAsync` would return false for the given sender and
+---receiver). If this method throws the string should not be displayed to the
+---user. In addition, this function will throw an error if CanUserChatAsync
+---would return false, so CanUserChatAsync should be called first to check.
+---
+---This function currently throws an error if the user with the id _toUserId_
+---is not online on the current server.
+---
+---If text can be used for real-time or near real-time communication it
+---should use this method.
+---
+---This function will return immediately in most cases. The only time it will
+---yield is if the target user is offline or has just joined the server and
+---their filtering info is not yet loaded.
+---
+TextFilterResult.GetChatForUserAsync = function(self, toUserId) end;
+---@return string
+---Returns the text in a properly filtered manner for all users.
+---
+TextFilterResult.GetNonChatStringForBroadcastAsync = function(self) end;
+---@param toUserId int64
+---@return string
+---Returns the text in a properly filtered manner for the specified
+---`Player/UserId`. This should be used in the context of non-chat text that
+---another user can see, such as the name of a pet.
+---
+TextFilterResult.GetNonChatStringForUserAsync = function(self, toUserId) end;
+---@class TextLabel : GuiLabel, GuiObject, GuiBase2d, GuiBase, Instance
+---@field public ContentText string
+---@field public Font Font
+---@field public FontFace Font
+---@field public FontSize FontSize
+---@field public LineHeight float
+---@field public LocalizedText string
+---@field public MaxVisibleGraphemes int
+---@field public RichText bool
+---@field public Text string
+---@field public TextBounds Vector2
+---@field public TextColor BrickColor
+---@field public TextColor3 Color3
+---@field public TextFits bool
+---@field public TextScaled bool
+---@field public TextSize float
+---@field public TextStrokeColor3 Color3
+---@field public TextStrokeTransparency float
+---@field public TextTransparency float
+---@field public TextTruncate TextTruncate
+---@field public TextWrap bool
+---@field public TextWrapped bool
+---@field public TextXAlignment TextXAlignment
+---@field public TextYAlignment TextYAlignment
+---A TextLabel renders a rectangle, like a `Frame`, with styled text. The
+---rectangle can be used to define text boundaries, text scaling
+---(`TextLabel/TextScaled`) and wrapping (`TextLabel/TextWrapped`,
+---`TextLabel/TextXAlignment`, `TextLabel/TextYAlignment`).
+---
+---This class contains properties that control the display of the text, such
+---as `TextLabel/Font` and `TextLabel/TextColor3`. All text rendered by a
+---single text label will have the same visual properties; multiple TextLabel
+---objects must be used in order to render multiple styles of text. To
+---display only text and hide the rectangle, set
+---`GuiObject/BackgroundTransparency` to 1.
+---
+---`TextService/GetTextSize` can be used to get the size (bounds) of text
+---that would be rendered in a TextLabel given a font size, font, and frame
+---size.
+---
+---A `UITextSizeConstraint` object can be used to constrain the size of text
+---with `TextLabel/TextScaled` enabled. It is recommended that the size of
+---text is no lower than 9, otherwise it may not be visible to most users.
+---
+local TextLabel;
+---@param text string
+---@return void
+TextLabel.SetTextFromInput = function(self, text) end;
+---@class TextService : Instance
+---The TextService is a service internally responsible for handling the
+---display of text in the game.
+---
+---This class has two member functions,
+---
+---The `TextService/GetTextSize` function gives developers the ability to
+---calculate the space required for a specific text string with specified
+---formatting, returning a `DataType/Vector2` pixel size.
+---
+---The `TextService/FilterStringAsync` function is required to properly
+---filter user specified text (such as chat messages or other inputs) in the
+---interests of user safety. Developers not using the Roblox default `Chat`,
+---or allowing users to otherwise input text must use this function.
+---
+---For more information on text filtering please see [this article][1].
+---
+---[1]: https://developer.roblox.com/articles/Text-and-Chat-Filtering
+---
+local TextService;
+---@param assetId Content
+---@return Dictionary
+TextService.GetFamilyInfoAsync = function(self, assetId) end;
+---@param string string
+---@param fontSize int
+---@param font Font
+---@param frameSize Vector2
+---@return Vector2
+---Computes the `DataType/Vector2` dimensions (in pixels) that will be taken
+---up with text when using the specified formatting parameters and size
+---constraints.
+---
+---Note, the fontSize parameter will not accept the `Enum/FontSize` Enum.
+---Instead the integer size corresponding with the `Enum/FontSize` Enum
+---should be used. This is not equal to the value of the `Enum/FontSize`
+---Enum. For example, for _Size11_ font, the integer _11_ should be used.
+---
+---This function is a useful alternative to the `TextLabel/TextBounds`
+---property of the `TextLabel` and `TextButton` objects. Using the
+---`TextLabel/TextBounds` property to calculate the dimensions text requires
+---is often impractical as it requires a `TextLabel` object to be created.
+---
+---With GetTextSize, the dimensions required by a particular text string in a
+---particular `TextLabel` or `TextButton` can be calculated before any object
+---is created or text property set.
+---
+---Developers are recommended to add a pixel of padding to the result to
+---ensure no text is cut off.
+---
+TextService.GetTextSize = function(self, string, fontSize, font, frameSize) end;
+---@param stringToFilter string
+---@param fromUserId int64
+---@param textContext TextFilterContext
+---@return Instance
+---The FilterStringAsync function filters a string being received from a
+---user, using the `TextService`, and returns a `TextFilterResult` which can
+---be used to distribute the correctly filtered text accordingly.
+---
+---#### Usage
+---
+---This method should be called once each time a user submits a message. Do
+---not cache the results of this function and re-use them for separate
+---messages. If a user submits the same text multiple times this method must
+---be called again each time the message is sent. If the results are cached
+---and reused spam detection and many forms of context-aware filtering will
+---be broken and potentially put user safety at risk. Games that improperly
+---use cached results may face moderation.
+---
+---However, it is encouraged to keep these result objects to display the same
+---message to users who join the server later. For example: this can be used
+---to safely and efficiently implement a server chat log that always uses the
+---least restrictive filtering for users who join later, or for efficiently
+---displaying text like a pet name to a user who joins the game after the pet
+---was first spawned and name filtered.
+---
+---The optional `Enum/TextFilterContext` parameter will not impact the
+---filtered result of the query. This value will be used to improve Roblox's
+---text filtering.
+---
+---Private text is anything that is seen only by specific players, rather
+---than every player. For example, if the chat is seen by a single player, or
+---by a selected group of players, then the chat is considered private. Chat
+---for teams or chat that is potentially visible to a wider group, such as
+---the server, is considered public. If you are unsure what your text
+---qualifies as, leave the optional field blank.
+---
+---Note:
+---
+---- This method always yields to make a text filtering service call
+---- This method may throw if there is a service error that can not be
+---  resolved. If this function throws an error please do not retry the
+---  request; this method implements it's own retry logic internally. If this
+---  method fails do not display the text to any user.
+---- This method currently throws if _fromUserId_ is not online on the
+---  current server. We plan to support users who are offline or on a
+---  different server in the future.
+---
+TextService.FilterStringAsync = function(self, stringToFilter, fromUserId, textContext) end;
+---@param scale float
+---@return void
+TextService.SetResolutionScale = function(self, scale) end;
+---@class TextSource : Instance
+---@field public CanSend bool
+---@field public UserId int64
+---Represents a speaker in a `TextChannel`.
+---
+---`TextSource`s provide details on permissions users have in `TextChannel`s.
+---There may be multiple `TextSource`s for a user if that user belongs in
+---multiple `TextChannel`s.
+---
+---Create `TextSource`s with `TextChannel:AddUserAsync`, which adds a
+---`TextSource` to the `TextChannel` as a descendant.
+---
+---Remove `TextSource`s by calling `TextSource.Destroy`.
+---
+---Name of a `TextSource` is the `Player.DisplayName` of the user associated
+---with the `TextSource` via `TextSource.UserId`.
+---
+local TextSource;
+---@class Texture : Decal, FaceInstance, Instance
+---@field public OffsetStudsU float
+---@field public OffsetStudsV float
+---@field public StudsPerTileU float
+---@field public StudsPerTileV float
+---A Texture object applies a repeating texture to the face of a `BasePart`.
+---
+---## How does a Texture work?
+---
+---A Texture will apply an image to the `BasePart` it is parented to. The
+---surface this image is applied to is dependent on the `FaceInstance/Face`
+---property. When the `BasePart` is resized, the image will repeat. The size
+---of the repeating textures is determined by the `Texture/StudsPerTileU` and
+---`StudsPerTileV` properties.
+---
+---```
+---local texture = Instance.new("Texture")
+---texture.Texture = "http://www.roblox.com/asset/?id=732339893" -- roblox logo
+----- 1x1 studs repeating texture
+---texture.StudsPerTileU = 1
+---texture.StudsPerTileV = 1
+---```
+---
+---The image a Texture applies is determined by its `Decal/Texture` property.
+---Images can be uploaded to Roblox provided they adhere to the community
+---guidelines. For information on how to upload images, see
+---[Textures and Decals](/building-and-visuals/modeling/textures-and-decals).
+---
+---## What is the difference between Textures and Decals?
+---
+---The texture object is very similar to the `Decal` object. However, whereas
+---the image applied by a `Decal` scales when the `BasePart` is resized, the
+---image applied by a Texture repeats.
+---
+---Repeating textures have a wide range of applications such as floor tiles
+---and wall textures.
+---
+---## Alternatives to Textures
+---
+---Although Decals have a wide variety of applications, in some cases
+---developers may wish to pick one of the following classes instead.
+---
+---- For non repeating images `Decal` object should be used
+---- To apply GUI elements, the `SurfaceGui` object should be used
+---- If the effect of lighting on the image needs to be altered, the
+---  `SurfaceGui` object should be used
+---
+---[1]: /building-and-visuals/modeling/textures-and-decals
+---
+local Texture;
+---@class ThirdPartyUserService : Instance
+---@field public ActiveGamepadAdded fun(): RbxScriptSignal
+---@field public ActiveGamepadRemoved fun(): RbxScriptSignal
+---@field public ActiveUserSignedOut fun(signOutStatus: int): RbxScriptSignal
+---An internal service that is used to handle third-party related users. This
+---service only works on consoles, and is only intended to be used by Roblox.
+---
+local ThirdPartyUserService;
+---@return bool
+ThirdPartyUserService.HaveActiveUser = function(self) end;
+---@return string
+ThirdPartyUserService.GetUserPlatformId = function(self) end;
+---@param gamepadId UserInputType
+---@return int
+ThirdPartyUserService.RegisterActiveUser = function(self, gamepadId) end;
+---@return void
+ThirdPartyUserService.ReturnToEngagement = function(self) end;
+---@return string
+ThirdPartyUserService.GetUserPlatformName = function(self) end;
+---@return void
+ThirdPartyUserService.ShowAccountPicker = function(self) end;
+---@class ThreadState : Instance
+---@field public FrameCount int
+---@field public Populated bool
+---@field public ThreadId int
+---@field public ThreadName string
+local ThreadState;
+---@param index int
+---@return Instance
+ThreadState.GetFrame = function(self, index) end;
+---@class TimerService : Instance
+---An internal service responsible for scheduling timed events. It is used by
+---the `Debris` class. Its functionality can not be accessed by developers.
+---
+local TimerService;
+---@class ToastNotificationService : Instance
+local ToastNotificationService;
+---@param message string
+---@param notificationId string
+---@return void
+ToastNotificationService.ShowNotification = function(self, message, notificationId) end;
+---@param notificationId string
+---@return void
+ToastNotificationService.HideNotification = function(self, notificationId) end;
+---@class Tool : BackpackItem, Instance
+---@field public CanBeDropped bool
+---@field public Enabled bool
+---@field public Grip CFrame
+---@field public GripForward Vector3
+---@field public GripPos Vector3
+---@field public GripRight Vector3
+---@field public GripUp Vector3
+---@field public ManualActivationOnly bool
+---@field public RequiresHandle bool
+---@field public ToolTip string
+---@field public Activated fun(): RbxScriptSignal
+---@field public Deactivated fun(): RbxScriptSignal
+---@field public Equipped fun(mouse: Mouse): RbxScriptSignal
+---@field public Unequipped fun(): RbxScriptSignal
+---Tools are objects that a `Humanoid` object can equip. For players, they
+---are stored in a `Backpack` object parented to a `Player` object. In-game,
+---players may have multiple tools which appear as icons at the bottom of the
+---screen. Equipping a tool moves it from the Backpack and into a player's
+---`Character|character` model in the `Workspace`. By default, tools are held
+---in the right hand and have a handle in them, which is a `BasePart|Part`
+---named "Handle" inside (though one is not required if `Tool/RequiresHandle`
+---is off). Tools that are to be provided to (re)spawning players ought to be
+---stored in the `StarterPack`.
+---
+---On desktop, pressing a number key (1, 2, 3...) will equip a tool. Equipped
+---tools can be dropped into the Workspace by pressing Backspace. It's
+---recommended that you turn `Tool/CanBeDropped` off so it is not possible to
+---drop a tool, die, respawn and drop again to duplicate tools. On gamepads,
+---LB and RB buttons will equip tools. You can disable activation via left
+---click (or right trigger on gamepad) by setting `Tool/ManualActivationOnly`
+---on. Doing so requires that you call Activate yourself through some sort of
+---other user input.
+---
+---Tools are not the only way to capture user input. You can also use
+---`ContextActionService`, `UserInputService` or `Player/GetMouse`. If you
+---need a Tool to have multiple actions, such as pressing a key while the
+---Tool is equipped, you should use ContextActionService's
+---`ContextActionService/BindAction|BindAction` and
+---`ContextActionService/UnbindAction|UnbindAction` in the
+---`Tool/Equipped|Equipped` and `Tool/Unequipped|Unequipped` events,
+---respectively. Use a `LocalScript` send these actions to the server via a
+---`RemoteFunction` inside the Tool.
+---
+local Tool;
+---@return void
+---The Deactivate function simulates the deactivation of a `Tool`. The Tool
+---must be equipped for this function to work.
+---
+---Tools will normally trigger the `Tool/Deactivated` event when the player
+---releases the left mouse button, while the tool is equipped.
+---
+---The below code, when placed in a `LocalScript`, would create a tool in the
+---`Players/LocalPlayer|LocalPlayer's` `Backpack`. It will simulate the tool
+---being deactivated and print "Tool deactivated" when the player equips the
+---tool.
+---
+---```lua
+---local tool = Instance.new("Tool")
+---tool.RequiresHandle = false
+---tool.Parent = game.Players.LocalPlayer.Backpack
+---
+---tool.Equipped:Connect(function()
+---	tool:Deactivate()
+---end)
+---
+---function toolDeactivated()
+---    print("Tool deactivated")
+---end
+---
+---tool.Deactivated:Connect(toolDeactivated)
+---```
+---
+Tool.Deactivate = function(self) end;
+---@return void
+---The Activate function simulates a click on a `Tool`. The Tool must be
+---equipped for this function to work.
+---
+---Tools will normally trigger the `Tool/Activated` event when the player
+---releases the left mouse button, while the tool is equipped.
+---
+---The below code, when placed in a `LocalScript`, would create a tool in the
+---`Players/LocalPlayer|LocalPlayer's` `Backpack`. It will simulate the tool
+---being activated and print "Tool activated" when the player equips the
+---tool.
+---
+---```lua
+---local tool = Instance.new("Tool")
+---tool.RequiresHandle = false
+---tool.Parent = game.Players.LocalPlayer.Backpack
+---
+---tool.Equipped:Connect(function()
+---	tool:Activate()
+---end)
+---
+---function toolActivated()
+---    print("Tool activated")
+---end
+---
+---tool.Activated:Connect(toolActivated)
+---```
+---
+Tool.Activate = function(self) end;
+---@class ToolboxService : Instance
+local ToolboxService;
+---@class Torque : Constraint, Instance
+---@field public RelativeTo ActuatorRelativeTo
+---@field public Torque Vector3
+---A Torque is used to apply a torque to a part or assembly. When active,
+---this object will find the center of mass of the part or assembly connected
+---to its `Constraint/Attachment0|Attachment0` and will apply a torque,
+---spinning the part or parts.
+---
+---![Torque Demo][1]
+---
+---## Direction of Torque
+---
+---The direction of the spin is determined by the `Torque/Torque` and
+---`Torque/RelativeTo` properties. The Torque defines the spin about the X,
+---Y, and Z axes. However, these axes are oriented based on the RelativeTo
+---property.
+---
+---When RelativeTo is set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.Attachment0`, the torque
+---will be oriented based on the local space of Attachment0. If Attachment0
+---moves or rotates, the torque will change to make sure it is still applying
+---in the correct directions. Similarly, when RelativeTo is set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.Attachment1`, the torque
+---will be applied based on `Constraint/Attachment1|Attachment1's`
+---orientation, regardless of the position or direction of Attachment0. Last,
+---RelativeTo can be set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.World`, which will use
+---the world coordinate system to determine the axes for rotation.
+---
+---See also:
+---
+---- [Body Movers Example.rbxl][2], a sample place showcasing body movers in
+---  various configurations.
+---- [Attachments and Constraints][3], an article outlining how to create and
+---  use attachments and constraints
+---
+---[1]: /assets/blt9aa3f798a7e9af47/TorqueDemo.gif
+---[2]:
+---  https://doy2mn9upadnk.cloudfront.net/uploads/default/original/3X/e/1/e17a844750802035b24f68ddcbd83f6312b8f1d6.rbxl
+---[3]: https://developer.roblox.com/articles/Constraints
+---
+local Torque;
+---@class TorsionSpringConstraint : Constraint, Instance
+---@field public Coils float
+---@field public CurrentAngle float
+---@field public Damping float
+---@field public LimitEnabled bool
+---@field public LimitsEnabled bool
+---@field public MaxAngle float
+---@field public MaxTorque float
+---@field public Radius float
+---@field public Restitution float
+---@field public Stiffness float
+---A torsion spring applies a torque based on a relative angle and a relative
+---angular velocity. Specifically, torsion springs try to bring two axes from
+---two parts together in a compliance way.
+---
+---This constraint is ideal for building vehicle suspension.
+---
+local TorsionSpringConstraint;
+---@class TotalCountTimeIntervalItem : StatsItem, Instance
+---A special type of
+---<a href="/reference/engine/classes/StatsItem">StatsItem</a> which measures
+---a total-count-over-time interval. As of right now, this StatsItem goes
+---unused.
+---
+local TotalCountTimeIntervalItem;
+---@class TouchInputService : Instance
+---An internal service responsible for touch inputs on mobile devices.
+---
+local TouchInputService;
+---@class TouchTransmitter : Instance
+---An internal object used by networking and replication code to transmit
+---`BasePart/Touched` and `BasePart/TouchEnded` events.
+---
+---The TouchTransmitter object named 'TouchInterest' is created and parented
+---to a `BasePart` when the `BasePart/Touched` or `BasePart/TouchEnded`
+---events are listened (connected) to.
+---
+---Removing the TouchTransmitter will prevent the touched events from
+---working. The TouchTransmitter object can also be removed exclusively on
+---the client (when `Workspace/FilteringEnabled` is set to true). This will
+---prevent collisions from models the client has network ownership of (such
+---as the player's character) from registering.
+---
+---Note, in almost all circumstances developers should disconnect the
+---connection using `RBXScriptConnection/Disconnect` method rather than
+---removing the TouchTransmitter. Otherwise the connection will not be
+---cleaned up which can cause performance issues over time.
+---
+local TouchTransmitter;
+---@class TracerService : Instance
+local TracerService;
+---@param name string
+---@param parentId string
+---@return string
+TracerService.StartSpan = function(self, name, parentId) end;
+---@param spanId string
+---@return void
+TracerService.FinishSpan = function(self, spanId) end;
+---@class Trail : Instance
+---@field public Attachment0 Attachment
+---@field public Attachment1 Attachment
+---@field public Brightness float
+---@field public Color ColorSequence
+---@field public Enabled bool
+---@field public FaceCamera bool
+---@field public Lifetime float
+---@field public LightEmission float
+---@field public LightInfluence float
+---@field public MaxLength float
+---@field public MinLength float
+---@field public Texture Content
+---@field public TextureLength float
+---@field public TextureMode TextureMode
+---@field public Transparency NumberSequence
+---@field public WidthScale NumberSequence
+---The Trail object is used to create a trail like an effect between two
+---points. As the points move through space a texture is drawn on the plane
+---the points define. This is commonly used to create effects to help
+---visualize movements like tracer trails behind projectiles, footprints,
+---tire tracks, and many other similar effects.
+---
+---![A diagram explaining the Trail object.][1]
+---![An example usage of the Trail object.][2]
+---
+---When a Trail is active it will record the position of it's
+---`Trail/Attachment0` every frame. It then connects these positions to where
+---the attachments were in the previous frame, creating a polygon. That
+---polygon is then filled in with the Trail's `Trail/Color` and
+---`Trail/Texture` (if that Texture exists). Each segment drawn in this way
+---will eventually fade based on the TrailEffect's `Trail/Lifetime`.
+---
+---## Creating Trails
+---
+---A Trail must be a descendant of the `Workspace`, and its attachment
+---properties (`Trail/Attachment0` and `Trail/Attachment1`) must be set to
+---two unique Attachments. Once this has been done the effect will create a
+---trail as soon as either of its attachments moves.
+---
+---![Basic Trail][3]
+---
+---It is common practice to either store the Trail in the `BasePart`
+---containing the effect's attachments, or as a child of a `Folder` in the
+---Workspace with other effects objects.
+---
+---[1]: /assets/bltf78765806231bc92/TrailSegments2.png
+---[2]: /assets/blta001a4353eae2502/Trail.gif
+---[3]: /assets/bltbed0b1f9276adeb8/BasicTrail.gif
+---
+local Trail;
+---@return void
+---The Clear function clears the segments of the `Trail`. This means that any
+---trail that has been drawn will be erased when this function is called,
+---even if that segment's `Trail/Lifetime` duration has not yet been reached.
+---
+---While this is less noticeable for trails with shorter lifetimes, this is
+---useful when cleaning up trails that have a longer lifetime, or for cases
+---where the trail is removed when a certain game action occurs.
+---
+---Calling this function will only affect old segments that have already been
+---done. It will not affect the drawing of any new trail segments after this
+---function call. If you would like to clear existing trail segments, and
+---temporarily prevent new segments from being drawn, consider toggling the
+---trail's `Trail/Enabled` property to false at the same time.
+---
+Trail.Clear = function(self) end;
+---@class Translator : Instance
+---@field public LocaleId string
+---The role of a Translator is to manufacture/return strings localized for
+---the viewing player. it can be used to retrieve display-ready localized
+---text from a `LocalizationTable`. The source of the `Translator/LocaleId`
+---property, the set of tables it will search, and the order it will search
+---them in depends on which method was used to create the Translator
+---instance.
+---
+---The input for a Translator is the original development language string and
+---a context, where all or part of the context can be used to find a more
+---precise/situational translation for the source string.
+---
+---The Translator can also be used to manufacture translated strings with
+---inserts (data replacements) which may change order based on the target
+---language.
+---
+local Translator;
+---@param context Instance
+---@param text string
+---@return string
+Translator.RobloxOnlyTranslate = function(self, context, text) end;
+---@param context Instance
+---@param text string
+---@return string
+---Returns the localized text string in a `LocalizationTable` based on its
+---`Translator` locale. This string will be in the context of the provided
+---object, given the provided **Source** text.
+---
+---See
+---[Localizing with Scripting](/production/localization/localizing-with-scripting)
+---for more details and usage examples of this function.
+---
+---#### Context Overrides
+---
+---In some cases, duplicate **Source** strings may have completely different
+---translations in other languages. For example, the English noun "Screen"
+---can indicate both a computer screen and a window screen, but the Spanish
+---translations are completely different:
+---
+---<table>
+---<tbody>
+---    <tr>
+---      <td width="12%">A</td>
+---      <td width="16%">B</td>
+---      <td width="18%">C</td>
+---      <td width="12%">D</td>
+---      <td width="18%">E</td>
+---    </tr>
+---    <tr>
+---      <td>Key</td>
+---      <td>Context</td>
+---      <td><b>Source</b></td>
+---      <td>Example</td>
+---      <td><b>es</b></td>
+---    </tr>
+---    <tr>
+---      <td></td>
+---      <td></td>
+---      <td>Screen</td>
+---      <td></td>
+---      <td>Pantalla</td>
+---    </tr>
+---    <tr>
+---      <td></td>
+---      <td></td>
+---      <td>Screen</td>
+---      <td></td>
+---      <td>Mosquitero</td>
+---    </tr>
+---    <tr>
+---      <td> </td>
+---      <td></td>
+---      <td></td>
+---      <td></td>
+---      <td></td>
+---    </tr>
+---  </tbody>
+---</table>
+---
+---In these cases, the first argument to this function &mdash; a valid
+---in-game `Instance` &mdash; can be used as a "tie breaker" when multiple
+---GUI objects use the same source string. To implement this, specify the
+---"path" to the `Instance` you'd like to override as the **Context** value
+---of the translation data:
+---
+---<table>
+---<tbody>
+---    <tr>
+---      <td width="12%">A</td>
+---      <td width="36%">B</td>
+---      <td width="18%">C</td>
+---      <td width="12%">D</td>
+---      <td width="18%">E</td>
+---    </tr>
+---    <tr>
+---      <td>Key</td>
+---      <td><b>Context</b></td>
+---      <td>Source</td>
+---      <td>Example</td>
+---      <td>es</td>
+---    </tr>
+---    <tr>
+---      <td></td>
+---      <td>workspace.ComputerScreen.SurfaceGui.TextLabel</td>
+---      <td>Screen</td>
+---      <td></td>
+---      <td>Pantalla</td>
+---    </tr>
+---    <tr>
+---      <td></td>
+---      <td></td>
+---      <td>Screen</td>
+---      <td></td>
+---      <td>Mosquitero</td>
+---    </tr>
+---    <tr>
+---      <td> </td>
+---      <td></td>
+---      <td></td>
+---      <td></td>
+---      <td></td>
+---    </tr>
+---  </tbody>
+---</table>
+---
+---Then, when calling this function in a script, pass the same `Instance` as
+---the first argument, followed by the **Source** lookup text as the second
+---argument:
+---
+---```lua
+---local LocalizationService = game:GetService("LocalizationService")
+---
+---local success, translator = pcall(function()
+---	return LocalizationService:GetTranslatorForPlayerAsync(game.Players.LocalPlayer)
+---end)
+---
+---if success then
+---	local trans = translator:Translate(workspace.ComputerScreen.SurfaceGui.TextLabel, "Screen")
+---	print(trans)
+---else
+---	warn("Cannot load translator for player!")
+---end
+---```
+---
+Translator.Translate = function(self, context, text) end;
+---@param key string
+---@param args Variant
+---@return string
+---Returns the localized text string in a `LocalizationTable` based on its
+---`Translator` locale, by key. The optional **args** table is used for
+---filling format parameters in the matching text entry.
+---
+---Note that this method will throw an error in the following cases:
+---
+---- If none of the `LocalizationTable|LocalizationTables` available to this
+---  `Translator` include a value for the given key.
+---- If the
+---  [format string](/production/localization/translating-dynamic-content)
+---  for the key uses numbered parameters and **args** is not an array.
+---- If the
+---  [format string](/production/localization/translating-dynamic-content)
+---  uses named parameters and **args** is not a table of key-value pairs.
+---- If **args** is missing values for parameters that are used in the
+---  matching
+---  [format string](/production/localization/translating-dynamic-content).
+---
+---See
+---[Localizing with Scripting](/production/localization/localizing-with-scripting)
+---for more details and usage examples of this function.
+---
+Translator.FormatByKey = function(self, key, args) end;
+---@class TremoloSoundEffect : SoundEffect, Instance
+---@field public Depth float
+---@field public Duty float
+---@field public Frequency float
+---The TremoloSoundEffect creates a trembling effect on a sound by varying
+---the volume of the sound up and down.
+---
+---Like all other `SoundEffect`s, a TremoloSoundEffect can be applied either
+---to a `Sound` or `SoundGroup` by being parented to either.
+---
+local TremoloSoundEffect;
+---@class TriangleMeshPart : BasePart, PVInstance, Instance
+---@field public CollisionFidelity CollisionFidelity
+---TriangleMeshPart is an abstract intermediate class from which `MeshPart`
+---and `PartOperation` inherit. It was created to consolidate the management
+---of physical geometry properties between the two sub-classes. It implements
+---the read-only `TriangleMeshPart/CollisionFidelity|CollisionFidelity`.
+---
+local TriangleMeshPart;
+---@class TrussPart : BasePart, PVInstance, Instance
+---@field public Style Style
+---Truss parts are the same as `Part|Parts`, except that they have a
+---different visual style, resize differently and characters are able to
+---climb them. The smallest size it can be is 2x2x2 studs.
+---
+---![A Truss beam as it appears in game][1]
+---
+---The `TrussPart/Style|style` of a truss beam can be set to change its
+---appearance.
+---
+---[1]: /assets/bltbbd19f2859328437/TrussPart.png
+---
+local TrussPart;
+---@class Tween : TweenBase, Instance
+---@field public Instance Instance
+---@field public TweenInfo TweenInfo
+---Tweens are used to interpolate the properties of instances. The Tween
+---object itself controls the playback of the interpolation. Creating and
+---configuring tweens is done with the `TweenService/Create` function. This
+---is the only way to create tweens. Instance.new cannot be used for this
+---particular object.
+---
+---Note that while the configuration of a tween can be accessed after a tween
+---has been created, it can not be modified. If new goals are needed for
+---interpolation, a new tween must be created. Further information on how to
+---create Tweens can be found on the `TweenService` page.
+---
+---Multiple tweens can be played on the same object at the same time, but
+---they must not be animating the same property. If two tweens attempt to
+---modify the same property, the initial tween will be cancelled and
+---overwritten by the most recent tween (see examples).
+---
+---Although other methods exist for tweening objects, such as
+---`GuiObject/TweenSizeAndPosition`, Tweens allows multiple properties to be
+---modified and for the animation to be paused and cancelled at any point.
+---
+local Tween;
+---@class TweenBase : Instance
+---@field public PlaybackState PlaybackState
+---@field public Completed fun(playbackState: PlaybackState): RbxScriptSignal
+---The base class for in-between interpolation handlers.
+---
+local TweenBase;
+---@return void
+---The Cancel function halts playback of its `Tween` and resets the tween
+---variables. If `TweenBase/Play` is called again the `Tween`'s properties
+---will resume interpolating towards their destination but, as the tween
+---variables have been reset, take the full length of the animation to do so.
+---
+---Only the tween variables are reset, not the properties being changed by
+---the tween. This means if you cancel a tween half way through its animation
+---the properties will not reset to their original values. Where Cancel
+---differs from `TweenBase/Pause` is that once resumed, it will take the full
+---duration of the tween to complete the animation.
+---
+TweenBase.Cancel = function(self) end;
+---@return void
+---The Play function starts the playback of its `Tween`. Note that if a tween
+---has already begun calling Play will have no effect unless the tween has
+---finished or has been stopped (either by `TweenBase/Cancel` or
+---`TweenBase/Pause`).
+---
+---Multiple tweens can be played on the same object at the same time, but
+---they must not be animating the same property. If two tweens attempt to
+---modify the same property, the initial tween will be cancelled and
+---overwritten by the most recent tween (see examples).
+---
+TweenBase.Play = function(self) end;
+---@return void
+---The Pause function halts playback of its `Tween`. However the progress
+---variables of the tween will not be reset, meaning that when
+---`TweenBase/Play` is called again the tween will resume playback from the
+---moment it was paused.
+---
+---If a developer wishes to reset the progress variables of the tween, they
+---should use `TweenBase/Cancel`.
+---
+---This means a tween paused half way through its animation will take half of
+---its duration to complete when resumed.
+---
+TweenBase.Pause = function(self) end;
+---@class TweenService : Instance
+---Tweens are used to interpolate the properties of instances. These can be
+---used to create animations for various Roblox objects. Almost any numeric
+---property can be tweened using TweenService. Note that only specific types
+---of properties can be used with TweenService. The types of properties that
+---can be tweened are:
+---
+---- number
+---- bool
+---- `DataType/CFrame`
+---- `DataType/Rect`
+---- `DataType/Color3`
+---- `DataType/UDim`
+---- `DataType/UDim2`
+---- `DataType/Vector2`
+---- `DataType/Vector2int16`
+---- `DataType/Vector3`
+---- `DataType/EnumItem`
+---
+---TweenService's constructor function, `TweenService/Create`, takes
+---information about the animation and generates the `Tween` object which can
+---be used to play the animation. Note that `Tweens` can animate multiple
+---properties at the same time.
+---
+---Details on how the interpolation of the tween is to be carried out are
+---given in the tweenInfo parameter of TweenService:Create(). The `TweenInfo`
+---data type includes a range of properties that can be used to achieve
+---various styles of animation, including reversing and looping `Tweens` (see
+---examples).
+---
+---Multiple tweens can be played on the same object at the same time, but
+---they must not be animating the same property. If two tweens attempt to
+---modify the same property, the initial tween will be cancelled and
+---overwritten by the most recent tween (see examples).
+---
+---Although other methods exist for tweening objects, such as
+---`GuiObject/TweenSizeAndPosition`, TweenService allows multiple properties
+---to be modified and for the animation to be paused and cancelled at any
+---point.
+---
+local TweenService;
+---@param alpha float
+---@param easingStyle EasingStyle
+---@param easingDirection EasingDirection
+---@return float
+---Returns a new alpha value for interpolating using the given alpha value,
+---`Enum/EasingStyle`, and `Enum/EasingDirection`.
+---
+---The provided alpha value is clamped between 0 and 1.
+---
+TweenService.GetValue = function(self, alpha, easingStyle, easingDirection) end;
+---@param instance Instance
+---@param tweenInfo TweenInfo
+---@param propertyTable Dictionary
+---@return Tween
+---The Create function of `TweenService` creates a new `Tween`. The function
+---takes three arguments: the object to tween, the `datatype/TweenInfo` to
+---use, and a table containing the properties to tween and the values to
+---tween to.
+---
+---Tweens are used to interpolate the properties of instances. These can be
+---used to create animations for various Roblox objects. Almost any numeric
+---property can be tweened using `TweenService`.
+---
+---The propertyTable parameter that is passed in needs to be a dictionary
+---where the keys are the string names of the property (e.g. “Position”,
+---“Transparency”, “Color”, etc), and the value is the value the property
+---needs to be at the end of the tween. Note that only specific types of
+---properties can be used with `TweenService`, but multiple properties can be
+---animated in the same tween. The types of properties that can be tweened
+---are:
+---
+---- number
+---- bool
+---- `CFrame`
+---- `Rect`
+---- `Color3`
+---- `UDim`
+---- `UDim2`
+---- `Vector2`
+---- `Vector2int16`
+---- `Vector3`
+---
+---The `Tween` created using this function is unique to the object given as
+---the instance parameter. To apply the same tween to another object, call
+---this function again with the new object.
+---
+---Details on how the interpolation of the tween is to be carried out are
+---given in the `datatype/TweenInfo` parameter, such as reversing, looping
+---and easing.
+---
+TweenService.Create = function(self, instance, tweenInfo, propertyTable) end;
+---@class UGCValidationService : Instance
+local UGCValidationService;
+---@param textureId string
+---@return Vector2
+UGCValidationService.GetTextureSize = function(self, textureId) end;
+---@param meshId string
+---@return int
+UGCValidationService.GetMeshTriCountSync = function(self, meshId) end;
+---@param meshPart Instance
+---@param meshId string
+---@return void
+UGCValidationService.SetMeshIdBlocking = function(self, meshPart, meshId) end;
+---@param meshId string
+---@return int
+UGCValidationService.GetMeshTriCount = function(self, meshId) end;
+---@param textureId string
+---@return Vector2
+UGCValidationService.GetTextureSizeSync = function(self, textureId) end;
+---@param meshId string
+---@return Array
+UGCValidationService.GetMeshVertColors = function(self, meshId) end;
+---@param url Content
+---@param assetFormat string
+---@return Objects
+UGCValidationService.FetchAssetWithFormat = function(self, url, assetFormat) end;
+---@param meshId string
+---@return Array
+UGCValidationService.GetMeshVertsSync = function(self, meshId) end;
+---@param meshId string
+---@return Array
+UGCValidationService.GetMeshVerts = function(self, meshId) end;
+---@class UIAspectRatioConstraint : UIConstraint, UIComponent, UIBase, Instance
+---@field public AspectRatio float
+---@field public AspectType AspectType
+---@field public DominantAxis DominantAxis
+---A UIAspectRatioConstraint ensures that the parent UI element (`GuiObject`)
+---maintains a particular aspect ratio even if its size is set as a
+---percentage of its parent. If an object with this constraint is also under
+---the control of a `UILayout` such as `UIGridLayout`, then the constraint
+---controls the objects size and overwrites any size the layout would apply.
+---
+---When applied to a GuiObject, the UIAspectRatioConstraint will make sure
+---that the objects ratio is maintained by the value defined in
+---`UIAspectRatioConstraint/AspectRatio`. The
+---`UIAspectRatioConstraint/AspectType` sets what determines the maximum size
+---of the object. When set to `UIAspectRatioConstraint/FitWithinMaxSize`, the
+---constraint will make the object the maximum size it can be within the
+---`GuiObject` of the element. When set to ScaleWithParentSize, the elements
+---maximum size will be the size of the parent while still maintaining the
+---aspect ratio. Finally, the `UIAspectRatioConstraint/DominantAxis` will
+---determine which axis to use when setting the new size of the element.
+---
+local UIAspectRatioConstraint;
+---@class UIBase : Instance
+---UIBase is the base class for UI layout and constraint classes.
+---
+local UIBase;
+---@class UIComponent : UIBase, Instance
+---A base class for UI constraint and layout classes, inherits from `UiBase`.
+---
+local UIComponent;
+---@class UIConstraint : UIComponent, UIBase, Instance
+---The base class for UI constraint classes.
+---
+local UIConstraint;
+---@class UICorner : UIComponent, UIBase, Instance
+---@field public CornerRadius UDim
+---A UIComponent that will apply deformation to shapes of corners of its
+---parent `GuiObject`. Input, but not descendants, will be clipped to the
+---round corner area.
+---
+---![ImageLabel with rounded corners | Image Credit: 0Techy][1]
+---
+---## Using the component
+---
+---To use the UICorner UIComponent:
+---
+---1.  Create a `Frame` / `ImageLabel` / `ImageButton` / `TextLabel` /
+---    `TextButton` / `ViewportFrame`
+---2.  Insert a UICorner component as its child
+---3.  Adjust the round corner radius by changing the
+---    `UICorner/CornerRadius|CornerRadius` property
+---
+---## UICorner vs 9-slices
+---
+---Alternatively, rounded backgrounds can be accomplished using 9-slices. As
+---a result, it is helpful to understand the pros and cons of UICorner and
+---9-slices:
+---
+---### UICorner
+---
+---- Pros
+---- Can be used to round `ViewportFrame|ViewportFrames` and image assets
+---- Allows for a scriptable and dynamic corner radius
+---- Cons
+---- There is a performance overhead (Screen Space specifically) as it needs
+---  extra processing on each pixel, while 9-slice only involves simple
+---  sampling
+---
+---### 9-slices
+---
+---- Pros
+---- Suitable for highly decorative borders that are not just rounded
+---- If you have a lot of rounded rectangles with solid colors and you pay
+---  special attention to low-end devices, using 9-slice may be more
+---  performance efficient
+---- Cons
+---- Hard to apply to existing image assets
+---- Different corner sizes require different assets
+---
+---## How the corner radius is calculated internally
+---
+---In order to keep the circular shape of round corners with the UDim
+---CornerRadius value, the round corner radius internally will be calculated
+---as follows:
+---
+---`radius = min(min(rectWidth, rectHeight) / 2, CornerRadius.scale * min(rectWidth, rectHeight) + CornerRadius.offset)`
+---
+---This means that:
+---
+---1.  The radius of the x-axis is always the same as the radius of y axis.
+---2.  The scale will always apply to the minimum edge.
+---3.  Rounded rectangles will always be in a pill shape if CornerRadius is
+---    set to a value that leads to a calculated result greater than half of
+---    the rectangles' minimum edge.
+---
+---It is suggested to always use either scale or offset to define
+---CornerRadius instead of mixing them up.
+---
+---[1]: /assets/blta27795a3c2bf8f9d/RoundedImage.jpg
+---
+local UICorner;
+---@class UIGradient : UIComponent, UIBase, Instance
+---@field public Color ColorSequence
+---@field public Enabled bool
+---@field public Offset Vector2
+---@field public Rotation float
+---@field public Transparency NumberSequence
+---**UIGradient** is a `UIComponent` that applies a color and transparency
+---gradient to the UI elements rendered by the parent `GuiObject`. The
+---appearance of the gradient is configurable through the following
+---properties:
+---
+---- `UIGradient/Color|Color`, a `datatype/ColorSequence`
+---- `UIGradient/Transparency|Transparency`, a `datatype/NumberSequence`
+---- `UIGradient/Offset|Offset`, a `datatype/Vector2`
+---- `UIGradient/Rotation|Rotation`, a number
+---
+---![Gradient Window Example][1]
+---
+---A UIGradient will not apply to child or descendant GuiObjects. In order to
+---apply the the same gradient to multiple objects, you will need multiple
+---UIGradients.
+---
+---## Supported Objects
+---
+---You can apply gradients to `Frame`, `TextLabel`, `TextButton`,
+---`ImageLabel`, `ImageButton`, and `ViewportFrame`. However,
+---`ScrollingFrame` and `TextBox` are not currently supported.
+---
+---## Performance Considerations
+---
+---In order to efficiently use a UIGradient, follow these principles:
+---
+---- Avoid using more than 6 color stops on the `UIGradient/Color|Color`
+---  sequence.
+---- Avoid using a UIGradient on any object that applies a text stroke
+---  (`TextLabel/TextStrokeColor3|TextStrokeColor3`): the gradient will try
+---  to blend with strokes and borders, and may cause performance issues.
+---- Avoid setting `UIGradient/Color|Color` and
+---  `UIGradient/Transparency|Transparency` frequently: this causes the
+---  sequence of colors to rebuild often, which is expensive. If possible,
+---  set these properties only once and try to animate the
+---  `UIGradient/Offset|Offset` or `UIGradient/Rotation|Rotation` properties
+---  to achieve a similar effect. Alternatively, you can change the color of
+---  the parent `GuiObject` using such properties as
+---  `GuiObject/BackgroundColor3|BackgroundColor3`,
+---  `ImageLabel/ImageColor3|ImageColor3`, or
+---  `TextLabel/TextColor3|TextColor3`.
+---- When applying an unchanging gradient on a UI element whose state changes
+---  a lot, there is a trade-off between using a UIGradient (processing time)
+---  and a static gradient image (memory).
+---
+---See also:
+---
+---- [UI Layout and Appearance](/building-and-visuals/ui/ui-layout-and-appearance)
+---  for more information on creating UIGradient objects and how they work.
+---
+---[1]: /assets/blt554b31323e805496/ILoveGradients.jpg
+---
+local UIGradient;
+---@class UIGridLayout : UIGridStyleLayout, UILayout, UIComponent, UIBase, Instance
+---@field public AbsoluteCellCount Vector2
+---@field public AbsoluteCellSize Vector2
+---@field public CellPadding UDim2
+---@field public CellSize UDim2
+---@field public FillDirectionMaxCells int
+---@field public StartCorner StartCorner
+---A UIGridLayout (not to be confused with the abstract `UIGridStyleLayout`
+---from which this class inherits) lays out sibling UI elements in multiple
+---rows within the parent UI element, adding elements to a row one-by-one
+---until the next element would not fit. It then continues adding elements in
+---the next row. A UIGridLayout will take UI elements' `GuiObject/Size` and
+---`GuiObject/Position` under control. While under control, these UI
+---elements' properties will not be editable in the Properties window.
+---
+---![A UIGridLayout arranging inventory slots in a grid][1]
+---
+---By default, it lays out elements from left-to-right, top-to-bottom in
+---**alphabetical** order, but this can be changed to use elements'
+---`GuiObject/LayoutOrder` by changing `UIListLayout/SortOrder` to
+---LayoutOrder. A UIListLayout will automatically re-layout elements when
+---elements are added/removed, or if a relevant property changes:
+---`GuiObject/LayoutOrder` or `Instance/Name`. This can be triggered manually
+---by calling `UIGridStyleLayout/ApplyLayout`, though this is typically not
+---necessary.
+---
+---The actual cell sizes are the same for all cells. A UIGridLayout will
+---respect UI constraints placed with it, such as `UISizeConstraint` and
+---`UIAspectRatioConstraint`. Elements in the layout can span multiple cells
+---if they have a `UISizeConstraint` with a
+---`UISizeConstraint/MinSize|MinSize` set higher than the
+---`UIGridLayout/CellSize|CellSize`. It is possible to limit the number of
+---elements per row using `UIGridLayout/FillDirectionMaxCells`. If set to 1,
+---it is possible to create a single row of elements (as each element would
+---be positioned in its own row).
+---
+---This layout is appropriate when line breaks are OK after arbitrary cells.
+---For example, a set of inventory spaces is a good use of this layout. If
+---building a table of values in which a line break is not appropriate in the
+---middle of tabular data, it might be a better idea to use a `UITableLayout`
+---instead.
+---
+---[1]: /assets/bltdf5323e2df741820/GamepadGrid_Image03.png
+---
+local UIGridLayout;
+---@class UIGridStyleLayout : UILayout, UIComponent, UIBase, Instance
+---@field public AbsoluteContentSize Vector2
+---@field public FillDirection FillDirection
+---@field public HorizontalAlignment HorizontalAlignment
+---@field public SortOrder SortOrder
+---@field public VerticalAlignment VerticalAlignment
+---The base class for grid style UI layouts.
+---
+local UIGridStyleLayout;
+---@return void
+---The ApplyLayout method forces sibling UI elements to be re-laid out in
+---case the sorting criteria may have changed (such as when
+---`UIGridStyleLayout/SortOrder` is set to Custom, and the
+---`UIGridStyleLayout/SetCustomSortFunction` behavior changed). Re-layouts
+---automatically happen when UI elements are added/removed, or their
+---`Instance/Name` or `GuiObject/LayoutOrder` change.
+---
+---The manner in which sibling UI elements are laid out is dependent on the
+---implementation of this abstract class. In other words, a concrete class
+---like `UIListLayout` or `UIGridLayout` is responsible for the actual
+---element positioning.
+---
+UIGridStyleLayout.ApplyLayout = function(self) end;
+---@param kw_function Function
+---@return void
+---This method is deprecated. Use `UIGridStyleLayout/SortOrder` instead.
+---
+---$DESCRIPTION_SHORT The function should take two arguments (each will be an
+---Instance child to compare), and return true if a comes before b, otherwise
+---return false. In other words, use this function the same way you would use
+---a ' function. The sorting should be deterministic, otherwise sort will
+---fail and fall back to name order.
+---
+UIGridStyleLayout.SetCustomSortFunction = function(self, kw_function) end;
+---@class UILayout : UIComponent, UIBase, Instance
+---The base class for UI layout classes.
+---
+local UILayout;
+---@class UIListLayout : UIGridStyleLayout, UILayout, UIComponent, UIBase, Instance
+---@field public Padding UDim
+---A UIListLayout lays out sibling UI elements in a single row within the
+---parent UI element, either horizontally or vertically. Each sibling UI
+---element retains its original `GuiObject/Size`, but its
+---`GuiObject/Position` will be taken under control by the UIListLayout.
+---While under control, the Position property of sibling UI elements will not
+---be editable in the Properties window.
+---
+---You can use the elements' `GuiObject/LayoutOrder` by changing
+---`UIListLayout/SortOrder` to LayoutOrder. A UIListLayout will automatically
+---re-layout elements when elements are added/removed, or if a relevant
+---property changes: `GuiObject/LayoutOrder`, `Instance/Name` or
+---`GuiObject/Size`. This can be triggered manually by calling
+---`UIGridStyleLayout/ApplyLayout`, though this is typically not necessary.
+---
+---Since each property that changes how elements are laid out will re-apply
+---the layout, it is recommended to set the `Instance/Parent` property last
+---so that the layout is only applied once. Similarly, since adding more UI
+---elements will also re-apply the layout, add the UIListLayout last so it
+---does not recalculate positions after each element.
+---
+local UIListLayout;
+---@class UIPadding : UIComponent, UIBase, Instance
+---@field public PaddingBottom UDim
+---@field public PaddingLeft UDim
+---@field public PaddingRight UDim
+---@field public PaddingTop UDim
+---Applies padding to the borders of the GuiObject that this is parented to.
+---
+local UIPadding;
+---@class UIPageLayout : UIGridStyleLayout, UILayout, UIComponent, UIBase, Instance
+---@field public Animated bool
+---@field public Circular bool
+---@field public CurrentPage GuiObject
+---@field public EasingDirection EasingDirection
+---@field public EasingStyle EasingStyle
+---@field public GamepadInputEnabled bool
+---@field public Padding UDim
+---@field public ScrollWheelInputEnabled bool
+---@field public TouchInputEnabled bool
+---@field public TweenTime float
+---@field public PageEnter fun(page: Instance): RbxScriptSignal
+---@field public PageLeave fun(page: Instance): RbxScriptSignal
+---@field public Stopped fun(currentPage: Instance): RbxScriptSignal
+---Creates a paged viewing window, like the home screen of a mobile device.
+---You can use a UIPageLayout by parenting it to a GuiObject. The
+---UIPageLayout will then apply itself to all of its GuiObject siblings.
+---
+local UIPageLayout;
+---@param index int
+---@return void
+---If the index is `>= 0` and less than the size of the layout, this method
+---acts like `UIPageLayout/JumpTo`. If it's out of bounds and circular is
+---set, it will animate the full distance between the in-bounds index of
+---`UIPageLayout/CurrentPage` and the new index.
+---
+UIPageLayout.JumpToIndex = function(self, index) end;
+---@param page Instance
+---@return void
+---If the `page` is in the UIPageLayout, then it sets
+---`UIPageLayout/CurrentPage` to it and animates to it. If the circular
+---layout is enabled, it will take the shortest path to this page.
+---
+UIPageLayout.JumpTo = function(self, page) end;
+---@return void
+---Sets `UIPageLayout/CurrentPage` to the page after the current page and
+---animates to it, or does nothing if there isn't a next page.
+---
+UIPageLayout.Next = function(self) end;
+---@return void
+---Sets `UIPageLayout/CurrentPage` to the page before the current page and
+---animates to it, or does nothing if there isn't a previous page.
+---
+UIPageLayout.Previous = function(self) end;
+---@class UIScale : UIComponent, UIBase, Instance
+---@field public Scale float
+---A UIScale object simply contains a number that is used to multiply the
+---`GuiBase2d/AbsoluteSize` of the parent UI element. This number is stored
+---in `UIScale/Scale`.
+---
+local UIScale;
+---@class UISizeConstraint : UIConstraint, UIComponent, UIBase, Instance
+---@field public MaxSize Vector2
+---@field public MinSize Vector2
+---The UISizeConstraint ensures a `GuiObject` does not become larger or
+---smaller than the `UISizeConstraint/MaxSize` and
+---`UISizeConstraint/MinSize`.
+---
+---For example, if the MaxSize is set to `{200, 200}` and the MinSize is set
+---to `{100, 100}`, then the constrained GuiObject cannot scale to be larger
+---than 200 pixels wide and 200 pixels tall or smaller than 100 pixels wide
+---and 100 pixels tall.
+---
+---If the object with this constraint is also under the control of a
+---`UILayout` such as `UIGridLayout`, then the constraint determines the
+---objects size and overwrites any size the layout would apply.
+---
+---A UISizeConstraint can be applied to a GuiObject by parenting it to that
+---object.
+---
+local UISizeConstraint;
+---@class UIStroke : UIComponent, UIBase, Instance
+---@field public ApplyStrokeMode ApplyStrokeMode
+---@field public Color Color3
+---@field public Enabled bool
+---@field public LineJoinMode LineJoinMode
+---@field public Thickness float
+---@field public Transparency float
+---For a more detailed walkthrough of the UIStroke object, take a look at the
+---<a href="../..https://developer.roblox.com/articles/applying-strokes">Applying
+---Strokes</a> article.
+---
+---An instance that applies an outline to text or a UI border. Key features
+---include:
+---
+---- Adjust the color and thickness of the stroke outline.
+---- Change the stroke transparency independently from the text or UI object.
+---- Choose the corner style of the stroke (round, bevel, or miter).
+---- Add a gradient to the stroke via the `UIGradient` instance.
+---- Use rich text tags to add stroke to inline text segments.
+---
+---## Rich Text
+---
+---If your text object has [rich text](/building-and-visuals/ui/rich-text)
+---enabled, you can control stroke properties on segments of the string via
+---the `<stroke>` tag.
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Property</th>
+---            <th>Description</th>
+---            <th>Default</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td><code>color</code></td>
+---            <td>Sets the stroke <a href="#color-gradient">color</a>.</td>
+---            <td><code>rgb(0, 0, 0)</code></td>
+---        </tr>
+---        <tr>
+---            <td><code>joins</code></td> 
+---            <td>Sets the <a href="#corner-style">corner style</a>. Can be set to <code>round</code>, <code>bevel</code>, or
+---            <code>miter</code>.</td> 
+---            <td><code>round</code></td>
+---        </tr>
+---        <tr>
+---            <td><code>thickness</code></td>
+---            <td>Sets the stroke <a href="#thickness">thickness</a>.</td>
+---            <td><code>1</code></td>
+---        </tr>
+---        <tr>
+---            <td><code>transparency</code></td>
+---            <td>Sets the stroke <a href="#transparency">transparency</a>.</td>
+---            <td><code>0</code></td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---```html
+---The &lt;font color="#c80032"&gt;<mark
+---  >&lt;stroke color="#fcc633" thickness="4"&gt;dragon&lt;/stroke&gt;</mark
+--->&lt;/font&gt; is hungry.
+---```
+---
+---<img src="/assets/blt2fa6854d87124e34/Stroke-RichText.png" />
+---
+local UIStroke;
+---@class UITableLayout : UIGridStyleLayout, UILayout, UIComponent, UIBase, Instance
+---@field public FillEmptySpaceColumns bool
+---@field public FillEmptySpaceRows bool
+---@field public MajorAxis TableMajorAxis
+---@field public Padding UDim2
+---A UITableLayout lays out sibling UI elements as rows in a table. Child UI
+---elements (the table cells) of these rows are then arranged in columns
+---(within rows). Each cell within a row has the same height, and each cell
+---within a column has the same width. The hierarchy in the explorer should
+---look like this (`Frame`s are yellow rows, `TextLabel`s are cells)
+---
+---<img src="/assets/bltae19601e50058387/UITableLayout_Hierarchy.png" alt="Hierarchy of UI elements used with a UITableLayout" />
+---<img src="/assets/bltfda742fd4e1d6db9/UITableLayout_Padding.png" alt="UITableLayout result" />
+---
+---By changing the `UIGridStyleLayout/FillDirection`, sibling UI elements can
+---act as columns instead.
+---
+---When applied, a UITableLayout will take control of sibling and cell
+---elements' `GuiObject/Size` and `GuiObject/Position`. Changing these in the
+---Properties window is still possible will not produce any effect.
+---
+---Dimensions of the cells in the resulting table are controlled by the
+---parent UI element's dimensions. Unless
+---`UITableLayout/FillEmptySpaceColumns` or
+---`UITableLayout/FillEmptySpaceRows` is enabled, the cell dimensions will be
+---that of the parent UI element (and thus tables with more than one cell
+---extend outside of their parent).
+---
+---Cells will continue to respect `UISizeConstraint` objects within them. In
+---other words, setting `UISizeConstraint/MinSize` on `UISizeConstraint`s
+---within the header cells can determine the size of the rest of the cells.
+---If `UISizeConstraint/MaxSize` restricts a cell's size from filling the
+---allotted space (i.e. another row/column is wider than it), it will align
+---to the top-left.
+---
+local UITableLayout;
+---@class UITextSizeConstraint : UIConstraint, UIComponent, UIBase, Instance
+---@field public MaxTextSize int
+---@field public MinTextSize int
+---A **UITextSizeConstraint** ensures that the size of text rendered by
+---certain `GuiObject` classes (`TextLabel`, `TextButton`, or `TextBox`) lies
+---within the range described by
+---`UITextSizeConstraint/MaxTextSize|MaxTextSize` and
+---`UITextSizeConstraint/MinTextSize|MinTextSize`. It is meant to be used
+---alongside `TextLabel/TextScaled`, which automatically scales text to fill
+---its containing object. Like other UI constraints, it is applied when
+---parented to the object to be constrained.
+---
+---![Constraints visual][1]
+---
+---It's recommended that no values lower than 9 be used for
+---`UITextSizeConstraint/MinTextSize|MinTextSize` property, otherwise text
+---may not be readable to most users.
+---
+---[1]: /assets/blte9c47efb631349e0/UITextSizeConstraintDemo.gif
+---
+local UITextSizeConstraint;
+---@class UnionOperation : PartOperation, TriangleMeshPart, BasePart, PVInstance, Instance
+---The UnionOperation combines parts together into a single solid model. To
+---use it, select the parts you want to combine and click the **Union**
+---button in the **Model** tab. This will create a new part called **Union**.
+---
+---<img src="/assets/blt12f1f9b92d9773ec/CSG-Union-Button.png" />
+---
+---This function can be used in conjunction with `NegateOperation` to shape,
+---resize, and create holes in solid models. Combined parts can also be
+---separated, allowing developers to revert (undo) the result of a unioned
+---model.
+---
+---You should only use **Union** on basic parts (block, sphere, wedge, or
+---cylinder). Also, these parts should **not** have any children such as
+---scripts, surface GUIs, etc. If a part with children is unioned, the
+---children will be hidden from the `DataModel`.
+---
+---See also:
+---
+---- <a href="/building-and-visuals/modeling/solid-modeling">Solid
+---  modeling</a>, an article that dives into solid modeling and how it lets
+---  you create complex models from simple blocks, spheres, wedges, and
+---  cylinders
+---- <a href="https://developer.roblox.com/articles/in-game-solid-modeling">In
+---  Game Solid Modeling</a>, an article discussing how developers can
+---  perform solid modeling live in-game as well as in Studio
+---
+local UnionOperation;
+---@class UniversalConstraint : Constraint, Instance
+---@field public LimitsEnabled bool
+---@field public MaxAngle float
+---@field public Radius float
+---@field public Restitution float
+---A physics constraint that ensures two axes on two rigid bodies remain
+---perpendicular. An example use of this constraint are power transmission
+---between the transmission and rear drive shafts of rear-wheel drive cars,
+---robotics, etc.
+---
+---The constraint ensures that two attachments are co-located (similar to
+---`BallSocketConstraint`) and that their secondary axes remain perpendicular
+---(see the picture below). In this sense, this constraint is more
+---restrictive than the BallSocketConstraint but is less restrictive than
+---`HingeConstraint` (by one degree of freedom).
+---
+---<img src="/assets/blt96586dfb35538032/UniversalConstraintDemo.jpg?auto=yes&amp;bg=222&amp;fg=000" alt="Example UniversalConstraint" />
+---
+---If `UniversalConstraint/LimitsEnabled|LimitsEnabled` is `true`, then the
+---relative motion of the primary axis of
+---`Constraint/Attachment1|Attachment1` is limited by a cone. This cone is
+---formed via `Constraint/Attachment0|Attachment0` and its primary axis and
+---makes an angle of `UniversalConstraint/MaxAngle|MaxAngle` with it.
+---
+local UniversalConstraint;
+---@class UnvalidatedAssetService : Instance
+local UnvalidatedAssetService;
+---@param userId int64
+---@param id int64
+---@param lookAt Vector3
+---@param camPos Vector3
+---@param usage string
+---@return void
+UnvalidatedAssetService.AppendTempAssetId = function(self, userId, id, lookAt, camPos, usage) end;
+---@param userId int64
+---@param tempId int64
+---@param assetId int64
+---@return bool
+UnvalidatedAssetService.UpgradeTempAssetId = function(self, userId, tempId, assetId) end;
+---@param userId int64
+---@param id int64
+---@param lookAt Vector3
+---@param camPos Vector3
+---@return bool
+UnvalidatedAssetService.AppendVantagePoint = function(self, userId, id, lookAt, camPos) end;
+---@class UserGameSettings : Instance
+---@field public AllTutorialsDisabled bool
+---@field public CameraMode CustomCameraMode
+---@field public CameraYInverted bool
+---@field public ChatVisible bool
+---@field public ComputerCameraMovementMode ComputerCameraMovementMode
+---@field public ComputerMovementMode ComputerMovementMode
+---@field public ControlMode ControlMode
+---@field public DefaultCameraID string
+---@field public Fullscreen bool
+---@field public GamepadCameraSensitivity float
+---@field public GraphicsQualityLevel int
+---@field public HasEverUsedVR bool
+---@field public IsUsingCameraYInverted bool
+---@field public IsUsingGamepadCameraSensitivity bool
+---@field public MasterVolume float
+---@field public MicroProfilerWebServerEnabled bool
+---@field public MicroProfilerWebServerIP string
+---@field public MicroProfilerWebServerPort int
+---@field public MouseSensitivity float
+---@field public MouseSensitivityFirstPerson Vector2
+---@field public MouseSensitivityThirdPerson Vector2
+---@field public OnScreenProfilerEnabled bool
+---@field public OnboardingsCompleted string
+---@field public PerformanceStatsVisible bool
+---@field public RCCProfilerRecordFrameRate int
+---@field public RCCProfilerRecordTimeFrame int
+---@field public RotationType RotationType
+---@field public SavedQualityLevel SavedQualitySetting
+---@field public StartMaximized bool
+---@field public StartScreenPosition Vector2
+---@field public StartScreenSize Vector2
+---@field public TouchCameraMovementMode TouchCameraMovementMode
+---@field public TouchMovementMode TouchMovementMode
+---@field public UsedCoreGuiIsVisibleToggle bool
+---@field public UsedCustomGuiIsVisibleToggle bool
+---@field public UsedHideHudShortcut bool
+---@field public VREnabled bool
+---@field public VRRotationIntensity int
+---@field public VignetteEnabled bool
+---@field public FullscreenChanged fun(isFullscreen: bool): RbxScriptSignal
+---@field public PerformanceStatsVisibleChanged fun(isPerformanceStatsVisible: bool): RbxScriptSignal
+---@field public StudioModeChanged fun(isStudioMode: bool): RbxScriptSignal
+---The UserGameSettings is a singleton class found inside of the
+---`UserSettings` singleton. It holds various persistent settings relating to
+---how the user wants to control their camera, and their character.
+---
+---You can access this object from a `LocalScript` via:
+---
+---```lua
+---UserSettings():GetService("UserGameSettings")
+---```
+---
+---This object is intended to be used on the client only, as it serves no
+---purpose on the server. It will also reflect your own settings when testing
+---in Roblox Studio.
+---
+local UserGameSettings;
+---@param onboardingId string
+---@return void
+---Sets the given onboarding as completed, so it won't be shown again to the
+---user the next time they play.
+---
+---Currently, this function only accepts [DynamicThumbstick][1], and it is
+---used to persistently track whether or not the player has finished the
+---tutorial for the Dynamic Thumbstick control scheme. If onboardingId is not
+---one of the accepted IDs, an error is thrown.
+---
+---The onboarding process is one-way. This means that, as a developer, you
+---can force the onboarding process to completion but cannot reset it.
+---
+---See also:
+---
+---- `UserGameSettings/GetOnboardingCompleted`, checks if onboarding has been
+---  completed
+---
+---[1]: /scripting/luau/strings
+---
+UserGameSettings.SetOnboardingCompleted = function(self, onboardingId) end;
+---@return bool
+---Returns true if the user's Roblox window is in full screen mode.
+---
+UserGameSettings.InFullScreen = function(self) end;
+---@param onboardingId string
+---@return bool
+---Checks whether or not the given onboarding has been completed yet, which
+---is useful for avoiding showing the onboarding animation again.
+---
+---If onboardingId is not one of the accepted IDs, an error is thrown.
+---
+---The onboarding process is one-way. This means that, as a developer, you
+---can force the onboarding process to completion but cannot reset it.
+---
+---See also:
+---
+---- `UserGameSettings/SetOnboardingCompleted`, sets onboarding as completed
+---
+UserGameSettings.GetOnboardingCompleted = function(self, onboardingId) end;
+---@return bool
+---Returns true if the client's game session is in Roblox Studio.
+---
+UserGameSettings.InStudioMode = function(self) end;
+---@param onboardingId string
+---@return void
+UserGameSettings.ResetOnboardingCompleted = function(self, onboardingId) end;
+---@return void
+---If called, Roblox toggles the menu option to invert the user's camera y
+---axis.
+---
+UserGameSettings.SetCameraYInvertVisible = function(self) end;
+---@param tutorialId string
+---@param value bool
+---@return void
+UserGameSettings.SetTutorialState = function(self, tutorialId, value) end;
+---@return void
+---If called, Roblox toggles the menu option to control the camera
+---sensitivity with gamepads.
+---
+UserGameSettings.SetGamepadCameraSensitivityVisible = function(self) end;
+---@param tutorialId string
+---@return bool
+UserGameSettings.GetTutorialState = function(self, tutorialId) end;
+---@return int
+---Returns the camera's Y-invert value.
+---
+UserGameSettings.GetCameraYInvertValue = function(self) end;
+---@class UserInputService : Instance
+---@field public AccelerometerEnabled bool
+---@field public BottomBarSize Vector2
+---@field public GamepadEnabled bool
+---@field public GazeSelectionEnabled bool
+---@field public GyroscopeEnabled bool
+---@field public KeyboardEnabled bool
+---@field public LegacyInputEventsEnabled bool
+---@field public ModalEnabled bool
+---@field public MouseBehavior MouseBehavior
+---@field public MouseDeltaSensitivity float
+---@field public MouseEnabled bool
+---@field public MouseIconEnabled bool
+---@field public NavBarSize Vector2
+---@field public OnScreenKeyboardAnimationDuration double
+---@field public OnScreenKeyboardPosition Vector2
+---@field public OnScreenKeyboardSize Vector2
+---@field public OnScreenKeyboardVisible bool
+---@field public OverrideMouseIconBehavior OverrideMouseIconBehavior
+---@field public RightBarSize Vector2
+---@field public StatusBarSize Vector2
+---@field public TouchEnabled bool
+---@field public UserHeadCFrame CFrame
+---@field public VREnabled bool
+---@field public DeviceAccelerationChanged fun(acceleration: InputObject): RbxScriptSignal
+---@field public DeviceGravityChanged fun(gravity: InputObject): RbxScriptSignal
+---@field public DeviceRotationChanged fun(rotation: InputObject, cframe: CFrame): RbxScriptSignal
+---@field public GamepadConnected fun(gamepadNum: UserInputType): RbxScriptSignal
+---@field public GamepadDisconnected fun(gamepadNum: UserInputType): RbxScriptSignal
+---@field public InputBegan fun(input: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public InputChanged fun(input: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public InputEnded fun(input: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public JumpRequest fun(): RbxScriptSignal
+---@field public LastInputTypeChanged fun(lastInputType: UserInputType): RbxScriptSignal
+---@field public PointerAction fun(wheel: float, pan: Vector2, pinch: float, gameProcessedEvent: bool): RbxScriptSignal
+---@field public StatusBarTapped fun(position: Vector2): RbxScriptSignal
+---@field public TextBoxFocusReleased fun(textboxReleased: TextBox): RbxScriptSignal
+---@field public TextBoxFocused fun(textboxFocused: TextBox): RbxScriptSignal
+---@field public TouchEnded fun(touch: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchLongPress fun(touchPositions: Array, state: UserInputState, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchMoved fun(touch: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchPan fun(touchPositions: Array, totalTranslation: Vector2, velocity: Vector2, state: UserInputState, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchPinch fun(touchPositions: Array, scale: float, velocity: float, state: UserInputState, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchRotate fun(touchPositions: Array, rotation: float, velocity: float, state: UserInputState, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchStarted fun(touch: InputObject, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchSwipe fun(swipeDirection: SwipeDirection, numberOfTouches: int, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchTap fun(touchPositions: Array, gameProcessedEvent: bool): RbxScriptSignal
+---@field public TouchTapInWorld fun(position: Vector2, processedByUI: bool): RbxScriptSignal
+---@field public UserCFrameChanged fun(type: UserCFrame, value: CFrame): RbxScriptSignal
+---@field public WindowFocusReleased fun(): RbxScriptSignal
+---@field public WindowFocused fun(): RbxScriptSignal
+---The `UserInputService` is a service used to detect and capture the
+---different types of input available on a user's device.
+---
+---The primary purpose of this service is to allow for games to cooperate
+---with multiple forms of available input - such as gamepads, touch screens,
+---and keyboards. It allows a `LocalScript` to perform different actions
+---depending on the device, and in turn, helps developers provide the best
+---experience for the end user.
+---
+---Some usages of this service include detecting user input when they
+---interact with GUIs, tools, and other game instances. In order to detect
+---user input, the service must look for a service event. For example, the
+---service can detect events such as when the user touches the screen of a
+---mobile device using `UserInputService/TouchStarted`, or connects a gamepad
+---such as an Xbox controller to their device using
+---`UserInputService/GamepadConnected`.
+---
+---Since this service is client-side only, it will only work when used in a
+---`LocalScript` or a `ModuleScript` required by a `LocalScript`. As
+---UserInputService is client-side only, users in the game can only detect
+---their own input - and not the input of others.
+---
+---See also:
+---
+---- `ContextActionService`, a service which allows you to bind functions to
+---  multiple user inputs
+---
+local UserInputService;
+---@return InputObject
+---The GetDeviceAcceleration function determines the current acceleration of
+---the user's device. It returns an `InputObject` that describes the device's
+---current acceleration.
+---
+---In order for this to work, the user's device must have an enabled
+---accelerometer. To check if a user's device has an enabled accelerometer,
+---you can check the `UserInputService/AccelerometerEnabled` property.
+---
+---If you want to track when the user's device's acceleration changes
+---instead, you can use the `UserInputService/DeviceAccelerationChanged`
+---event.
+---
+---Since it only fires locally, it can only be used in a `LocalScript`.
+---
+UserInputService.GetDeviceAcceleration = function(self) end;
+---@param keyCode KeyCode
+---@return bool
+---This function returns whether the user is holding down the key associated
+---with the given `Enum/KeyCode`. It returns _true_ if the specified key is
+---pressed or _false_ if it is not pressed.
+---
+---This can be used to check if a specific key, such as the space bar, is
+---being pressed. For example:
+---
+---```lua
+---local UserInputService = game:GetService("UserInputService")
+---
+---local spaceHeld = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+---```
+---
+---To retrieve a list of all keys pressed by the user, use the
+---`UserInputService/GetKeysPressed` function.
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+---See also:
+---
+---- `UserInputType/IsGamepadButtonDown` - A similar event with a different
+---  use: To check if a given `Enum/KeyCode|button` on a
+---  `Enum/UserInputType|gamepad` is pressed.
+---
+UserInputService.IsKeyDown = function(self, keyCode) end;
+---@return Vector2
+---This function returns a `DataType/Vector2` representing the current screen
+---location of the player's `Mouse` in pixels relative to the top left
+---corner. This does not account for the `GuiObject|GUI` inset.
+---
+---If the location of the mouse pointer is offscreen or the players device
+---does not have a mouse, the value returned will be undetermined instead of
+---Vector2.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetMouseLocation = function(self) end;
+---@return InputObject
+---This function returns an `InputObject` describing the device's current
+---gravity vector.
+---
+---The gravity vector is determined by the device's orientation relative to
+---the real-world force of gravity. For instance, if a device is perfectly
+---upright (portrait), the gravity vector is
+---`DataType/Vector3|Vector3.new(0, 0, -9.18)`. If the left side of the
+---device is pointing down, the vector is Vector3.new(9.81, 0, 0). Finally,
+---if the back of the device is pointing down, the vector is Vector3.new(0,
+----9.81, 0).
+---
+---This function might be used to enable the user's device to impact or
+---control gravity within the game or move in-game objects such as a ball.
+---
+---Gravity is only tracked for players using a device with an enabled
+---gyroscope - such as a mobile device.
+---
+---To check if a user's device has an enabled gyroscope, check the value of
+---`UserInputService/GyroscopeEnabled`. If the device has an enabled
+---gyroscope, you can also use the `UserInputService/DeviceGravityChanged`
+---event to track when force of gravity on the user's device changes.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetDeviceGravity = function(self) end;
+---@param mouseButton UserInputType
+---@return bool
+---This function takes a mouse button `Enum/UserInputType` and returns a bool
+---that indicates whether it is currently pressed.
+---
+---The mouse button checked depends on the `Enum/UserInputType` value passed
+---to the function as an argument. For example:
+---
+---```lua
+---local UserInputService = game:GetService("UserInputService")
+---
+---local pressed = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+---```
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`."
+---
+UserInputService.IsMouseButtonPressed = function(self, mouseButton) end;
+---@return Array
+---This function returns an array of gamepad
+---`Enum/UserInputType|UserInputTypes` that are connected and enabled for GUI
+---navigation. This list is in descending order of priority, meaning it can
+---be iterated over to determine which gamepad should have navigation
+---control.
+---
+---Whether a connected gamepad is a navigation gamepad only determines which
+---gamepad(s) control the navigation GUIs. This does not influence navigation
+---controls.
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+---See also:
+---
+---- `UserInputService/SetNavigationGamepad`, to enable or disable a gamepad
+---  for GUI navigation
+---- `UserInputService/IsNavigationGamepad`, to verify if a gamepad is
+---  enabled for GUI navigation
+---- `UserInputService/GetConnectedGamepads`, to return all gamepads
+---  connected regardless of GUI navigational control
+---
+UserInputService.GetNavigationGamepads = function(self) end;
+---@return Tuple
+---This function returns an `InputObject` and a `DataType/CFrame` describing
+---the device's current rotation vector.
+---
+---This is fired with an InputObject. The _Position_ property of the input
+---object is a `Enum/InputType|Enum.InputType.Gyroscope` that tracks the
+---total rotation in each local device axis.
+---
+---Device rotation can only be tracked on devices with a
+---`UserInputService/GyroscopeEnabled|gyroscope`.
+---
+---As this function fires locally, it can only be used in a `LocalScript`.
+---
+UserInputService.GetDeviceRotation = function(self) end;
+---@return Platform
+UserInputService.GetPlatform = function(self) end;
+---@return DeviceType
+UserInputService.GetDeviceType = function(self) end;
+---@param gamepadEnum UserInputType
+---@return bool
+---This function returns _true_ if the specified `Enum/UserInputType` Gamepad
+---is allowed to control Navigation and Selection `GuiObject|GUIs`.
+---
+---If you want to set a navigation gamepad, you can use
+---`UserInputService/SetNavigationGamepad`. You can also use
+---`UserInputService/GetNavigationGamepads` to get a list of all navigation
+---gamepads.
+---
+---For example, the code below checks if the gamepad1 is as a navigation
+---gamepad:
+---
+---```lua
+---local userInputService = game:GetService("UserInputService")
+---
+---if (userInputService:IsNavigationGamepad(UserInputType.Gamepad1) then
+---	print("Gamepad is a navigation gamepad!")
+---else
+---	print("Gamepad is not a navigation gamepad!")
+---end
+---```
+---
+---A list of all connected gamepads, regardless of navigation can be
+---retrieved using`UserInput/GetConnectedGamepads.
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.IsNavigationGamepad = function(self, gamepadEnum) end;
+---@param keyCode KeyCode
+---@return string
+---**GetStringForKeyCode** returns a string representing a key the user
+---should press in order to input a given KeyCode, keeping in mind their
+---keyboard layout. For KeyCodes that require some modifier to be held, this
+---function returns the key to be pressed in addition to the modifier. See
+---the examples below for further explanation.
+---
+---When using Roblox with a non-QWERTY keyboard layout, key codes are mapped
+---to equivalent QWERTY positions. For example, pressing <kbd>A</kbd> on an
+---AZERTY keyboard results in `Enum.KeyCode.Q`. This mapping can lead to
+---mismatched information on game help menus. For example, "Press
+---<kbd>M</kbd> to open Map" is inaccurate on an AZERTY keyboard; it would
+---need to be "Press <kbd>?</kbd> to open Map", which is in the same position
+---as M on QWERTY. This function solves this issue by providing the actual
+---key to be pressed while using non-QWERTY keyboard layouts.
+---
+---#### Usage
+---
+---```
+---local UserInputService = game:GetService("UserInputService")
+---local textLabel = script.Parent
+---local mapKey = Enum.KeyCode.M
+---textLabel.Text = "Press " .. UserInputService:GetStringForKeyCode(mapKey) .. " to open the map!"
+---```
+---
+---#### Examples on QWERTY Keyboard
+---
+---<table>
+---<tr>
+---  <td>KeyCode</td>
+---  <td>Return Value</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.Q`
+---
+---</td>
+---  <td>
+---
+---`Q`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.W`
+---
+---</td>
+---  <td>
+---
+---`W`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.Equals`
+---
+---</td>
+---  <td>
+---
+---`=`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.At`
+---
+---</td>
+---  <td>
+---
+---`2`, because `@` is typed with <kbd>Shift</kbd>+<kbd>2</kbd>
+---
+---</td>
+---  </tr>
+---</table>
+---
+---#### Examples on [AZERTY Keyboard](https://upload.wikimedia.org/wikipedia/commons/b/b9/KB_France.svg)
+---
+---<table>
+---<tr>
+---  <td>KeyCode</td>
+---  <td>Return Value</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.Q`
+---
+---</td>
+---  <td>
+---
+---`A`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.W`
+---
+---</td>
+---  <td>
+---
+---`Z`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.Equals`
+---
+---</td>
+---  <td>
+---
+---`=`
+---
+---</td>
+---  </tr>
+---<tr>
+---  <td>
+---
+---`Enum.KeyCode.At`
+---
+---</td>
+---  <td>
+---
+---`É`, see keyboard layout for comparison
+---
+---</td>
+---  </tr>
+---</table>
+---
+UserInputService.GetStringForKeyCode = function(self, keyCode) end;
+---@return TextBox
+---This function returns the `TextBox` the client is currently focused on. A
+---TextBox can be manually selected by the user, or selection can be forced
+---using the `TextBox/CaptureFocus` function. If no TextBox is selected, this
+---function will return _nil_.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+---See also:
+---
+---- `UserInputService/TextBoxFocused`
+---- `UserInputService/TextBoxFocusReleased`
+---- `TextBox/CaptureFocus`
+---- `TextBox/IsFocused`
+---- `TextBox/ReleaseFocus`
+---
+UserInputService.GetFocusedTextBox = function(self) end;
+---@param gamepadEnum UserInputType
+---@param enabled bool
+---@return void
+---The SetNavigationGamepad function sets whether the specified
+---`Enum/UserInputType` gamepad can move the GUI navigator. A gamepad that is
+---allowed to move the GUI navigator is considered a _navigation gamepad_.
+---
+---If the _enabled_ argument is passed as _true_, the Gamepad can move the
+---GUI navigator. If the argument is _false_, the Gamepad can not move the
+---GUI navigator.
+---
+---If you want to check if a specified Gamepad is a set to be a navigation
+---gamepad, you can use the `UserInputService/IsNavigationGamepad` function.
+---You can also use the `UserInputService/GetNavigationGamepads` to retrieve
+---a list of all navigation gamepads.
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.SetNavigationGamepad = function(self, gamepadEnum, enabled) end;
+---@param gamepadNum UserInputType
+---@return bool
+---This function returns whether a gamepad with the given
+---`Enum/UserInputType` is connected to the client.
+---
+---This can be used to check if a specific gamepad, such as _'Gamepad1'_ is
+---connected to the client's device.
+---
+---To retrieve a list of all connected gamepads, use
+---`UserInputService/GetConnectedGamepads`.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+---Check out this [article][2] to learn more about adding support for gamepad
+---input into your game and [this][1] page for articles on cross-platform
+---development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---[2]: https://developer.roblox.com/articles/Gamepad-Haptic-Feedback
+---
+UserInputService.GetGamepadConnected = function(self, gamepadNum) end;
+---@param gamepadNum UserInputType
+---@param gamepadKeyCode KeyCode
+---@return bool
+---This functions allows a developer to quickly check if a particular button
+---is pressed on a particular gamepad. It returns true if the
+---`Enum/UserInputType|gamepad` has the specified `Enum/KeyCode|button`
+---pressed down, otherwise it returns false.
+---
+---#### Valid UserInputTypes
+---
+---The specified gamepad should be one of the following UserInputType enum
+---values:
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---		</tr>
+---	</thead>
+---	<tr>
+---  <td>Enum.UserInputType.Gamepad1-8</td>
+---  </tr>
+---</table>
+---
+---#### Valid KeyCodes
+---
+---The specified button should be one of the following KeyCodes enum values:
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---		</tr>
+---	</thead>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonX</td>
+---  </tr>
+---  <tr>
+---  <td>Enum.KeyCode.ButtonY</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonA</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonB</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonR1</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonL1</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonR3</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonL3</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonStart</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.ButtonSelect</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.DPadLeft</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.DPadRight</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.DPadUp</td>
+---  </tr>
+---	<tr>
+---  <td>Enum.KeyCode.DPadDown</td>
+---  </tr>
+---</table>
+---
+---This can be used to check whether a specific button, such as A, is being
+---held down. For example:
+---
+---```lua
+---local UserInputService = game:GetService("UserInputService")
+---
+---local button = Enum.KeyCode.ButtonA
+---local gamepad = Enum.UserInputType.Gamepad1
+---
+---local isButtonHeld = UserInputService:IsGamepadButtonDown(gamepad, button)
+---```
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---- `UserInputType/IsKeyDown` - A similar event with a different use: To
+---  check if a given `Enum/KeyCode|key` on a `Enum/UserInputType|keyboard`
+---  is pressed.
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.IsGamepadButtonDown = function(self, gamepadNum, gamepadKeyCode) end;
+---@param gamepadNum UserInputType
+---@return Array
+---This function returns an array of `Enum/KeyCode|KeyCodes` that the gamepad
+---associated with the given `Enum/UserInputType` supports.
+---
+---This function can be used to determine which KeyCodes are supported and
+---not supported by a connected gamepad. To determine if a specific KeyCode
+---is supported, use `UserInputService/GamepadSupports`.
+---
+---If called on a non existent, or non connected, gamepad, this function will
+---return an empty array.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+---Check out this [article][2] to learn more about adding support for gamepad
+---input into your game and [this][1] page for articles on cross-platform
+---development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---[2]: https://developer.roblox.com/articles/Gamepad-Haptic-Feedback
+---
+UserInputService.GetSupportedGamepadKeyCodes = function(self, gamepadNum) end;
+---@return void
+---This function recenters the `DataType/CFrame` of the VR headset to the
+---current orientation of the headset worn by the user. This means that the
+---headset's current orientation is set to `CFrame.new()`.
+---
+---Use this function to to move the headset CFrame to the center of the play
+---area if it seems to be at a weird offset.
+---
+---This behaves identically to the `VRService` function,
+---`VRService/RecenterUserHeadCFrame`.
+---
+---Since `UserInputService` is client-side only, this function can only be
+---used in a `LocalScript`.
+---
+UserInputService.RecenterUserHeadCFrame = function(self) end;
+---@param statusBarSize Vector2
+---@param navBarSize Vector2
+---@param bottomBarSize Vector2
+---@param rightBarSize Vector2
+---@return void
+UserInputService.SendAppUISizes = function(self, statusBarSize, navBarSize, bottomBarSize, rightBarSize) end;
+---@param gamepadNum UserInputType
+---@return Array
+---This function returns an array of `InputObject|InputObjects` for all
+---available inputs on the given `Enum/UserInputType` gamepad, representing
+---each input's last input state.
+---
+---To find the `Enum/UserInputType|UserInputTypes` of connected gamepads, use
+---`UserInputService/GetConnectedGamepads`.
+---
+---As this function only fires locally, it can only be used in a
+---`LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.GetGamepadState = function(self, gamepadNum) end;
+---@param type UserCFrame
+---@return CFrame
+---The GetUserCFrame function returns a `DataType/CFrame` describing the
+---position and orientation of a specified `Enum/UserCFrame` virtual reality
+---(VR) device. If the specified device is not connected, the function
+---returns `DataType/CFrame|CFrame.new()`.
+---
+---For example, the code snippet below prints the CFrame of the user's VR
+---headset.
+---
+---```lua
+---local userInputService = game:GetService("UserInputService")
+---local cframe = userInputService:GetUserCFrame(Enum.UserCFrame.Head)
+---
+---print(cframe)
+---```
+---
+---By using the function, players can implement features such as
+---re-positioning the user's in-game character corresponding to the location
+---of a connected VR device. This can be done by changing the _CFrame_ of the
+---user's in-game body parts to match the _CFrame_ of the specified VR device
+---using `Enum/UserCFrame` and `DataType/CFrame` value arguments passed by
+---the event.
+---
+---See also:
+---
+---- `UserInputService/UserCFrameChanged`, an event which fires when the
+---  `DataType/CFrame` of a VR device changes
+---- `VRService`, a service used to implement VR support
+---
+---As this event only fires locally, it can only be used in a `LocalScript`.
+---
+UserInputService.GetUserCFrame = function(self, type) end;
+---@param gamepadNum UserInputType
+---@param gamepadKeyCode KeyCode
+---@return bool
+---This function returns whether the given `Enum/UserInputType` gamepad
+---supports a button corresponding with the given `Enum//KeyCode`. This
+---function is used to determine valid gamepad inputs.
+---
+---To determine which `Enum/UserInputType` gamepads are connected, use
+---`UserInputService/GetConnectedGamepads`.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.GamepadSupports = function(self, gamepadNum, gamepadKeyCode) end;
+---@return Array
+---This function returns an array of `InputObject|InputObjects` associated
+---with the keys currently being pressed down.
+---
+---This array can be iterated through to determine which keys are currently
+---being pressed, using the `InputObject/KeyCode` values.
+---
+---To check if a specific key is being pressed, use
+---`UserInputService/IsKeyDown`.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetKeysPressed = function(self) end;
+---@return Array
+---This function returns an array of `InputObject|InputObjects` corresponding
+---to the mouse buttons currently being pressed down.
+---
+---Mouse buttons that are tracked by this function include:
+---
+---<table>
+---	<thead>
+---	<tr>
+---		<td>Name </td>
+---		<td>Description</td>
+---	</tr>
+---	</thead>
+---	<tr>
+---		<td>MouseButton1</td>
+---		<td>The left mouse button.</td>
+---	</tr>
+---	<tr>
+---		<td>MouseButton2</td>
+---		<td>The right mouse button.</td>
+---	</tr>
+---	<tr>
+---		<td>MouseButton3</td>
+---		<td>The middle mouse button.</td>
+---	</tr>
+---</table>
+---
+---If the user is not pressing any mouse button down when the function is
+---called, it will return an empty array.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetMouseButtonsPressed = function(self) end;
+---@return Array
+---This function returns an array of `Enum/UserInputType` gamepads currently
+---connected. If no gamepads are connected, this array will be empty.
+---Additionally, it only returns UserInputType objects that are gamepads. For
+---instance, this event will return a connected Gamepad1 object but not a
+---Keyboard object.
+---
+---For example, the following code snippet retrieves the connected gamepads
+---and stores them in a variable named _connectedGamepads_.
+---
+---```lua
+---local userInputService = game:GetService("UserInputService")
+---local connectedGamepads = userInputService:GetConnectedGamepads()
+---```
+---
+---To check if a specific gamepad is connected, use
+---`UserInputService/GetGamepadConnected`.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+---See [this][1] page for articles on cross-platform development.
+---
+---See also:
+---
+---- `UserInputService/GamepadConnected`
+---- `UserInputService/GamepadDisconnected`
+---- `UserInputService/GetConnectedGamepads`
+---- `UserInputService/GetNavigationGamepads`
+---- `UserInputService/SetNavigationGamepad`
+---- `UserInputService/IsNavigationGamepad`
+---- `UserInputService/IsGamepadButtonDown`
+---- `UserInputService/GetSupportedGamepadKeyCodes`
+---- `UserInputService/GetGamepadState`
+---- `UserInputService/GetGamepadConnected`
+---- `UserInputService/GamepadSupports`
+---- `UserInputService/GamepadEnabled`
+---
+---[1]: /learn-roblox/cross-platform
+---
+UserInputService.GetConnectedGamepads = function(self) end;
+---@return UserInputType
+---This function returns 'Enum/UserInputType` associated with the user's most
+---recent input.
+---
+---For example, if the user's previous input had been pressing the spacebar,
+---the `Enum/UserInputType` returned would be _'Keyboard'_.
+---
+---The `UserInputService/LastInputTypeChanged` event can be used to track
+---when the last `Enum/UserInputType` used by the user changes.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetLastInputType = function(self) end;
+---@return Vector2
+---This function returns the change, in pixels, of the position of the
+---player's `Mouse` in the last rendered frame as a `DataType/Vector2`. This
+---function only works if the mouse has been locked using the
+---`UserInputService.MouseBehavior` property. If the mouse has not been
+---locked, the returned `DataType/Vector2` values will be zero.
+---
+---The sensitivity of the mouse, determined in the client's settings and
+---`UserInputService/MouseDeltaSensitivity`, will influence the result.
+---
+---As `UserInputService` is client-side only, this function can only be used
+---in a `LocalScript`.
+---
+UserInputService.GetMouseDelta = function(self) end;
+---@class UserService : Instance
+---A service that handles queries regarding users on the Roblox platform.
+---
+local UserService;
+---@param userIds Array
+---@return Array
+---This function enables developers to request information about users
+---outside of the current [DataModel](/reference/engine/classes/DataModel) in
+---bulk, which is why both the input and output values are arrays.
+---
+---- The order of the `UserInfosResponse` objects in the return value's array
+---  may not match the order of the `UserIds` sent in the input parameter's
+---  array. Use the `Id` field of the `UserInfosResponse` object to identify
+---  your input array with the output array.
+---- It's possible to receive less `UserInfoResponse` objects than requested
+---  if one or more of the `userIds` in the request array are invalid, such
+---  as negative numbers or user ID's that don't have accounts associated
+---  with them. It's possible to receive a response with zero results if all
+---  userIds are invalid.
+---- If a Roblox user does not have a display name associated with their
+---  account, the function will return instead the same string as the user's
+---  username in the `DisplayName` field. See
+---  [Player.DisplayName](/reference/engine/classes/Player#DisplayName).
+---  While a user's UserId will never change, a user may change their
+---  username or display name. The same input `UserIds` may return a
+---  different string for these fields from one day to another.
+---- Since `GetUserInfosByUserIdsAsync()` makes an external web request, it
+---  will yield and may fail if the backend service is experiencing
+---  interruptions. Ensure you can handle downtime appropriately by wrapping
+---  the method with a pcall.
+---
+UserService.GetUserInfosByUserIdsAsync = function(self, userIds) end;
+---@class UserSettings : GenericSettings, ServiceProvider, Instance
+---UserSettings is a singleton object that is used to house basic user
+---settings, which persist across all games. Currently, it only stores the
+---`UserGameSettings` object.
+---
+---You can retrieve a reference to this object via the `UserSettings()`
+---function, which returns it.
+---
+local UserSettings;
+---@return void
+---Erases the saved state of the UserSettings, and restores its values back
+---to default. This function will fail to run correctly from a LocalScript,
+---as it does not have permission to restore all of the properties in the
+---`UserGameSettings` class.
+---
+UserSettings.Reset = function(self) end;
+---@param name string
+---@return bool
+---Returns true if the specified user feature is enabled. This will throw an
+---error if the user feature does not exist.
+---
+---This function checks against a list of FFlags, whose name starts with
+---"User". The function is intended to be used by Roblox-created scripts, and
+---functions similarly to `GlobalSettings/GetFFlag`.
+---
+UserSettings.IsUserFeatureEnabled = function(self, name) end;
+---@class UserStorageService : LocalStorageService, Instance
+local UserStorageService;
+---@class VRService : Instance
+---@field public DidPointerHit bool
+---@field public GuiInputUserCFrame UserCFrame
+---@field public PointerHitCFrame CFrame
+---@field public VRDeviceAvailable bool
+---@field public VRDeviceName string
+---@field public VREnabled bool
+---@field public NavigationRequested fun(cframe: CFrame, inputUserCFrame: UserCFrame): RbxScriptSignal
+---@field public TouchpadModeChanged fun(pad: VRTouchpad, mode: VRTouchpadMode): RbxScriptSignal
+---@field public UserCFrameChanged fun(type: UserCFrame, value: CFrame): RbxScriptSignal
+---@field public UserCFrameEnabled fun(type: UserCFrame, enabled: bool): RbxScriptSignal
+---The VRService is a service that is responsible for handling interactions
+---between Roblox and Virtual Reality (VR). If you're interested in
+---incorporating VR compatibility into your game, this is the service for
+---you!
+---
+---The primary purpose of this service is to allow for games to communication
+---and cooperate with virtual reality decisions - such as VR headsets and
+---controllers. It allows a LocalScript to perform different actions
+---depending on the device, and in turn, helps developers provide the best
+---experience for the end user seeking to experience Roblox using VR devices.
+---
+---Some usages of this service include detecting whether a user has any
+---connected VR devices, tracking when those devices move, and determining
+---how those devices interact with the user's in-game controls. In order to
+---detect user input, the service must look for a service event. For example,
+---the service can detect VR device movement via events such as
+---`VRService/UserCFrameChanged`.
+---
+---## Notes
+---
+---1.  The `UserInputService` also contains several events and functions
+---    useful for enhancing a player's VR experience in your game.
+---2.  Since this service is client-side only, it will only work when used in
+---    a `LocalScript`. It will not work when used within a `Script`.
+---    Client-side only means that users in the game can only detect their
+---    own input - and not the input of other users.
+---
+local VRService;
+---@param type UserCFrame
+---@return CFrame
+---The GetUserCFrame function returns a `DataType/CFrame` describing the
+---position &amp; orientation of a specified virtual reality (VR) device.
+---
+---This function should be used when implementing VR compatibility into a
+---game to obtain and track the movement of a connected VR device.
+---
+---By using the function, players can implement features such as
+---re-positioning the user's in-game character corresponding to the location
+---of a connected VR device. This can be done by changing the _CFrame_ of the
+---user's in-game character to match the _CFrame_ of the specified VR device
+---using the UserCFrame enum and _CFrame_ value arguments passed by the
+---event.
+---
+---The `VRService` service also provides an event
+---`VRService/UserCFrameChanged` that automatically fires when the _CFrame_
+---of connected VR device changes - so long it is used in a LocalScript.
+---
+---This can also be used alongside the several `UserInputService` VR
+---functions and events.
+---
+---Since `VRService` only runs client-side, this function will only work when
+---used in a `LocalScript`.
+---
+VRService.GetUserCFrame = function(self, type) end;
+---@param pad VRTouchpad
+---@return VRTouchpadMode
+---The GetTouchpadMode function returns the `Enum/VRTouchpadMode` indicating
+---the mode of a specified `Enum/VRTouchpad`.
+---
+---The returned mode indicates how the user interacts with their touchpad to
+---play the game. For more information about the different types of modes,
+---see the `Enum/VRTouchpadMode` page.
+---
+---This can also be used alongside the several `UserInputService` VR
+---functions and events.
+---
+---Since `VRService` only runs client-side, this function will only work when
+---used in a `LocalScript`.
+---
+VRService.GetTouchpadMode = function(self, pad) end;
+---@param pad VRTouchpad
+---@param mode VRTouchpadMode
+---@return void
+---The SetTouchpadMode function sets the mode of the specified
+---`Enum/VRTouchpad` to the specified `Enum/VRTouchpadMode`.
+---
+---This can be used to change the user's virtual reality (VR) touchpad mode
+---so that the user interacts with the game different using the touchpad. For
+---more information about the different types of modes, see the
+---`Enum/VRTouchpadMode` page.
+---
+---This can also be used alongside the several `UserInputService` VR
+---functions and events.
+---
+---Since `VRService` only runs client-side, this function will only work when
+---used in a `LocalScript`.
+---
+VRService.SetTouchpadMode = function(self, pad, mode) end;
+---@param type UserCFrame
+---@return bool
+---The GetUserCFrameEnabled function returns true if the specified
+---`Enum/UserCFrame` virtual reality device (VR) is available to be listened
+---to.
+---
+---This can be used to determine whether a specified VR device, _(e.g.
+---UserCFrame.Head)_, is connected to the user's game. If the specified VR
+---device is connected, is it enabled (_true_). Otherwise, it is disabled
+---(_false_).
+---
+---This can also be used alongside the several `UserInputService` VR
+---functions and events.
+---
+---Since `VRService` only runs client-side, this function will only work when
+---used in a `LocalScript`.
+---
+VRService.GetUserCFrameEnabled = function(self, type) end;
+---@param cframe CFrame
+---@param inputUserCFrame UserCFrame
+---@return void
+---The RequestNavigation function requests navigation to the specified
+---`DataType/CFrame`, using the specified `Enum/UserCFrame` as the origin for
+---the visualizer parabola.
+---
+---This can be used to incorporate virtual reality (VR) into your game by
+---providing a means to visualize a navigation path from the user's VR device
+---to a destination.
+---
+---The `VRService` has a similar event, `VRService/NavigationRequested`, used
+---to detect such requests. This can also be used alongside the several
+---`UserInputService` VR functions and events.
+---
+---Since VRService only runs client-side, this function will only work when
+---used in a `LocalScript`.
+---
+VRService.RequestNavigation = function(self, cframe, inputUserCFrame) end;
+---@return void
+---The RecentUserHeadCFrame function recenters the `DataType/CFrame` of the
+---user's head to the current location of the VR headset being worn by the
+---user.
+---
+---This function can be used to ensure that the user's in-game head is
+---positioned according to the location of the user's VR headset.
+---
+---This is similar to the `UserInputService` function,
+---`UserInputService/RecenterUserHeadCFrame`.
+---
+---Since `VRServiceService` only runs client-side, this function will only
+---work when used in a `LocalScript`.
+---
+VRService.RecenterUserHeadCFrame = function(self) end;
+---@class ValueBase : Instance
+---Base class of all 'Value Instance' objects.
+---
+local ValueBase;
+---@class Vector3Curve : Instance
+---Represents a 3D vector curve containing 3 `FloatCurve|FloatCurves`, stored
+---as 3 FloatCurve children instances. Each FloatCurve can be accessed via
+---`Vector3Curve/X`, `Vector3Curve/Y`, `Vector3Curve/Z` methods. The 3 axes
+---can be sampled simultaneously via the method
+---`Vector3Curve/GetValueAtTime`.
+---
+local Vector3Curve;
+---@return FloatCurve
+---Returns the FloatCurve controlling the Y channel. It is the first child
+---instance of type FloatCurve named `Y`. If none is found an empty
+---FloatCurve is created.
+---
+Vector3Curve.Y = function(self) end;
+---@return FloatCurve
+---Returns the FloatCurve controlling the Z channel. It is the first child
+---instance of type FloatCurve named `Z`. If none is found an empty
+---FloatCurve is created.
+---
+Vector3Curve.Z = function(self) end;
+---@param time float
+---@return Array
+---Samples the 3 FloatCurves (X, Y, Z) at the time passed as argument.
+---Returns the 3 samples as a tuple of 3 numbers. If a channel curve is
+---missing or no key is found in the curve the channel is evaluated as nil.
+---
+Vector3Curve.GetValueAtTime = function(self, time) end;
+---@return FloatCurve
+---Returns the FloatCurve controlling the X channel. It is the first child
+---instance of type FloatCurve named `X`. If none is found an empty
+---FloatCurve is created.
+---
+Vector3Curve.X = function(self) end;
+---@class Vector3Value : ValueBase, Instance
+---@field public Value Vector3
+---@field public Changed fun(value: Vector3): RbxScriptSignal
+---@field public changed fun(value: Vector3): RbxScriptSignal
+---A Vector3Value simply holds a Vector3 as a value. This value can be used
+---for scripts to communicate, for objects to move to a preset location, etc.
+---
+local Vector3Value;
+---@class VectorForce : Constraint, Instance
+---@field public ApplyAtCenterOfMass bool
+---@field public Force Vector3
+---@field public RelativeTo ActuatorRelativeTo
+---A VectorForce is used to apply a force to a part or assembly of parts. The
+---direction and strength of the force is determined by a `DataType/Vector3`
+---and can be relative to an attachment on the part, another attachment, or
+---the world coordinate system.
+---
+---The following image demonstrates how VectorForce applies a force on a part
+---relative to an Attachment.
+---
+---![VectorForce RelativeTo][1]
+---
+---The following image demonstrates how VectorForce applies a force on a part
+---relative to the part's center of mass.
+---
+---![VectorForce CenterOfMass][2]
+---
+---## Location of force
+---
+---A VectorForce will apply its force on the Parent of its
+---`Constraint/Attachment0|Attachment0`, but the location where the force is
+---applied is determined by the `VectorForce/ApplyAtCenterOfMass` property.
+---
+---When `VectorForce/ApplyAtCenterOfMass` is false, which it is by default,
+---the force will be applied to the part at the Attachement0's location. This
+---means that if the attachment is not at the center of the part, it can
+---create a torque on the part.
+---
+---When ApplyAtCenterOfMass is set to true, the force will check if any other
+---parts are rigidly connected to the parent part of its Attachment0. If
+---there are, then the force will apply at the center of mass of all of the
+---connected parts. If there are no rigid connections to other parts, the
+---force will simply be applied at the center of mass of the part.
+---
+---## Direction of force
+---
+---The direction of the force is determined by the Vector3 defined by force,
+---but it will also be affected by the `VectorForce/RelativeTo` property.
+---
+---By default, `VectorForce/RelativeTo` is set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.Attachment0`, meaning the
+---force will be applied in the space local to the attachment. Remember that
+---when visualizing an attachment, the yellow arrow shows the direction of
+---positive X, and the orange bar shows the direction of positive Y. If the
+---part the attachment is connected to rotates, the force will change
+---direction to make sure it is still in the context of the attachment.
+---
+---RelativeTo can also be set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.Attachment1`. In this
+---case, the force will be applied in the space local to
+---`Constraint/Attachment1|Attachment1`, regardless of the orientation of
+---Attachment0 or its connected part. If Attachment1 rotates, then the force
+---will change to stay oriented correctly.
+---
+---Lastly, RelativeTo can also be set to
+---`Enum/ActuatorRelativeTo|Enum.ActuatorRelativeTo.World`. In this mode, the
+---force is applied in world coordinates, regardless of the orientation of
+---Attachment0 or its part.
+---
+---See also:
+---
+---- [Body Movers Example.rbxl][3], a sample place showcasing body movers in
+---  various configurations.
+---- [Attachments and Constraints][4], an article outlining how to create and
+---  use attachments and constraints
+---
+---[1]: /assets/bltacb3e3255384a7b4/VectorForceRelativeTo3.gif
+---[2]: /assets/bltcdb637c5a4b55ef3/VectorForceCenterOfMass.gif
+---[3]:
+---  https://doy2mn9upadnk.cloudfront.net/uploads/default/original/3X/e/1/e17a844750802035b24f68ddcbd83f6312b8f1d6.rbxl
+---[4]: https://developer.roblox.com/articles/Constraints
+---
+local VectorForce;
+---@class VehicleController : Controller, Instance
+---A VehicleController is an object responsible for translating
+---<a href="/reference/engine/enums/PlayerActions">PlayerActions</a> to
+---movements with a `VehicleSeat`.
+---
+local VehicleController;
+---@class VehicleSeat : BasePart, PVInstance, Instance
+---@field public AreHingesDetected int
+---@field public Disabled bool
+---@field public HeadsUpDisplay bool
+---@field public MaxSpeed float
+---@field public Occupant Humanoid
+---@field public Steer int
+---@field public SteerFloat float
+---@field public Throttle int
+---@field public ThrottleFloat float
+---@field public Torque float
+---@field public TurnSpeed float
+---The VehicleSeat objects welds a player to the seat when the player touches
+---the seat. It then forwards the movement keys to any connected motor
+---joints, allowing control of a vehicle.
+---
+---While VehicleSeats are great for making simple vehicles they do have some
+---limitations. Movement control will only detect motors connected directly
+---to the vehicle seat, or through another rigid connection. This means that
+---if you have a wheel connected to a beam which is then welded to the seat
+---it will work fine, however if you have the wheel connected to a part,
+---which is connected by a hinge to the rest of the car, it will not work.
+---
+local VehicleSeat;
+---@param humanoid Instance
+---@return void
+---Forces the character with the specified
+---<a href="/reference/engine/classes/Humanoid">Humanoid</a> to sit in the
+---VehicleSeat.
+---
+VehicleSeat.Sit = function(self, humanoid) end;
+---@class VelocityMotor : JointInstance, Instance
+---@field public CurrentAngle float
+---@field public DesiredAngle float
+---@field public Hole Hole
+---@field public MaxVelocity float
+---The VelocityMotor is a special type of joint that works similarly to a
+---`Motor`, but it uses a `MotorFeature` and a `Hole` to create the
+---connection. In order for this object to work correctly:
+---
+---- The VelocityMotor must be parented inside of a `MotorFeature`
+---- The `MotorFeature` needs to be parented inside of a `BasePart`
+---- A `Hole` needs to be parented inside of another `BasePart`
+---- The VelocityMotor's `VelocityMotor/Hole` property should be assigned to
+---  the hole you parented inside of the other part.
+---
+local VelocityMotor;
+---@class VersionControlService : Instance
+---@field public ScriptCollabEnabled bool
+local VersionControlService;
+---@class VideoFrame : GuiObject, GuiBase2d, GuiBase, Instance
+---@field public IsLoaded bool
+---@field public Looped bool
+---@field public Playing bool
+---@field public Resolution Vector2
+---@field public TimeLength double
+---@field public TimePosition double
+---@field public Video Content
+---@field public Volume float
+---@field public DidLoop fun(video: string): RbxScriptSignal
+---@field public Ended fun(video: string): RbxScriptSignal
+---@field public Loaded fun(video: string): RbxScriptSignal
+---@field public Paused fun(video: string): RbxScriptSignal
+---@field public Played fun(video: string): RbxScriptSignal
+---A VideoFrame renders a rectangle, like a `Frame` does, with a moving video
+---image. The video must be from a file uploaded to the Roblox website.
+---
+---The video is scaled to fit the entirety of the rectangle, but looks best
+---when displayed at its native resolution.
+---
+---## 2D and 3D Sound
+---
+---A VideoFrame placed underneath `SurfaceGui` on a `BasePart` will emit its
+---sound from that part's `BasePart/Position`.
+---
+---A VideoFrame exhibits the Doppler effect, meaning its frequency and pitch
+---varies with the relative motion of whatever part it is attached to.
+---
+---The volume of the VideoFrame will be determined by the distance between
+---the client's sound listener (by default the `Camera` position) and the
+---position of the VideoFrame's part.
+---
+---A VideoFrame is considered **"global"** if it is not placed underneath
+---SurfaceGui on a BasePart. In this case, the sound will play at the same
+---volume throughout the entire place.
+---
+local VideoFrame;
+---@return void
+---Sets `VideoFrame/Playing` to false, pausing playback if the
+---`VideoFrame/Video` is playing.
+---
+---As `VideoFrame/TimePosition` is not reset, when the video is resumed it
+---will continue from its previous position.
+---
+VideoFrame.Pause = function(self) end;
+---@return void
+---Sets `VideoFrame/Playing` to true, This plays the `VideoFrame/Video`,
+---continuing from the current `VideoFrame/TimePosition`.
+---
+VideoFrame.Play = function(self) end;
+---@class ViewportFrame : GuiObject, GuiBase2d, GuiBase, Instance
+---@field public Ambient Color3
+---@field public CurrentCamera Camera
+---@field public ImageColor3 Color3
+---@field public ImageTransparency float
+---@field public LightColor Color3
+---@field public LightDirection Vector3
+---A **ViewportFrame** is a type of `GuiObject|GUI` that can render 3D
+---objects inside its bounds. This is a great way to display 3D
+---objects/models in a 2D GUI space like a `ScreenGui`. At the moment, no
+---shadow or post effects are available. Neon and Glass
+---`Enum/Material|materials` will be rendered on lowest quality.
+---
+---For a step-by-step walkthrough, see the
+---[Frames](/building-and-visuals/ui/frames).
+---
+local ViewportFrame;
+---@class VirtualInputManager : Instance
+---@field public AdditionalLuaState string
+---@field public PlaybackCompleted fun(additionalLuaState: string): RbxScriptSignal
+---@field public RecordingCompleted fun(result: string): RbxScriptSignal
+---VirtualInputManager is an internal service used by Roblox to record inputs
+---and play them back during performance benchmarking tests. This service's
+---API can only be used by `CoreScript`.
+---
+local VirtualInputManager;
+---@param objectId int
+---@param keyCode KeyCode
+---@param x float
+---@param y float
+---@param z float
+---@return void
+VirtualInputManager.HandleGamepadAxisInput = function(self, objectId, keyCode, x, y, z) end;
+---@param touchId int64
+---@param state int
+---@param x float
+---@param y float
+---@return void
+VirtualInputManager.SendTouchEvent = function(self, touchId, state, x, y) end;
+---@return void
+VirtualInputManager.StopPlaying = function(self) end;
+---@param x float
+---@param y float
+---@param z float
+---@return void
+VirtualInputManager.SendGravityEvent = function(self, x, y, z) end;
+---@return void
+VirtualInputManager.StopRecording = function(self) end;
+---@param quatX float
+---@param quatY float
+---@param quatZ float
+---@param quatW float
+---@return void
+VirtualInputManager.SendGyroscopeEvent = function(self, quatX, quatY, quatZ, quatW) end;
+---@param namespace string
+---@param detail string
+---@param detailType string
+---@return void
+VirtualInputManager.sendRobloxEvent = function(self, namespace, detail, detailType) end;
+---@param inputTypesToIgnore Variant
+---@return void
+VirtualInputManager.SetInputTypesToIgnore = function(self, inputTypesToIgnore) end;
+---@param deviceId int
+---@param keyCode KeyCode
+---@param buttonState int
+---@return void
+VirtualInputManager.HandleGamepadButtonInput = function(self, deviceId, keyCode, buttonState) end;
+---@return void
+VirtualInputManager.WaitForInputEventsProcessed = function(self) end;
+---@param fileName string
+---@return void
+VirtualInputManager.StartPlaying = function(self, fileName) end;
+---@param themeName string
+---@return void
+VirtualInputManager.sendThemeChangeEvent = function(self, themeName) end;
+---@param x float
+---@param y float
+---@param isForwardScroll bool
+---@param layerCollector Instance
+---@return void
+VirtualInputManager.SendMouseWheelEvent = function(self, x, y, isForwardScroll, layerCollector) end;
+---@param isPressed bool
+---@param keyCode KeyCode
+---@param isRepeatedKey bool
+---@param layerCollector Instance
+---@return void
+VirtualInputManager.SendKeyEvent = function(self, isPressed, keyCode, isRepeatedKey, layerCollector) end;
+---@return void
+VirtualInputManager.StartRecording = function(self) end;
+---@param x float
+---@param y float
+---@param z float
+---@return void
+VirtualInputManager.SendAccelerometerEvent = function(self, x, y, z) end;
+---@param deviceId int
+---@return void
+VirtualInputManager.HandleGamepadConnect = function(self, deviceId) end;
+---@param string string
+---@return void
+VirtualInputManager.StartPlayingJSON = function(self, string) end;
+---@param x int
+---@param y int
+---@param mouseButton int
+---@param isDown bool
+---@param layerCollector Instance
+---@param repeatCount int
+---@return void
+VirtualInputManager.SendMouseButtonEvent = function(self, x, y, mouseButton, isDown, layerCollector, repeatCount) end;
+---@param str string
+---@param layerCollector Instance
+---@return void
+VirtualInputManager.SendTextInputCharacterEvent = function(self, str, layerCollector) end;
+---@return void
+VirtualInputManager.Dump = function(self) end;
+---@param deviceId int
+---@return void
+VirtualInputManager.HandleGamepadDisconnect = function(self, deviceId) end;
+---@param x float
+---@param y float
+---@param layerCollector Instance
+---@return void
+VirtualInputManager.SendMouseMoveEvent = function(self, x, y, layerCollector) end;
+---@class VirtualUser : Instance
+---VirtualUser is a service that allows you to record the inputs of a user,
+---and then play it back to a limited extent. This service hasn't been
+---maintained in several years, so it doesn't work very well anymore.
+---
+local VirtualUser;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user holding the right mouse button down.
+---
+VirtualUser.Button2Down = function(self, position, camera) end;
+---@param key string
+---@return void
+---Simulates the user typing a key.
+---
+VirtualUser.TypeKey = function(self, key) end;
+---@param key string
+---@return void
+---Simulates the user holding a key down.
+---
+VirtualUser.SetKeyDown = function(self, key) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user releasing the right mouse button.
+---
+VirtualUser.Button2Up = function(self, position, camera) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user holding the left mouse button down.
+---
+VirtualUser.Button1Down = function(self, position, camera) end;
+---@return void
+---Attempts to gain priority over the hardware controller's input, in favor
+---of the VirtualUser's simulated input.
+---
+VirtualUser.CaptureController = function(self) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user clicking the left mouse button.
+---
+VirtualUser.ClickButton1 = function(self, position, camera) end;
+---@return string
+---Stops recording the user's input. Returns a Lua script as a string, that
+---allows you to playback the inputs that were recorded.
+---
+VirtualUser.StopRecording = function(self) end;
+---@return void
+---Starts recording the user's input.
+---
+VirtualUser.StartRecording = function(self) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user clicking the right mouse button.
+---
+VirtualUser.ClickButton2 = function(self, position, camera) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user releasing the left mouse button.
+---
+VirtualUser.Button1Up = function(self, position, camera) end;
+---@param key string
+---@return void
+---Simulates the user releasing a key.
+---
+VirtualUser.SetKeyUp = function(self, key) end;
+---@param position Vector2
+---@param camera CFrame
+---@return void
+---Simulates the user moving the mouse cursor to a specific position.
+---
+VirtualUser.MoveMouse = function(self, position, camera) end;
+---@class VisibilityService : Instance
+local VisibilityService;
+---@class Visit : Instance
+---The Visit service is a backend service used by Roblox. Its functions are
+---not accessible to developers in any form.
+---
+local Visit;
+---@class VoiceChannel : Instance
+local VoiceChannel;
+---@param userId int64
+---@return Tuple
+VoiceChannel.AddUserAsync = function(self, userId) end;
+---@class VoiceChatInternal : Instance
+---@field public VoiceChatState VoiceChatState
+---@field public ParticipantsStateChanged fun(participantsLeft: Array, participantsJoined: Array, updatedStates: Array): RbxScriptSignal
+---@field public PlayerMicActivitySignalChange fun(activityInfo: Dictionary): RbxScriptSignal
+---@field public StateChanged fun(old: VoiceChatState, new: VoiceChatState): RbxScriptSignal
+local VoiceChatInternal;
+---@param groupId string
+---@param isMicMuted bool
+---@return bool
+VoiceChatInternal.JoinByGroupIdToken = function(self, groupId, isMicMuted) end;
+---@param userId int64
+---@param paused bool
+---@return bool
+VoiceChatInternal.SubscribePause = function(self, userId, paused) end;
+---@return void
+VoiceChatInternal.Leave = function(self) end;
+---@param paused bool
+---@return bool
+VoiceChatInternal.PublishPause = function(self, paused) end;
+---@param paused bool
+---@return bool
+VoiceChatInternal.SubscribePauseAll = function(self, paused) end;
+---@return int
+VoiceChatInternal.GetVoiceChatAvailable = function(self) end;
+---@param micDeviceName string
+---@param micDeviceGuid string
+---@return void
+VoiceChatInternal.SetMicDevice = function(self, micDeviceName, micDeviceGuid) end;
+---@param userId int64
+---@return bool
+VoiceChatInternal.IsVoiceEnabledForUserIdAsync = function(self, userId) end;
+---@return bool
+VoiceChatInternal.IsPublishPaused = function(self) end;
+---@param userId int64
+---@return bool
+VoiceChatInternal.SubscribeUnblock = function(self, userId) end;
+---@return string
+VoiceChatInternal.GetAndClearCallFailureMessage = function(self) end;
+---@param userId int64
+---@return bool
+VoiceChatInternal.IsSubscribePaused = function(self, userId) end;
+---@param userId int64
+---@return bool
+VoiceChatInternal.SubscribeRetry = function(self, userId) end;
+---@return Tuple
+VoiceChatInternal.GetAudioProcessingSettings = function(self) end;
+---@param groupId string
+---@param isMicMuted bool
+---@return bool
+VoiceChatInternal.JoinByGroupId = function(self, groupId, isMicMuted) end;
+---@param userId int64
+---@return bool
+VoiceChatInternal.SubscribeBlock = function(self, userId) end;
+---@return string
+VoiceChatInternal.GetGroupId = function(self) end;
+---@param speakerDeviceName string
+---@param speakerDeviceGuid string
+---@return void
+VoiceChatInternal.SetSpeakerDevice = function(self, speakerDeviceName, speakerDeviceGuid) end;
+---@return int
+VoiceChatInternal.GetVoiceChatApiVersion = function(self) end;
+---@return Tuple
+VoiceChatInternal.GetMicDevices = function(self) end;
+---@return bool
+VoiceChatInternal.IsContextVoiceEnabled = function(self) end;
+---@return Tuple
+VoiceChatInternal.GetSpeakerDevices = function(self) end;
+---@return Array
+VoiceChatInternal.GetParticipants = function(self) end;
+---@class VoiceChatService : Instance
+---@field public EnableDefaultVoice bool
+---@field public VoiceChatEnabledForPlaceOnRcc bool
+---@field public VoiceChatEnabledForUniverseOnRcc bool
+local VoiceChatService;
+---@param userId int64
+---@return bool
+---Returns whether or not the given user has voice enabled. On the
+---client-side, this can only be used to check the voice status of the local
+---player.
+---
+---This function is not yet implemented server-side.
+---
+---This function can throw an error if the HTTP call fails.
+---
+---The following code sample enables a UI layer only for voice enabled
+---players.
+---
+---```lua
+---local Players = game:GetService(“Players”)
+---local VoiceChatService = game:GetService(“VoiceChatService”)
+---
+---local localPlayer = Players.LocalPlayer
+---local success, enabled = pcall(function()
+---    return VoiceChatService:IsVoiceEnabledForUserIdAsync(localPlayer.UserId)
+---end)
+---if success and enabled then
+---    localPlayer.PlayerGui.MyVoiceGui.Enabled = true
+---end
+---
+---```
+---
+VoiceChatService.IsVoiceEnabledForUserIdAsync = function(self, userId) end;
+---@class VoiceSource : Instance
+---@field public UserId int64
+local VoiceSource;
+---@class WedgePart : FormFactorPart, BasePart, PVInstance, Instance
+---WedgeParts are great for building slopes because of their slanted surface.
+---They can even be rotated onto their slant so that they can be used at an
+---angle to make a triangular ramp. Due to their collision, WedgeParts can be
+---good for quickly rotating bricks to a certain angle within Roblox Studio,
+---making them a quick solution to using scripting methods such as CFrame to
+---perform the same function. WedgeParts can be adjusted to any size a
+---regular brick can so that they can be aligned with the rest of your
+---building work. WedgeParts, when used next to each other at different
+---angles, can also make great curved ramps without the need for CFrame too
+---
+local WedgePart;
+---@class Weld : JointInstance, Instance
+---An object used to hold two objects together in a relative position,
+---regardless of whether they're touching. This object is placed inside of a
+---`BasePart` and the `JointInstance/Part1|Part1` property determines which
+---other part should be welded to the original part. Two
+---`datatype/CFrame|CFrames`, `JointInstance/C0|C0` and
+---`JointInstance/C1|C1`, then determine how the parts should be placed.
+---
+---See also `WeldConstraint` for a newer alternative using the constraints
+---system that does not require `JointInstance/C0|C0` or
+---`JointInstance/C1|C1` properties to be manually set.
+---
+---While the weld is `JointInstance/Active|Active`, it maintains the part
+---positions such that: `part1.CFrame * C1 == Part0.CFrame * C0`
+---
+---## Root part
+---
+---Every Assembly has a root part, see `BasePart/GetRootPart`. When a Weld's
+---`JointInstance/C0|C0`/`JointInstance/C1|C1` is modified the root part will
+---stay where it was.
+---
+---## Directionality
+---
+---Welds do not have any directionality. `JointInstance/Part0|Part0` or
+---`JointInstance/Part1|Part1`, doesn't matter. You can imagine rigid joints
+---forming a tree branching down from the root part. All the parts down the
+---tree from root will move, and their welded “children” in this tree will
+---move with them.
+---
+local Weld;
+---@class WeldConstraint : Instance
+---@field public Active bool
+---@field public Enabled bool
+---@field public Part0 BasePart
+---@field public Part1 BasePart
+---**WeldConstraints** are used to attach two `BasePart|parts` together. The
+---constraint makes sure that the parts stay in the same relative position
+---and orientation to one another, meaning that if one part moves, the other
+---will move the same amount. Even if the two parts are not touching one
+---another, they can be welded together with a weld constraint.
+---
+---The most common way to create a weld constraint is through the Studio
+---**Create** menu in the **Model** tab (select **Weld**). This tool will act
+---differently based on how many parts are selected when the tool is
+---activated:
+---
+---- If no parts are selected when the **Weld** tool is clicked, the next two
+---  parts that are clicked on will be welded together. If the same part is
+---  clicked twice, no weld will be created.
+---- If one part is selected when the **Weld** tool is clicked, the next part
+---  that is clicked on will be welded to the selected part.
+---- If several parts are selected when the **Weld** tool is clicked, any
+---  parts in that selection that are touching or overlapping will be welded
+---  together.
+---
+---## Repositioning Welded Parts
+---
+---Roblox handles moving a welded part differently depending on whether the
+---part was moved using its `BasePart/Position|Position` or with its
+---`datatype/CFrame|CFrame`.
+---
+---If a welded part's `BasePart/Position|Position` is updated, the part will
+---move but none of the connected parts will move with it. The weld will
+---recalculate the offset from the other part based on the part's new
+---position.
+---
+---```lua
+----- Create two parts and position them at the same height
+---local partA = Instance.new("Part")
+---local partB = Instance.new("Part")
+---partA.Position = Vector3.new(0, 10, 0)
+---partB.Position = Vector3.new(0, 10, 10)
+---partA.Parent = workspace
+---partB.Parent = workspace
+---
+----- Weld the two parts together
+---local weld = Instance.new("WeldConstraint")
+---weld.Parent = workspace
+---weld.Part0 = partA
+---weld.Part1 = partB
+---
+----- Update the position of the first part; the first part will move but the second will stay where it started
+---partA.Position = Vector3.new(0, 20, 0)
+---```
+---
+---In contrast, if a part's `datatype/CFrame|CFrame` is updated, that part
+---will move and any part welded to that part will also move. These other
+---parts will be moved to make sure they maintain the same offset as when the
+---weld was created.
+---
+---```lua
+----- Create two parts and position them at the same height
+---local partA = Instance.new("Part")
+---local partB = Instance.new("Part")
+---partA.Position = Vector3.new(0, 10, 0)
+---partB.Position = Vector3.new(0, 10, 10)
+---partA.Parent = workspace
+---partB.Parent = workspace
+---
+----- Weld the two parts together
+---local weld = Instance.new("WeldConstraint")
+---weld.Parent = workspace
+---weld.Part0 = partA
+---weld.Part1 = partB
+---
+----- Update the CFrame of the first part; the second part will also move to maintain the offset of the weld
+---partA.CFrame = CFrame.new(0, 20, 0)
+---```
+---
+local WeldConstraint;
+---@class Workspace : WorldRoot, Model, PVInstance, Instance
+---@field public AllowThirdPartySales bool
+---@field public AnimationWeightedBlendFix NewAnimationRuntimeSetting
+---@field public ClientAnimatorThrottling ClientAnimatorThrottlingMode
+---@field public CurrentCamera Camera
+---@field public DistributedGameTime double
+---@field public FallenPartsDestroyHeight float
+---@field public FilteringEnabled bool
+---@field public GlobalWind Vector3
+---@field public Gravity float
+---@field public HumanoidOnlySetCollisionsOnStateChange HumanoidOnlySetCollisionsOnStateChange
+---@field public InterpolationThrottling InterpolationThrottlingMode
+---@field public MeshPartHeadsAndAccessories MeshPartHeadsAndAccessories
+---@field public PhysicsSimulationRate PhysicsSimulationRate
+---@field public PhysicsSteppingMethod PhysicsSteppingMethod
+---@field public ReplicateInstanceDestroySetting ReplicateInstanceDestroySetting
+---@field public Retargeting AnimatorRetargetingMode
+---@field public SignalBehavior SignalBehavior
+---@field public StreamOutBehavior StreamOutBehavior
+---@field public StreamingEnabled bool
+---@field public StreamingMinRadius int
+---@field public StreamingPauseMode StreamingPauseMode
+---@field public StreamingTargetRadius int
+---@field public Terrain Terrain
+---@field public TouchesUseCollisionGroups bool
+---The Workspace is the service in which any objects that are to be rendered
+---in the 3D world exist. Objects not descending from Workspace will not be
+---rendered or physically interact with the world.
+---
+---## What does the Workspace do?
+---
+---The core job of the Workspace is to hold objects that exist in the 3D
+---world, `BasePart|BaseParts` and `Attachment|Attachments`. Whilst such
+---objects are descendant of Workspace, they will be active. For BaseParts
+---this means they will be rendered, and physically interact with other parts
+---and the world. For `Attachment`s this means objects adorned to them, such
+---as `ParticleEmitter|ParticleEmitters`, `Beam|Beams` and
+---`BillboardGui|BillboardGuis` will render.
+---
+---Understanding this behavior is important, as it means objects can be
+---removed from the Workspace when they are not needed. For example, map
+---`Model|Models` can be removed from the `Workspace` when a different map is
+---being played on. Objects that are not immediately needed in the Workspace
+---are generally stored in `ReplicatedStorage` or `ServerStorage`.
+---
+---In its role as the holder of active 3D objects, Workspace includes a
+---number of useful functions related to parts, their positions and joints
+---between them.
+---
+---## Accessing the Workspace
+---
+---The Workspace can be accessed several ways, all of which are valid.
+---
+---```
+---workspace -- a global variable
+---game.Workspace -- a property of the DataModel
+---game:GetService("Workspace") -- Workspace is a service
+---```
+---
+---Note:
+---
+---- Objects that require adornment, such as `ParticleEmitter`s and
+---  `BillboardGui`s will be adorned to the _0, 0, 0_ position when adorned
+---  to the Workspace (parented to it without an adornee otherwise being set)
+---- The `Model/MakeJoints` and `Model/BreakJoints` functions inherited from
+---  the `Model` class are overridden by the Workspace's own
+---  `Workspace/MakeJoints` and `Workspace/BreakJoints` functions, which can
+---  only be used in plugins
+---- It is impossible to delete the Workspace
+---- The Workspace will also clean up `BasePart`s that fall beneath
+---  `Workspace/FallenPartsDestroyHeight`
+---- A client's current `Camera` object can be accessed using the
+---  `Workspace/CurrentCamera` property
+---- The `Terrain` object can be accessed using the `Workspace/Terrain`
+---  property
+---
+local Workspace;
+---@return void
+---Positions and zooms the `Workspace/CurrentCamera` to show the extent of
+---`BasePart`s currently in the `Workspace`.
+---
+---This function was used in the, now removed, 'Zoom To Extents' button in
+---Roblox Studio. It exhibits similar behavior to the 'Zoom To' (F shortcut)
+---feature, however it shows the extents of the `Workspace` rather than the
+---currently selected object.
+---
+---This function cannot be used in scripts but will function in the command
+---bar or plugins.
+---
+Workspace.ZoomToExtents = function(self) end;
+---@param objects Objects
+---@param jointType JointCreationMode
+---@return void
+---This function creates joints between the specified `BasePart|Parts` and
+---any touching parts depending on the parts' surfaces and the specified
+---joint creation mode.
+---
+---This function creates joints between the specified Parts and any planar
+---touching surfaces, depending on the parts' surfaces and the specified
+---joint creation mode.
+---
+---- Glue, Studs, Inlets, Universal, Weld, and Smooth surfaces will all
+---  create Weld instances.
+---- Spheres will not surface-weld to anything. The rounded sides of
+---  cylinders will not surface-weld, but the flat end sides will.
+---- Hinge and Motor surfaces will still create `Rotate` and `RotateP` joint
+---  instances, regardless of part shape.
+---
+---The first parameter is an array of `BasePart|BaseParts`. Joints will only
+---be created between the parts in the array and not in the array. Joints
+---will not be created between the parts in the array.
+---
+---The second parameter is a `Enum/JointCreationMode` that determines how
+---joints will be created. Passing in either enum value,
+---`enum/JointCreationMode|Enum.JointCreationMode.All` or
+---`enum/JointCreationMode|Enum.JointCreationMode.Surface`, has the same
+---behavior which equates to Join Always
+---
+---This function is used by the Roblox Studio Move tool when the user
+---finishes moving a selection. In conjunction with `Plugin/GetJoinMode` and
+---`Workspace/UnjoinFromOutsiders` it can be used to retain join
+---functionality when developing custom studio build tools. See the snippets
+---below for an example.
+---
+---```lua
+----- finished moving a selection, make joints
+---local function finishedMovingParts(parts)
+---	local joinMode = Plugin:GetJoinMode()
+---	workspace:JoinToOutsiders(parts, joinMode)
+---end
+---```
+---
+---```lua
+----- started moving a selection, break joints
+---local function startMovingParts(parts)
+---	workspace:UnjoinFromOutsiders(parts)
+---end
+---```
+---
+---Developers interested in seeing how this function is used in the Roblox
+---Studio should see the [Studio Tools GitHub repository][1].
+---
+---[1]: https://github.com/Roblox/Studio-Tools
+---
+Workspace.JoinToOutsiders = function(self, objects, jointType) end;
+---@param objects Objects
+---@return void
+---Breaks all joints between the specified `BasePart`s and other `BasePart`s.
+---
+---This function requires an array of `BasePart`s. Note, joints will not be
+---broken between these `BasePart`s (each other), only between these
+---`BasePart`s and other `BasePart`s not in the array.
+---
+---This function is used by the Roblox Studio Move tool when the user starts
+---moving a selection. In conjunction with `Plugin/GetJoinMode` and
+---`Workspace/JoinToOutsiders` it can be used to retain join functionality
+---when developing custom studio build tools. See the snippets below for an
+---example.
+---
+---```
+----- finished moving a selection, make joints
+---local function finishedMovingParts(parts)
+---	local joinMode = Plugin:GetJoinMode()
+---	workspace:JoinToOutsiders(parts, joinMode)
+---end
+---```
+---
+---```
+----- started moving a selection, break joints
+---local function startMovingParts(parts)
+---	workspace:UnjoinFromOutsiders(parts)
+---end
+---```
+---
+---Developers interested in seeing how this function is used in the Roblox
+---Studio should see the [Studio Tools GitHub repository][1].
+---
+---[1]: https://github.com/Roblox/Studio-Tools
+---
+Workspace.UnjoinFromOutsiders = function(self, objects) end;
+---@param gravity float
+---@param jumpPower float
+---@return float
+Workspace.CalculateJumpHeight = function(self, gravity, jumpPower) end;
+---@param value MeshPartHeadsAndAccessories
+---@return void
+Workspace.SetMeshPartHeadsAndAccessories = function(self, value) end;
+---@param value bool
+---@return void
+---This property determines whether physics throttling is enabled.
+---
+---Historically this function could be used by plugins. However, for security
+---reasons this has been changed and now it can only be used by developers in
+---the command bar.
+---
+---Note, currently physics throttling will always stay enabled regardless if
+---this function is used or not.
+---
+---#### What is physics throttling?
+---
+---Physics throttling occurs when the physics engine detects it cannot keep
+---up with the game in realtime. When physics is being throttled, it will
+---update less frequently causing `BasePart|BaseParts` to appear to move
+---slower.
+---
+---Without throttling, the physics simulation would fall further behind out
+---of sync with the game. Without physics throttling, users experience lower
+---frame rates.
+---
+---Objects associated with `Humanoid|Humanoids` are exempt from physics
+---throttling.
+---
+---Developers can use `Workspace/GetPhysicsThrottling` to determine the
+---degree to which physics are being throttled.
+---
+---#### Demonstrating physics throttling
+---
+---Developers should always avoid creating places that overload the physics
+---engine, as it leads to sub-par experience for players. Those wishing to
+---simulate physics throttling for research purposes however, need only
+---create a lot of `Part`s very quickly.
+---
+---```
+---local i = 0
+---while true do
+---	i = i + 1
+---	if i % 5 == 0 then
+---		wait()
+---	end
+---	local part = Instance.new("Part", workspace)
+---end
+---```
+---
+Workspace.SetPhysicsThrottleEnabled = function(self, value) end;
+---@return int
+---Returns the number of `BasePart`s that are deemed physically active, due
+---to being recently under the influence of physics.
+---
+---This function provides a measure of how many `BasePart`s are being
+---influenced by, or recently under the influence of, physical forces.
+---
+---```
+---print(workspace:GetNumAwakeParts()) -- prints the number of 'awake' parts
+---```
+---
+---#### Sleeping vs Awake Parts
+---
+---In order to ensure good performance, Roblox sets `BaseParts` in which
+---physics are not being applied to a 'sleeping' state. `BasePart`s with
+---`BasePart/Anchored` set to true, for example, will always be sleeping as
+---physics does not apply to them. When a force is applied to an non anchored
+---`BasePart`, an 'awake' state will be applied. Whilst a `BasePart` is awake
+---the Roblox physics engine will perform continuous calculations to ensure
+---physical forces interact correctly with the part. Once the `BasePart` is
+---no longer subject to physical forces, it will revert to a 'sleeping'
+---state.
+---
+Workspace.GetNumAwakeParts = function(self) end;
+---@return int
+---Returns an integer, between 0 and 100, representing the percentage of
+---real-time that physics simulation is currently being throttled to.
+---
+---This function can be used to determine whether, and to what degree,
+---physics throttling is occurring.
+---
+---#### What is physics throttling?
+---
+---Physics throttling occurs when the physics engine detects it cannot keep
+---up with the game in realtime. When physics is being throttled, it will
+---update less frequently causing `BasePart`s to appear to move slower.
+---
+---Without throttling, the physics simulation would fall further behind out
+---of sync with the game. This can lead to lower frame rates and other
+---undesirable behavior.
+---
+---Objects associated with `Humanoid`s are exempt from physics throttling.
+---
+---See also `Workspace/SetPhysicsThrottleEnabled`.
+---
+---#### Demonstrating physics throttling
+---
+---Developers should always avoid creating places that overload the physics
+---engine, as it leads to sub-par experience for players. Those wishing to
+---simulate physics throttling for research purposes however, need only
+---create a lot of `Part`s very quickly.
+---
+---```
+---local i = 0
+---while true do
+---	i = i + 1
+---	if i % 5 == 0 then
+---		wait()
+---	end
+---	local part = Instance.new("Part", workspace)
+---end
+---```
+---
+Workspace.GetPhysicsThrottling = function(self) end;
+---@param gravity float
+---@param jumpHeight float
+---@return float
+Workspace.CalculateJumpPower = function(self, gravity, jumpHeight) end;
+---@param objects Objects
+---@return void
+---**Deprecated**
+---
+---SurfaceType based joining is deprecated, do not use MakeJoints for new
+---projects. `WeldConstraint|WeldConstraints` and
+---`HingeConstraint|HingeConstraints` should be used instead.
+---
+---Goes through all `BasePart|Parts` given. If any part's side has a
+---`Enum/SurfaceType` that can make a joint it will create a joint with any
+---adjacent parts.
+---
+---Joints will be created between the specified Parts and any planar touching
+---surfaces, depending on the parts' surfaces.
+---
+---- Smooth surfaces will not create joints
+---- Glue surfaces will create a `Glue` joint
+---- Weld will create a `Weld` joint with any surface except for Unjoinable
+---- Studs, Inlet, or Universal will each create a `Snap` joint with either
+---  of other the other two surfaces (e.g. Studs with Inlet and Universal)
+---- Hinge and Motor surfaces create `Rotate` and `RotateV` joint instances
+---
+---Unlike `Model/MakeJoints`, this function requires an array of parts as a
+---parameter. This array is given as follows:
+---
+---```
+---workspace:MakeJoints({part1, part2, part3})
+---```
+---
+---Joints are broken if enough force is applied to them due to an
+---`Explosion`, unless a `ForceField` object is parented to the `BasePart` or
+---ancestor `Model`. For this reason, they are often used to make simple
+---destructible buildings and other models.
+---
+Workspace.MakeJoints = function(self, objects) end;
+---@return double
+---Returns the number of frames per second that physics is currently being
+---simulated at.
+---
+---#### Using GetRealPhysicsFPS to combat exploiters
+---
+---A common use of this function is to detect if exploiters are increasing
+---their local physics frame rate to move faster. This is generally done by
+---comparing the result returned by a client's GetRealPhysicsFPS to a maximum
+---that will not be breached in normal circumstances (usually 65 or 70). If
+---this limit is breached, developers can use the `Player/Kick` function to
+---remove that `Player` from the game. It is important to remember that,
+---although this practice may be effective sometimes, client-side
+---anti-exploiter measures are never 100% reliable.
+---
+Workspace.GetRealPhysicsFPS = function(self) end;
+---@return bool
+---Returns true if the game has the PGS Physics solver enabled.
+---
+---As `Workspace/PGSPhysicsSolverEnabled` cannot be accessed by scripts, the
+---PGSIsEnabled function allows developers to tell which physics solver the
+---game is using.
+---
+---```
+---print(workspace:PGSIsEnabled()) -- true = PGS solver enabled
+---print(workspace:PGSIsEnabled()) -- false = Legacy solver enabled
+---```
+---
+---#### What is the PGS Solver?
+---
+---The PGS Solver is Roblox's state of the art physics solver which offers a
+---range of simulation capabilities not available in Roblox's legacy solver.
+---
+---Note, the PGS solver is currently the default physics solver used by
+---Roblox. Developers should expect the legacy physics solver to be
+---deprecated or removed at some point in the future.
+---
+---For more information on the PGS Solver, please see [this article][1].
+---
+---[1]: https://developer.roblox.com/articles/Building-with-PGS
+---
+Workspace.PGSIsEnabled = function(self) end;
+---@param objects Objects
+---@return void
+---Goes through all `BasePart`s given, breaking any joints connected to these
+---parts.
+---
+---This function will break any of the following types of joints:
+---
+---- `JointInstance`s such as `Connectors`, `Welds` and `Snaps`
+---- `WeldConstraint`s
+---
+---Unlike `Break/MakeJoints`, this function requires an array of `BasePart`s
+---as a parameter. This array is given as follows:
+---
+---```
+---workspace:BreakJoints({part1, part2, part3})
+---```
+---
+---Note, this function cannot be used by scripts and will only function in
+---plugins.
+---
+Workspace.BreakJoints = function(self, objects) end;
+---@param gravity float
+---@param jumpPower float
+---@param walkSpeed float
+---@return float
+Workspace.CalculateJumpDistance = function(self, gravity, jumpPower, walkSpeed) end;
+---@return double
+---**GetServerTimeNow** returns the epoch time on the server with microsecond
+---precision. The time is adjusted for drift and smoothed monotonically (it
+---is guaranteed to be non-decreasing). The server clock progresses no faster
+---than 1.006&times; speed and no slower than 0.994&times; speed.
+---
+---This function is useful for creating synchronized experiences, as it has
+---three properties necessary for doing so: it is a real-world time clock, is
+---monotonic and has decent precision. Essentially, it is the client's best
+---guess of what `os.clock` would return on the server.
+---
+---This function relies on the server, so calling it from a core script on a
+---client that isn't connected will throw an error.
+---
+---See also:
+---
+---- `Workspace/DistributedGameTime|DistributedGameTime`, a game-time clock
+---- [`os.clock`](/reference/engine/libraries/os)
+---- `datatype/DateTime`
+---
+Workspace.GetServerTimeNow = function(self) end;
+---@return bool
+---Returns true if the game has the PGS Physics solver enabled.
+---
+---The PGS Physics solver was previously called the 'Experimental' solver,
+---before becoming Roblox's default server. This function returns the same
+---result as `Workspace:PGSIsEnabled`.
+---
+---```
+---print(workspace:PGSIsEnabled() == workspace:ExperimentalSolverIsEnabled()) -- true
+---```
+---
+---This function can only be used by plugins and the command bar.
+---
+---#### What is the PGS Solver?
+---
+---The PGS Solver is Roblox's state of the art physics solver which offers a
+---range of simulation capabilities not available in Roblox's legacy solver.
+---
+---Note, the PGS solver is currently the default physics solver used by
+---Roblox. Developers should expect the legacy physics solver to be
+---deprecated or removed at some point in the future.
+---
+---For more information on the PGS Solver, please see [this article][1].
+---
+---[1]: https://developer.roblox.com/articles/Building-with-PGS
+---
+Workspace.ExperimentalSolverIsEnabled = function(self) end;
+---@class WorldModel : WorldRoot, Model, PVInstance, Instance
+---The WorldModel provides some physics features to a `ViewportFrame`.
+---
+---More specifically, you can make a WorldModel a child of a ViewportFrame,
+---and then parent geometry to the WorldModel. This will then allow you to
+---use raycasts in the ViewportFrame through the WorldModel. Furthermore you
+---can put `Humanoid` characters in the WorldModel and their joints will be
+---set-up correctly, and you can animate them.
+---
+local WorldModel;
+---@class WorldRoot : Model, PVInstance, Instance
+local WorldRoot;
+---@param cframe CFrame
+---@param size Vector3
+---@param overlapParams OverlapParams
+---@return Objects
+---**GetPartBoundsInBox** returns an array of parts whose _bounding boxes_
+---overlap a box whose volume is described using the given center (CFrame)
+---and size (Vector3).
+---
+---Beware that this spatial query function efficiently considers the volume
+---of parts' bounding boxes rather than their actual occupied volume. This
+---may be important when considering cylinders, spheres, unions, and
+---`MeshPart`, which have non-block shapes. For cases where accuracy
+---particularly matters, use `WorldRoot/GetPartsInPart|GetPartsInPart`
+---instead or further filter the results of this function yourself.
+---
+---This function uses an `datatype/OverlapParams` object to describe reusable
+---portions of the spatial query, such as an instance whitelist/blacklist,
+---the maximum number of parts to query, and what
+---[collision group](/building-and-visuals/physics/collision-filtering) to
+---use. When making repeated spatial queries using functions like this, you
+---should construct just one of these objects and reuse it.
+---
+---This and other spatial query functions do not consider parts'
+---`BasePart/CanCollide|CanCollide` or `BasePart/CanTouch|CanTouch`
+---properties. However, it will consider parts' collision group if specified
+---by the given OverlapParams.
+---
+WorldRoot.GetPartBoundsInBox = function(self, cframe, size, overlapParams) end;
+---@param point Vector3
+---@param ignoreGrid bool
+---@return void
+WorldRoot.SetInsertPoint = function(self, point, ignoreGrid) end;
+---@param ray Ray
+---@param whitelistDescendantsTable Objects
+---@param ignoreWater bool
+---@return Tuple
+---This function is a variant of `WorldRoot/FindPartOnRay` with the addition
+---of a whitelist. This lets you detect only certain parts or `Model|Models`
+---and is particularly useful when, for example, looking for points of
+---intersection between a ray and a single part.
+---
+---```lua
+---local function getIntersection(part, ray)
+---	local whiteList = {part}
+---	local _, position, normal = workspace:FindPartOnRayWithWhitelist(ray, whiteList)
+---	return position, normal
+---end
+---```
+---
+---Those looking to utilize an ignore list instead should use
+---`WorldRoot/FindPartOnRayWithIgnoreList`.
+---
+---Note:
+---
+---- If a `nil` value is given in the whitelist, instances after it will be
+---  disregarded.
+---- Theoretically, a ray extends infinitely in one direction. However, the
+---  max length of the direction vector on Roblox is 5000 studs.
+---- The length (magnitude) of the directional vector is important, as parts
+---  further away than its length will not be tested.
+---- If the ray does not intersect anything, the return values will be `nil`
+---  and the point at the end of the ray, respectively.
+---- Parts that are in a
+---  [collision group](/building-and-visuals/physics/collision-filtering)
+---  that does not collide with the "Default" collision group are ignored
+---  implicitly.
+---
+WorldRoot.FindPartOnRayWithWhitelist = function(self, ray, whitelistDescendantsTable, ignoreWater) end;
+---@param partList Objects
+---@param cframeList Array
+---@param eventMode BulkMoveMode
+---@return void
+---**Warning:** You should only use this function if you are sure that part
+---movement is a bottleneck in your code, simply setting the CFrame property
+---of the individual parts / welded models you want to move will be fast
+---enough in the vast majority of cases.
+---
+---This function moves a table of parts to the location specified in a table
+---of `DataType/CFrame|CFrames`. This makes it a very fast way to move large
+---numbers of parts, as you don't have to pay the cost of separate property
+---sets for each individual part.
+---
+---The third argument of BulkMoveTo allows you to further speed up movement
+---of the parts by specifying the `BasePart/Position|Position` and
+---`BasePart/Orientation|Orientation`. Changed events should not be fired on
+---the parts. If you specify FireCFrameChanged as the BulkMoveMode then only
+---CFrame .Changed will be fired, rather than changed firing for Position,
+---Orientation, and CFrame like it normally does.
+---
+WorldRoot.BulkMoveTo = function(self, partList, cframeList, eventMode) end;
+---@param region Region3
+---@param ignoreDescendentsInstance Instance
+---@return bool
+---**IsRegion3Empty** returns a bool indicating whether there are no
+---`BasePart`s within the given `DataType/Region3`.
+---
+---The optional ignoreDescendentsInstance parameter can be used to specify a
+---specific instance for whom itself and all of its descendants should be
+---ignored by this function. This can be useful when, for example, looking to
+---see if any `BasePart`s are inside a `BasePart` other than the `BasePart`
+---itself.
+---
+---```
+---local min = part.Position - (0.5 * part.Size)
+---local max = part.Position + (0.5 * part.Size)
+---local region = Region3.new(min, max)
+---local isPartEmpty = workspace:IsRegion3Empty(region, part) --  ignore part
+---```
+---
+---If more than one object and its descendants need to be excluded from the
+---search, developers should use `Workspace/IsRegion3EmptyWithIgnoreList`.
+---
+---This function only returns if a region is empty or not. Developers looking
+---to find `BasePart`s in a region should use `Workspace/FindPartsInRegion3`.
+---
+---#### How do Region3 checks work?
+---
+---Checking if a part overlaps a `DataType/Region3` is not a simple process.
+---It actually is time consuming and complicated. Instead it checks if parts
+---are roughly in the same area. When this function is called, it figures out
+---which voxels contain the `DataType/Region3`. It then figures out which
+---parts might be in those voxels. It does this by comparing the axis-aligned
+---bounding box (sometimes called the AABB) of the part with the voxels. The
+---axis-aligned bounding box can be seen in Roblox Studio when a part is
+---selected.
+---
+---This means that the area that is inspected by the function may be larger
+---than the `DataType/Region3`. For this reason it is recommended to make
+---sure that the `DataType/Region3` is on the voxel grid. The best way to do
+---this is by setting the coordinates of the `DataType/Region3` to multiples
+---of 4 (since voxels are 4 x 4 x 4 studs).
+---
+---This method is a fairly quick and easy way to see if any parts are in a
+---general area. If a game needs to know if parts are exactly in an area,
+---then `BasePart/GetTouchingParts` should be used. There is a higher cost to
+---using `BasePart/GetTouchingParts` since a part is needed in the
+---`Workspace` and the function takes more time to run.
+---
+WorldRoot.IsRegion3Empty = function(self, region, ignoreDescendentsInstance) end;
+---@param position Vector3
+---@param radius float
+---@param overlapParams OverlapParams
+---@return Objects
+---**GetPartBoundsInRadius** returns an array of parts whose _bounding boxes_
+---overlap a sphere whose volume is described using the given center
+---(Vector3) and radius (number).
+---
+---Beware that this spatial query function efficiently considers the volume
+---of parts' bounding boxes rather than their actual occupied volume. This
+---may be important when considering cylinders, spheres, unions, and
+---`MeshPart`, which have non-block shapes. For cases where accuracy
+---particularly matters, use `WorldRoot/GetPartsInPart|GetPartsInPart`
+---instead or further filter the results of this function yourself.
+---
+---This function uses an `datatype/OverlapParams` object to describe reusable
+---portions of the spatial query, such as an instance whitelist/blacklist,
+---the maximum number of parts to query, and what
+---[collision group](/building-and-visuals/physics/collision-filtering) to
+---use. When making repeated spatial queries using functions like this, you
+---should construct just one of these objects and reuse it.
+---
+---This and other spatial query functions do not consider parts'
+---`BasePart/CanCollide|CanCollide` or `BasePart/CanTouch|CanTouch`
+---properties. However, it will consider parts' collision group if specified
+---by the given OverlapParams.
+---
+WorldRoot.GetPartBoundsInRadius = function(self, position, radius, overlapParams) end;
+---@param ray Ray
+---@param ignoreDescendantsInstance Instance
+---@param terrainCellsAreCubes bool
+---@param ignoreWater bool
+---@return Tuple
+WorldRoot.findPartOnRay = function(self, ray, ignoreDescendantsInstance, terrainCellsAreCubes, ignoreWater) end;
+---@param region Region3
+---@param ignoreDescendantsInstance Instance
+---@param maxParts int
+---@return Objects
+---Returns an array of `BasePart`s in the given `DataType/Region3`.
+---
+---This function takes an optional maxParts parameter (default 20) which
+---limits the number of `BasePart`s that can be returned. Once this number
+---has been reached, the search for `BasePart`s will stop. This means some
+---`BasePart`s may not be returned even if they are within the
+---`DataType/Region3`
+---
+---The optional ignoreDescendentsInstance parameter can be used to specify a
+---specific instance for whom itself and all of its descendants should be
+---ignored by this function. This can be useful when, for example, looking to
+---see if any `BasePart`s are inside a `BasePart` other than the `BasePart`
+---itself.
+---
+---```
+---local min = part.Position - (0.5 * part.Size)
+---local max = part.Position + (0.5 * part.Size)
+---local region = Region3.new(min, max)
+---local parts = workspace:FindPartsInRegion3(region, part) --  ignore part
+---```
+---
+---Variants of this function exist with ignore-list and white-list
+---functionality, `Workspace/FindPartsInRegion3WithIgnoreList` and
+---`Workspace/FindPartsInRegion3WithWhiteList`.
+---
+---If no `BasePart`s are found, an empty array will be returned.
+---
+---#### How do Region3 checks work?
+---
+---Checking if a part overlaps a `DataType/Region3` is not a simple process.
+---It actually is time consuming and complicated. Instead it checks if parts
+---are roughly in the same area. When this function is called, it figures out
+---which voxels contain the `DataType/Region3`. It then figures out which
+---parts might be in those voxels. It does this by comparing the axis-aligned
+---bounding box (sometimes called the AABB) of the part with the voxels. The
+---axis-aligned bounding box can be seen in Roblox Studio when a part is
+---selected.
+---
+---This means that the area that is inspected by the function may be larger
+---than the `DataType/Region3`. For this reason it is recommended to make
+---sure that the `DataType/Region3` is on the voxel grid. The best way to do
+---this is by setting the coordinates of the `DataType/Region3` to multiples
+---of 4 (since voxels are 4 x 4 x 4 studs).
+---
+---This method is a fairly quick and easy way to see if parts are in a
+---general area. If a game needs to know if parts are exactly in an area,
+---then `BasePart/GetTouchingParts` should be used. There is a higher cost to
+---using `BasePart/GetTouchingParts` since a part is needed in the
+---`Workspace` and the function takes more time to run.
+---
+WorldRoot.FindPartsInRegion3 = function(self, region, ignoreDescendantsInstance, maxParts) end;
+---@param region Region3
+---@param ignoreDescendantsInstance Instance
+---@param maxParts int
+---@return Objects
+WorldRoot.findPartsInRegion3 = function(self, region, ignoreDescendantsInstance, maxParts) end;
+---@param region Region3
+---@param ignoreDescendentsTable Objects
+---@return bool
+---**IsRegion3EmptyWithIgnoreList** returns a bool indicating whether there
+---are no `BasePart`s within in the given `DataType/Region3`, ignoring any
+---`BasePart`s that are descendants of the objects within the given ignore
+---list.
+---
+---For example, the following code snippet will check to see if the Region is
+---empty, ignoring the descendants of a `Model` named 'Scenery'.
+---
+---```
+---local region3 = Region3.new(Vector3.new(0, 0, 0), Vector3.new(10, 10, 10))
+---local scenery = workspace:FindFirstChild("Scenery")
+---local ignoreList = {scenery}
+---local isEmpty = workspace:IsRegion3EmptyWithIgnoreList(region3, ignoreList)
+---```
+---
+---This function only returns if a region is empty or not. Developers looking
+---to find `BasePart`s in a region should use
+---`Workspace/FindPartsInRegion3WithIgnoreList`.
+---
+---This function is a variant of `Workspace/IsRegion3Empty` with the addition
+---of an ignore list. In cases where a white list is required instead,
+---developers should check to see if any parts are returned by
+---`Workspace/FindPartsinRegion3WithWhitelist`.
+---
+---#### How do Region3 checks work?
+---
+---Checking if a part overlaps a `DataType/Region3` is not a simple process.
+---It actually is time consuming and complicated. Instead it checks if parts
+---are roughly in the same area. When this function is called, it figures out
+---which voxels contain the `DataType/Region3`. It then figures out which
+---parts might be in those voxels. It does this by comparing the axis-aligned
+---bounding box (sometimes called the AABB) of the part with the voxels. The
+---axis-aligned bounding box can be seen in Roblox Studio when a part is
+---selected.
+---
+---This means that the area that is inspected by the function may be larger
+---than the `DataType/Region3`. For this reason it is recommended to make
+---sure that the `DataType/Region3` is on the voxel grid. The best way to do
+---this is by setting the coordinates of the `DataType/Region3` to multiples
+---of 4 (since voxels are 4 x 4 x 4 studs).
+---
+---This method is a fairly quick and easy way to see if any parts are in a
+---general area. If a game needs to know if parts are exactly in an area,
+---then `BasePart/GetTouchingParts` should be used. There is a higher cost to
+---using `BasePart/GetTouchingParts` since a part is needed in the
+---`Workspace` and the function takes more time to run.
+---
+---Note:
+---
+---- If a nil value is given in the ignore list, instances after this value
+---  will not be ignored
+---
+WorldRoot.IsRegion3EmptyWithIgnoreList = function(self, region, ignoreDescendentsTable) end;
+---@param ray Ray
+---@param ignoreDescendantsInstance Instance
+---@param terrainCellsAreCubes bool
+---@param ignoreWater bool
+---@return Tuple
+---**FindPartOnRay** uses [raycasting][1] to find the first `BasePart` or
+---`Terrain` cell intersecting with a given `DataType/Ray`. This function
+---returns the `BasePart` or terrain cell hit, the point of intersection, the
+---surface normal at the point of intersection, and the associated
+---`Enum/Material` hit.
+---
+---```
+---local character = game.Players.LocalPlayer.Character
+----- Get the head
+---local head = character:FindFirstChild("Head")
+----- Build a ray in the direction the head is facing
+---local origin = head.Position
+---local lookDirection = head.CFrame.LookVector
+---local ray = Ray.new(origin, lookDirection * 500)
+----- Raycast, ignoring the player's character
+---local hitPart, hitPosition = workspace:FindPartOnRay(ray, character)
+---if hitPart then
+---	print("Hit part: " .. hitPart:GetFullName())
+---else
+---	print("Did not hit part")
+---end
+---```
+---
+---If the `ignoreDescendantsInstance` parameter is provided, the raycasting
+---calculation will ignore the given object and all of its descendants. It
+---behaves similar to the `Mouse/TargetFilter` property.
+---
+---The `terrainCellsAreCubes` and `ignoreWater` parameters determine whether
+---`Terrain` cells should be treated as cubes or not, and whether water
+---should be ignored or not.
+---
+---In order to whitelist or ignore multiple objects and their descendants,
+---use the `WorldRoot/FindPartOnRayWithWhitelist` and
+---`WorldRoot/FindPartOnRayWithIgnoreList` variants.
+---
+---Note:
+---
+---- Theoretically, a ray extends infinitely in one direction. However, the
+---  max length of the direction vector on Roblox is 5000 studs.
+---- The length (magnitude) of the directional vector is important, as parts
+---  further away than its length will not be tested.
+---- If the ray does not intersect anything, the return values will be `nil`
+---  and the point at the end of the ray, respectively.
+---- Parts that are in a
+---  [collision group](/building-and-visuals/physics/collision-filtering)
+---  that does not collide with the "Default" collision group are ignored
+---  implicitly.
+---
+---For a demonstration of how raycasting works in Roblox, see the [Intro to
+---Raycasting][1] article.
+---
+---[1]: https://developer.roblox.com/articles/Raycasting
+---
+WorldRoot.FindPartOnRay = function(self, ray, ignoreDescendantsInstance, terrainCellsAreCubes, ignoreWater) end;
+---@param part BasePart
+---@param overlapParams OverlapParams
+---@return Objects
+---**GetPartsInPart** returns an array of parts whose occupied space is
+---shared with the given part, which must exist in the same WorldRoot
+---(`Workspace`) as the parts to be queried.
+---
+---Queried parts that are merely touching the given part are considered
+---occupying the same space. This function can be used in place of
+---`BasePart/GetTouchingParts`, and is generally a better choice in most
+---cases.
+---
+---Beware that this spatial query function considers the exact volume
+---occupied by the given part using a full geometric collision check. A
+---concave/hollow part won't match queried parts within it unless they
+---actually overlap/touch such a part. For simpler volumes, consider using
+---`WorldRoot/GetPartBoundsInBox|GetPartBoundsInBox` or
+---`WorldRoot/GetPartBoundsInRadius|GetPartBoundsInRadius` instead, as they
+---are faster at the cost of being less accurate.
+---
+---This function uses an `datatype/OverlapParams` object to describe reusable
+---portions of the spatial query, such as an instance whitelist/blacklist,
+---the maximum number of parts to query, and what
+---[collision group](/building-and-visuals/physics/collision-filtering) to
+---use. When making repeated spatial queries using functions like this, you
+---should construct just one of these objects and reuse it.
+---
+---This and other spatial query functions do not consider parts'
+---`BasePart/CanCollide|CanCollide` or `BasePart/CanTouch|CanTouch`
+---properties. However, it will consider parts' collision group if specified
+---by the given OverlapParams.
+---
+WorldRoot.GetPartsInPart = function(self, part, overlapParams) end;
+---@param region Region3
+---@param ignoreDescendantsTable Objects
+---@param maxParts int
+---@return Objects
+---Returns an array of `BasePart`s in the given `DataType/Region3` that
+---aren't in, or a descendant of an entry in, the given IgnoreList.
+---
+---This function takes an optional maxParts parameter (default 20) which
+---limits the number of `BasePart`s that can be returned. Once this number
+---has been reached, the search for `BasePart`s will stop. This means some
+---`BasePart`s may not be returned even if they are within the
+---`DataType/Region3`
+---
+---If no `BasePart`s are found, an empty array will be returned.
+---
+---This function is a variant of `Workspace/FindPartsInRegion3` with the
+---addition of an ignore list. This allows the developer to exclude certain
+---`BasePart`s or `Model`s, for example characters, from the search. Those
+---looking to find `BasePart`s in a Region3 using a white list, should use
+---`Workspace/FindPartsInRegion3WithWhitelist`.
+---
+---#### How do Region3 checks work?
+---
+---Checking if a part overlaps a `DataType/Region3` is not a simple process.
+---It actually is time consuming and complicated. Instead it checks if parts
+---are roughly in the same area. When this function is called, it figures out
+---which voxels contain the `DataType/Region3`. It then figures out which
+---parts might be in those voxels. It does this by comparing the axis-aligned
+---bounding box (sometimes called the AABB) of the part with the voxels. The
+---axis-aligned bounding box can be seen in Roblox Studio when a part is
+---selected.
+---
+---This means that the area that is inspected by the function may be larger
+---than the `DataType/Region3`. For this reason it is recommended to make
+---sure that the `DataType/Region3` is on the voxel grid. The best way to do
+---this is by setting the coordinates of the `DataType/Region3` to multiples
+---of 4 (since voxels are 4 x 4 x 4 studs).
+---
+---This method is a fairly quick and easy way to see if parts are in a
+---general area. If a game needs to know if parts are exactly in an area,
+---then `BasePart/GetTouchingParts` should be used. There is a higher cost to
+---using `BasePart/GetTouchingParts` since a part is needed in the
+---`Workspace` and the function takes more time to run.
+---
+---Note:
+---
+---- If a nil value is given in the ignore list, instances after this value
+---  will not be ignored
+---
+WorldRoot.FindPartsInRegion3WithIgnoreList = function(self, region, ignoreDescendantsTable, maxParts) end;
+---@param origin Vector3
+---@param direction Vector3
+---@param raycastParams RaycastParams
+---@return RaycastResult
+---Casts a ray using an origin, direction, and optional
+---`datatype/RaycastParams`. If it finds an eligible `BasePart` or `Terrain`
+---cell, a `datatype/RaycastResult` is returned containing the results of the
+---operation. If no `datatype/RaycastParams` object is provided, the defaults
+---are used (all parts are considered and `Terrain` water is not ignored).
+---
+---Note that the length (magnitude) of the directional vector is important,
+---as objects/terrain further away than its length will not be tested. If
+---you're using a `datatype/CFrame` to help create the ray components,
+---consider using `CFrame.LookVector` as the directional vector and multiply
+---it by the desired length as shown in the example below. The maximum length
+---of the direction vector is 5,000 studs.
+---
+---This method does **not** use a `datatype/Ray` object, but its origin and
+---direction components can be borrowed from `Ray.Origin` and
+---`Ray.Direction`.
+---
+WorldRoot.Raycast = function(self, origin, direction, raycastParams) end;
+---@param part BasePart
+---@param target CFrame
+---@param translateStiffness float
+---@param rotateStiffness float
+---@param collisionsMode IKCollisionsMode
+---@return void
+---This function moves the specified part to the specified location via
+---[inverse kinematics](https://en.wikipedia.org/wiki/Inverse_kinematics)
+---rather than moving it there directly, to ensure any joints,
+---`Constraint|constraints`, or collisions that part is participating in
+---remain physically satisfied. Currently this function is only available in
+---Studio to `Plugin|plugins`, as it currently conflicts with the physics of
+---a running game.
+---
+---**Translate stiffness** is a number between 0 and 1 specifying how
+---agressively to match the part's position to the position part of the
+---target CFrame. **Rotate stiffness** is a number between 0 and 1 specifying
+---how agresively to match the part's rotation to to the rotation part of the
+---target CFrame.
+---
+---For example:
+---
+---- If translate stiffness and rotate stiffness are both equal to 1, then
+---  the part will be moved exactly to the target CFrame regardless of what
+---  physical constraints there are on it.
+---- If translate stiffness and rotate stiffness are both equal to 0.5, then
+---  the part will try to move to exactly the target CFrame, but may be
+---  pushed out of the way by physical constraints on it.
+---- If translate stiffness and rotate stiffness are both equal to 0, then
+---  the target CFrame will be ignored and physical constraints will be
+---  solved for the object at the position where it was.
+---
+WorldRoot.IKMoveTo = function(self, part, target, translateStiffness, rotateStiffness, collisionsMode) end;
+---@param partList Objects
+---@param overlapIgnored float
+---@return bool
+---**ArePartsTouchingOthers** returns true if at least one of the given
+---`BasePart` are touching any other parts. Two parts are considered
+---"touching" if they are within the distance threshold, `overlapIgnored`.
+---
+---If no parts are provided, false is returned.
+---
+WorldRoot.ArePartsTouchingOthers = function(self, partList, overlapIgnored) end;
+---@param region Region3
+---@param whitelistDescendantsTable Objects
+---@param maxParts int
+---@return Objects
+---Returns an array of `BasePart`s in the given `DataType/Region3` that are
+---in, or descendant of an object in, a given white list.
+---
+---This function takes an optional maxParts parameter (default 20) which
+---limits the number of `BasePart`s that can be returned. Once this number
+---has been reached, the search for `BasePart`s will stop. This means some
+---`BasePart`s may not be returned even if they are within the
+---`DataType/Region3`
+---
+---If no `BasePart`s are found, an empty array will be returned.
+---
+---This function is a variant of `Workspace/FindPartsInRegion3` with the
+---addition of a white list. Those looking to find `BasePart`s in a Region3
+---using an ignore list, should use
+---`Workspace/FindPartsInRegion3WithIgnoreList`.
+---
+---#### How do Region3 checks work?
+---
+---Checking if a part overlaps a `DataType/Region3` is not a simple process.
+---It actually is time consuming and complicated. Instead it checks if parts
+---are roughly in the same area. When this function is called, it figures out
+---which voxels contain the `DataType/Region3`. It then figures out which
+---parts might be in those voxels. It does this by comparing the axis-aligned
+---bounding box (sometimes called the AABB) of the part with the voxels. The
+---axis-aligned bounding box can be seen in Roblox Studio when a part is
+---selected.
+---
+---This means that the area that is inspected by the function may be larger
+---than the `DataType/Region3`. For this reason it is recommended to make
+---sure that the `DataType/Region3` is on the voxel grid. The best way to do
+---this is by setting the coordinates of the `DataType/Region3` to multiples
+---of 4 (since voxels are 4 x 4 x 4 studs).
+---
+---This method is a fairly quick and easy way to see if parts are in a
+---general area. If a game needs to know if parts are exactly in an area,
+---then `BasePart/GetTouchingParts` should be used. There is a higher cost to
+---using `BasePart/GetTouchingParts` since a part is needed in the
+---`Workspace` and the function takes more time to run.
+---
+---Note:
+---
+---- If a nil value is given in the white list, instances after this value
+---  will be disregarded
+---
+WorldRoot.FindPartsInRegion3WithWhiteList = function(self, region, whitelistDescendantsTable, maxParts) end;
+---@param ray Ray
+---@param ignoreDescendantsTable Objects
+---@param terrainCellsAreCubes bool
+---@param ignoreWater bool
+---@return Tuple
+---This function is a variant of `WorldRoot/FindPartOnRay` with the addition
+---of an ignore list. This lets you ignore certain parts or `Model|Models`.
+---
+---Those looking to utilize a whitelist instead should use
+---`WorldRoot/FindPartOnRayWithWhitelist`.
+---
+---Note:
+---
+---- Theoretically, a ray extends infinitely in one direction. However, the
+---  max length of the direction vector on Roblox is 5000 studs.
+---- The length (magnitude) of the directional vector is important, as parts
+---  further away than its length will not be tested.
+---- If the ray does not intersect anything, the return values will be `nil`
+---  and the point at the end of the ray, respectively.
+---- Parts that are in a
+---  [collision group](/building-and-visuals/physics/collision-filtering)
+---  that does not collide with the "Default" collision group are ignored
+---  implicitly.
+---
+WorldRoot.FindPartOnRayWithIgnoreList = function(self, ray, ignoreDescendantsTable, terrainCellsAreCubes, ignoreWater) end;
+---@class WrapLayer : BaseWrap, Instance
+---@field public BindOffset CFrame
+---@field public Color Color3
+---@field public DebugMode WrapLayerDebugMode
+---@field public Enabled bool
+---@field public Order int
+---@field public Puffiness float
+---@field public ReferenceMeshId Content
+---@field public ReferenceOrigin CFrame
+---@field public ReferenceOriginWorld CFrame
+---@field public ShrinkFactor float
+---The WrapLayer object defines a 3D accessory's inner and outer surfaces and
+---other properties related to layering accessories. These surfaces, or the
+---Inner Cage and Outer Cage, are similar to collision boxes, and describe
+---the surfaces of which other 3D accessories can be placed without clipping
+---or breaking.
+---
+---Internally, WrapLayer also uses the UV layout of the Inner and Outer cages
+---to match coordinates to another 3D object's cage. This powers the
+---deformation of objects around differently shaped avatars and underlying
+---accessories.
+---
+local WrapLayer;
+---@class WrapTarget : BaseWrap, Instance
+---@field public Color Color3
+---@field public DebugMode WrapTargetDebugMode
+---@field public Stiffness float
+---The WrapTarget object defines a target. A target is the 3D body with only
+---an outer surface, or an Outer Cage.
+---
+---This target, often an Avatar, is what 3D accessories (using WrapLayer)
+---will be applied to, allowing multiple accessories items to naturally layer
+---over the source target.
+---
+local WrapTarget;
+---@class Axes
+---@field public X bool
+---@field public Y bool
+---@field public Z bool
+---@field public Top bool
+---@field public Bottom bool
+---@field public Left bool
+---@field public Right bool
+---@field public Back bool
+---@field public Front bool
+---The `Axes` datatype is for the `ArcHandles` class to control which rotation
+---axes are currently enabled.
+Axes = {};
+---@param axes Tuple
+---Creates a new Axes using list of axes and/or faces. NormalIds (faces) are
+---converted to the corresponding axes.
+---@return Axes
+Axes.new = function(axes) end;
+---@class BrickColor
+---@field public Number number
+---@field public r number
+---@field public g number
+---@field public b number
+---@field public Name string
+---@field public Color Color3
+---The `BrickColor` data type provides a predefined list of named colors, not to be confused with `Color3`, a more general data type that describes RGB colors. The following code shows how to use `BrickColor.new()` to declare the `BrickColor` property of a `Part`.
+---
+---
+---```lua
+----- By color name
+---workspace.Part.BrickColor = BrickColor.new("Pastel Blue")
+----- By numerical index
+---workspace.Part.BrickColor = BrickColor.new(11)
+----- By RGB values
+---workspace.Part.BrickColor = BrickColor.new(128, 187, 219)
+---```
+---
+---The following table is the list of available brick colors.
+---
+---<table>
+---<thead>
+---<tr>
+---  <th scope="col">Color</th>
+---  <th width="150">Name</th>
+---  <th width="100">Number</th>
+---  <th scope="col">RGB Value</th>
+---</tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td style={{backgroundColor: "#F2F3F3"}}></td>
+---  <td>White</td>
+---  <td>1</td>
+---  <td>[242, 243, 243]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A1A5A2"}}></td>
+---  <td>Grey</td>
+---  <td>2</td>
+---  <td>[161, 165, 162]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F9E999"}}></td>
+---  <td>Light yellow</td>
+---  <td>3</td>
+---  <td>[249, 233, 153]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D7C59A"}}></td>
+---  <td>Brick yellow</td>
+---  <td>5</td>
+---  <td>[215, 197, 154]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C2DAB8"}}></td>
+---  <td>Light green (Mint)</td>
+---  <td>6</td>
+---  <td>[194, 218, 184]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E8BAC8"}}></td>
+---  <td>Light reddish violet</td>
+---  <td>9</td>
+---  <td>[232, 186, 200]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#80BBDB"}}></td>
+---  <td>Pastel Blue</td>
+---  <td>11</td>
+---  <td>[128, 187, 219]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CB8442"}}></td>
+---  <td>Light orange brown</td>
+---  <td>12</td>
+---  <td>[203, 132, 66]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CC8E69"}}></td>
+---  <td>Nougat</td>
+---  <td>18</td>
+---  <td>[204, 142, 105]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C4281C"}}></td>
+---  <td>Bright red</td>
+---  <td>21</td>
+---  <td>[196, 40, 28]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C470A0"}}></td>
+---  <td>Med. reddish violet</td>
+---  <td>22</td>
+---  <td>[196, 112, 160]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#0D69AC"}}></td>
+---  <td>Bright blue</td>
+---  <td>23</td>
+---  <td>[13, 105, 172]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F5CD30"}}></td>
+---  <td>Bright yellow</td>
+---  <td>24</td>
+---  <td>[245, 205, 48]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#624732"}}></td>
+---  <td>Earth orange</td>
+---  <td>25</td>
+---  <td>[98, 71, 50]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#1B2A35"}}></td>
+---  <td>Black</td>
+---  <td>26</td>
+---  <td>[27, 42, 53]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6D6E6C"}}></td>
+---  <td>Dark grey</td>
+---  <td>27</td>
+---  <td>[109, 110, 108]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#287F47"}}></td>
+---  <td>Dark green</td>
+---  <td>28</td>
+---  <td>[40, 127, 71]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A1C48C"}}></td>
+---  <td>Medium green</td>
+---  <td>29</td>
+---  <td>[161, 196, 140]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F3CF9B"}}></td>
+---  <td>Lig. Yellowich orange</td>
+---  <td>36</td>
+---  <td>[243, 207, 155]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#4B974B"}}></td>
+---  <td>Bright green</td>
+---  <td>37</td>
+---  <td>[75, 151, 75]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A05F35"}}></td>
+---  <td>Dark orange</td>
+---  <td>38</td>
+---  <td>[160, 95, 53]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C1CADE"}}></td>
+---  <td>Light bluish violet</td>
+---  <td>39</td>
+---  <td>[193, 202, 222]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#ECECEC"}}></td>
+---  <td>Transparent</td>
+---  <td>40</td>
+---  <td>[236, 236, 236]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CD544B"}}></td>
+---  <td>Tr. Red</td>
+---  <td>41</td>
+---  <td>[205, 84, 75]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C1DFF0"}}></td>
+---  <td>Tr. Lg blue</td>
+---  <td>42</td>
+---  <td>[193, 223, 240]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7BB6E8"}}></td>
+---  <td>Tr. Blue</td>
+---  <td>43</td>
+---  <td>[123, 182, 232]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F7F18D"}}></td>
+---  <td>Tr. Yellow</td>
+---  <td>44</td>
+---  <td>[247, 241, 141]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B4D2E4"}}></td>
+---  <td>Light blue</td>
+---  <td>45</td>
+---  <td>[180, 210, 228]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D9856C"}}></td>
+---  <td>Tr. Flu. Reddish orange</td>
+---  <td>47</td>
+---  <td>[217, 133, 108]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#84B68D"}}></td>
+---  <td>Tr. Green</td>
+---  <td>48</td>
+---  <td>[132, 182, 141]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F8F184"}}></td>
+---  <td>Tr. Flu. Green</td>
+---  <td>49</td>
+---  <td>[248, 241, 132]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#ECE8DE"}}></td>
+---  <td>Phosph. White</td>
+---  <td>50</td>
+---  <td>[236, 232, 222]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#EEC4B6"}}></td>
+---  <td>Light red</td>
+---  <td>100</td>
+---  <td>[238, 196, 182]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#DA867A"}}></td>
+---  <td>Medium red</td>
+---  <td>101</td>
+---  <td>[218, 134, 122]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6E99CA"}}></td>
+---  <td>Medium blue</td>
+---  <td>102</td>
+---  <td>[110, 153, 202]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C7C1B7"}}></td>
+---  <td>Light grey</td>
+---  <td>103</td>
+---  <td>[199, 193, 183]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6B327C"}}></td>
+---  <td>Bright violet</td>
+---  <td>104</td>
+---  <td>[107, 50, 124]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E29B40"}}></td>
+---  <td>Br. yellowish orange</td>
+---  <td>105</td>
+---  <td>[226, 155, 64]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#DA8541"}}></td>
+---  <td>Bright orange</td>
+---  <td>106</td>
+---  <td>[218, 133, 65]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#008F9C"}}></td>
+---  <td>Bright bluish green</td>
+---  <td>107</td>
+---  <td>[0, 143, 156]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#685C43"}}></td>
+---  <td>Earth yellow</td>
+---  <td>108</td>
+---  <td>[104, 92, 67]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#435493"}}></td>
+---  <td>Bright bluish violet</td>
+---  <td>110</td>
+---  <td>[67, 84, 147]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#BFB7B1"}}></td>
+---  <td>Tr. Brown</td>
+---  <td>111</td>
+---  <td>[191, 183, 177]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6874AC"}}></td>
+---  <td>Medium bluish violet</td>
+---  <td>112</td>
+---  <td>[104, 116, 172]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E5ADC8"}}></td>
+---  <td>Tr. Medi. reddish violet</td>
+---  <td>113</td>
+---  <td>[229, 173, 200]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C7D23C"}}></td>
+---  <td>Med. yellowish green</td>
+---  <td>115</td>
+---  <td>[199, 210, 60]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#55A5AF"}}></td>
+---  <td>Med. bluish green</td>
+---  <td>116</td>
+---  <td>[85, 165, 175]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B7D7D5"}}></td>
+---  <td>Light bluish green</td>
+---  <td>118</td>
+---  <td>[183, 215, 213]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A4BD47"}}></td>
+---  <td>Br. yellowish green</td>
+---  <td>119</td>
+---  <td>[164, 189, 71]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D9E4A7"}}></td>
+---  <td>Lig. yellowish green</td>
+---  <td>120</td>
+---  <td>[217, 228, 167]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E7AC58"}}></td>
+---  <td>Med. yellowish orange</td>
+---  <td>121</td>
+---  <td>[231, 172, 88]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D36F4C"}}></td>
+---  <td>Br. reddish orange</td>
+---  <td>123</td>
+---  <td>[211, 111, 76]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#923978"}}></td>
+---  <td>Bright reddish violet</td>
+---  <td>124</td>
+---  <td>[146, 57, 120]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#EAB892"}}></td>
+---  <td>Light orange</td>
+---  <td>125</td>
+---  <td>[234, 184, 146]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A5A5CB"}}></td>
+---  <td>Tr. Bright bluish violet</td>
+---  <td>126</td>
+---  <td>[165, 165, 203]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#DCBC81"}}></td>
+---  <td>Gold</td>
+---  <td>127</td>
+---  <td>[220, 188, 129]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#AE7A59"}}></td>
+---  <td>Dark nougat</td>
+---  <td>128</td>
+---  <td>[174, 122, 89]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#9CA3A8"}}></td>
+---  <td>Silver</td>
+---  <td>131</td>
+---  <td>[156, 163, 168]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D5733D"}}></td>
+---  <td>Neon orange</td>
+---  <td>133</td>
+---  <td>[213, 115, 61]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D8DD56"}}></td>
+---  <td>Neon green</td>
+---  <td>134</td>
+---  <td>[216, 221, 86]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#74869D"}}></td>
+---  <td>Sand blue</td>
+---  <td>135</td>
+---  <td>[116, 134, 157]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#877C90"}}></td>
+---  <td>Sand violet</td>
+---  <td>136</td>
+---  <td>[135, 124, 144]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E09864"}}></td>
+---  <td>Medium orange</td>
+---  <td>137</td>
+---  <td>[224, 152, 100]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#958A73"}}></td>
+---  <td>Sand yellow</td>
+---  <td>138</td>
+---  <td>[149, 138, 115]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#203A56"}}></td>
+---  <td>Earth blue</td>
+---  <td>140</td>
+---  <td>[32, 58, 86]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#27462D"}}></td>
+---  <td>Earth green</td>
+---  <td>141</td>
+---  <td>[39, 70, 45]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CFE2F7"}}></td>
+---  <td>Tr. Flu. Blue</td>
+---  <td>143</td>
+---  <td>[207, 226, 247]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7988A1"}}></td>
+---  <td>Sand blue metallic</td>
+---  <td>145</td>
+---  <td>[121, 136, 161]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#958EA3"}}></td>
+---  <td>Sand violet metallic</td>
+---  <td>146</td>
+---  <td>[149, 142, 163]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#938767"}}></td>
+---  <td>Sand yellow metallic</td>
+---  <td>147</td>
+---  <td>[147, 135, 103]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#575857"}}></td>
+---  <td>Dark grey metallic</td>
+---  <td>148</td>
+---  <td>[87, 88, 87]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#161D32"}}></td>
+---  <td>Black metallic</td>
+---  <td>149</td>
+---  <td>[22, 29, 50]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#ABADAC"}}></td>
+---  <td>Light grey metallic</td>
+---  <td>150</td>
+---  <td>[171, 173, 172]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#789082"}}></td>
+---  <td>Sand green</td>
+---  <td>151</td>
+---  <td>[120, 144, 130]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#957977"}}></td>
+---  <td>Sand red</td>
+---  <td>153</td>
+---  <td>[149, 121, 119]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7B2E2F"}}></td>
+---  <td>Dark red</td>
+---  <td>154</td>
+---  <td>[123, 46, 47]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFF67B"}}></td>
+---  <td>Tr. Flu. Yellow</td>
+---  <td>157</td>
+---  <td>[255, 246, 123]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E1A4C2"}}></td>
+---  <td>Tr. Flu. Red</td>
+---  <td>158</td>
+---  <td>[225, 164, 194]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#756C62"}}></td>
+---  <td>Gun metallic</td>
+---  <td>168</td>
+---  <td>[117, 108, 98]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#97695B"}}></td>
+---  <td>Red flip/flop</td>
+---  <td>176</td>
+---  <td>[151, 105, 91]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B48455"}}></td>
+---  <td>Yellow flip/flop</td>
+---  <td>178</td>
+---  <td>[180, 132, 85]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#898788"}}></td>
+---  <td>Silver flip/flop</td>
+---  <td>179</td>
+---  <td>[137, 135, 136]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D7A94B"}}></td>
+---  <td>Curry</td>
+---  <td>180</td>
+---  <td>[215, 169, 75]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F9D62E"}}></td>
+---  <td>Fire Yellow</td>
+---  <td>190</td>
+---  <td>[249, 214, 46]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E8AB2D"}}></td>
+---  <td>Flame yellowish orange</td>
+---  <td>191</td>
+---  <td>[232, 171, 45]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#694028"}}></td>
+---  <td>Reddish brown</td>
+---  <td>192</td>
+---  <td>[105, 64, 40]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CF6024"}}></td>
+---  <td>Flame reddish orange</td>
+---  <td>193</td>
+---  <td>[207, 96, 36]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A3A2A5"}}></td>
+---  <td>Medium stone grey</td>
+---  <td>194</td>
+---  <td>[163, 162, 165]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#4667A4"}}></td>
+---  <td>Royal blue</td>
+---  <td>195</td>
+---  <td>[70, 103, 164]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#23478B"}}></td>
+---  <td>Dark Royal blue</td>
+---  <td>196</td>
+---  <td>[35, 71, 139]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#8E4285"}}></td>
+---  <td>Bright reddish lilac</td>
+---  <td>198</td>
+---  <td>[142, 66, 133]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#635F62"}}></td>
+---  <td>Dark stone grey</td>
+---  <td>199</td>
+---  <td>[99, 95, 98]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#828A5D"}}></td>
+---  <td>Lemon metalic</td>
+---  <td>200</td>
+---  <td>[130, 138, 93]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E5E4DF"}}></td>
+---  <td>Light stone grey</td>
+---  <td>208</td>
+---  <td>[229, 228, 223]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B08E44"}}></td>
+---  <td>Dark Curry</td>
+---  <td>209</td>
+---  <td>[176, 142, 68]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#709578"}}></td>
+---  <td>Faded green</td>
+---  <td>210</td>
+---  <td>[112, 149, 120]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#79B5B5"}}></td>
+---  <td>Turquoise</td>
+---  <td>211</td>
+---  <td>[121, 181, 181]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#9FC3E9"}}></td>
+---  <td>Light Royal blue</td>
+---  <td>212</td>
+---  <td>[159, 195, 233]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6C81B7"}}></td>
+---  <td>Medium Royal blue</td>
+---  <td>213</td>
+---  <td>[108, 129, 183]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#904C2A"}}></td>
+---  <td>Rust</td>
+---  <td>216</td>
+---  <td>[144, 76, 42]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7C5C46"}}></td>
+---  <td>Brown</td>
+---  <td>217</td>
+---  <td>[124, 92, 70]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#96709F"}}></td>
+---  <td>Reddish lilac</td>
+---  <td>218</td>
+---  <td>[150, 112, 159]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6B629B"}}></td>
+---  <td>Lilac</td>
+---  <td>219</td>
+---  <td>[107, 98, 155]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A7A9CE"}}></td>
+---  <td>Light lilac</td>
+---  <td>220</td>
+---  <td>[167, 169, 206]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CD6298"}}></td>
+---  <td>Bright purple</td>
+---  <td>221</td>
+---  <td>[205, 98, 152]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E4ADC8"}}></td>
+---  <td>Light purple</td>
+---  <td>222</td>
+---  <td>[228, 173, 200]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#DC9095"}}></td>
+---  <td>Light pink</td>
+---  <td>223</td>
+---  <td>[220, 144, 149]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F0D5A0"}}></td>
+---  <td>Light brick yellow</td>
+---  <td>224</td>
+---  <td>[240, 213, 160]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#EBB87F"}}></td>
+---  <td>Warm yellowish orange</td>
+---  <td>225</td>
+---  <td>[235, 184, 127]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FDEA8D"}}></td>
+---  <td>Cool yellow</td>
+---  <td>226</td>
+---  <td>[253, 234, 141]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7DBBDD"}}></td>
+---  <td>Dove blue</td>
+---  <td>232</td>
+---  <td>[125, 187, 221]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#342B75"}}></td>
+---  <td>Medium lilac</td>
+---  <td>268</td>
+---  <td>[52, 43, 117]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#506D54"}}></td>
+---  <td>Slime green</td>
+---  <td>301</td>
+---  <td>[80, 109, 84]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#5B5D69"}}></td>
+---  <td>Smoky grey</td>
+---  <td>302</td>
+---  <td>[91, 93, 105]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#0010B0"}}></td>
+---  <td>Dark blue</td>
+---  <td>303</td>
+---  <td>[0, 16, 176]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#2C651D"}}></td>
+---  <td>Parsley green</td>
+---  <td>304</td>
+---  <td>[44, 101, 29]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#527CAE"}}></td>
+---  <td>Steel blue</td>
+---  <td>305</td>
+---  <td>[82, 124, 174]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#335882"}}></td>
+---  <td>Storm blue</td>
+---  <td>306</td>
+---  <td>[51, 88, 130]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#102ADC"}}></td>
+---  <td>Lapis</td>
+---  <td>307</td>
+---  <td>[16, 42, 220]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#3D1585"}}></td>
+---  <td>Dark indigo</td>
+---  <td>308</td>
+---  <td>[61, 21, 133]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#348E40"}}></td>
+---  <td>Sea green</td>
+---  <td>309</td>
+---  <td>[52, 142, 64]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#5B9A4C"}}></td>
+---  <td>Shamrock</td>
+---  <td>310</td>
+---  <td>[91, 154, 76]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#9FA1AC"}}></td>
+---  <td>Fossil</td>
+---  <td>311</td>
+---  <td>[159, 161, 172]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#592259"}}></td>
+---  <td>Mulberry</td>
+---  <td>312</td>
+---  <td>[89, 34, 89]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#1F801D"}}></td>
+---  <td>Forest green</td>
+---  <td>313</td>
+---  <td>[31, 128, 29]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#9FADC0"}}></td>
+---  <td>Cadet blue</td>
+---  <td>314</td>
+---  <td>[159, 173, 192]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#0989CF"}}></td>
+---  <td>Electric blue</td>
+---  <td>315</td>
+---  <td>[9, 137, 207]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7B007B"}}></td>
+---  <td>Eggplant</td>
+---  <td>316</td>
+---  <td>[123, 0, 123]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7C9C6B"}}></td>
+---  <td>Moss</td>
+---  <td>317</td>
+---  <td>[124, 156, 107]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#8AAB85"}}></td>
+---  <td>Artichoke</td>
+---  <td>318</td>
+---  <td>[138, 171, 133]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B9C4B1"}}></td>
+---  <td>Sage green</td>
+---  <td>319</td>
+---  <td>[185, 196, 177]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CACBD1"}}></td>
+---  <td>Ghost grey</td>
+---  <td>320</td>
+---  <td>[202, 203, 209]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A75E9B"}}></td>
+---  <td>Lilac</td>
+---  <td>321</td>
+---  <td>[167, 94, 155]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7B2F7B"}}></td>
+---  <td>Plum</td>
+---  <td>322</td>
+---  <td>[123, 47, 123]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#94BE81"}}></td>
+---  <td>Olivine</td>
+---  <td>323</td>
+---  <td>[148, 190, 129]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A8BD99"}}></td>
+---  <td>Laurel green</td>
+---  <td>324</td>
+---  <td>[168, 189, 153]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#DFDFDE"}}></td>
+---  <td>Quill grey</td>
+---  <td>325</td>
+---  <td>[223, 223, 222]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#970000"}}></td>
+---  <td>Crimson</td>
+---  <td>327</td>
+---  <td>[151, 0, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B1E5A6"}}></td>
+---  <td>Mint</td>
+---  <td>328</td>
+---  <td>[177, 229, 166]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#98C2DB"}}></td>
+---  <td>Baby blue</td>
+---  <td>329</td>
+---  <td>[152, 194, 219]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF98DC"}}></td>
+---  <td>Carnation pink</td>
+---  <td>330</td>
+---  <td>[255, 152, 220]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF5959"}}></td>
+---  <td>Persimmon</td>
+---  <td>331</td>
+---  <td>[255, 89, 89]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#750000"}}></td>
+---  <td>Maroon</td>
+---  <td>332</td>
+---  <td>[117, 0, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#EFB838"}}></td>
+---  <td>Gold</td>
+---  <td>333</td>
+---  <td>[239, 184, 56]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F8D96D"}}></td>
+---  <td>Daisy orange</td>
+---  <td>334</td>
+---  <td>[248, 217, 109]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E7E7EC"}}></td>
+---  <td>Pearl</td>
+---  <td>335</td>
+---  <td>[231, 231, 236]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C7D4E4"}}></td>
+---  <td>Fog</td>
+---  <td>336</td>
+---  <td>[199, 212, 228]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF9494"}}></td>
+---  <td>Salmon</td>
+---  <td>337</td>
+---  <td>[255, 148, 148]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#BE6862"}}></td>
+---  <td>Terra Cotta</td>
+---  <td>338</td>
+---  <td>[190, 104, 98]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#562424"}}></td>
+---  <td>Cocoa</td>
+---  <td>339</td>
+---  <td>[86, 36, 36]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F1E7C7"}}></td>
+---  <td>Wheat</td>
+---  <td>340</td>
+---  <td>[241, 231, 199]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FEF3BB"}}></td>
+---  <td>Buttermilk</td>
+---  <td>341</td>
+---  <td>[254, 243, 187]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E0B2D0"}}></td>
+---  <td>Mauve</td>
+---  <td>342</td>
+---  <td>[224, 178, 208]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D490BD"}}></td>
+---  <td>Sunrise</td>
+---  <td>343</td>
+---  <td>[212, 144, 189]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#965555"}}></td>
+---  <td>Tawny</td>
+---  <td>344</td>
+---  <td>[150, 85, 85]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#8F4C2A"}}></td>
+---  <td>Rust</td>
+---  <td>345</td>
+---  <td>[143, 76, 42]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#D3BE96"}}></td>
+---  <td>Cashmere</td>
+---  <td>346</td>
+---  <td>[211, 190, 150]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E2DCBC"}}></td>
+---  <td>Khaki</td>
+---  <td>347</td>
+---  <td>[226, 220, 188]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#EDEAEA"}}></td>
+---  <td>Lily white</td>
+---  <td>348</td>
+---  <td>[237, 234, 234]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#E9DADA"}}></td>
+---  <td>Seashell</td>
+---  <td>349</td>
+---  <td>[233, 218, 218]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#883E3E"}}></td>
+---  <td>Burgundy</td>
+---  <td>350</td>
+---  <td>[136, 62, 62]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#BC9B5D"}}></td>
+---  <td>Cork</td>
+---  <td>351</td>
+---  <td>[188, 155, 93]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C7AC78"}}></td>
+---  <td>Burlap</td>
+---  <td>352</td>
+---  <td>[199, 172, 120]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CABFA3"}}></td>
+---  <td>Beige</td>
+---  <td>353</td>
+---  <td>[202, 191, 163]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#BBB3B2"}}></td>
+---  <td>Oyster</td>
+---  <td>354</td>
+---  <td>[187, 179, 178]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6C584B"}}></td>
+---  <td>Pine Cone</td>
+---  <td>355</td>
+---  <td>[108, 88, 75]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A0844F"}}></td>
+---  <td>Fawn brown</td>
+---  <td>356</td>
+---  <td>[160, 132, 79]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#958988"}}></td>
+---  <td>Hurricane grey</td>
+---  <td>357</td>
+---  <td>[149, 137, 136]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#ABA89E"}}></td>
+---  <td>Cloudy grey</td>
+---  <td>358</td>
+---  <td>[171, 168, 158]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#AF9483"}}></td>
+---  <td>Linen</td>
+---  <td>359</td>
+---  <td>[175, 148, 131]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#966766"}}></td>
+---  <td>Copper</td>
+---  <td>360</td>
+---  <td>[150, 103, 102]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#564236"}}></td>
+---  <td>Medium brown</td>
+---  <td>361</td>
+---  <td>[86, 66, 54]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7E683F"}}></td>
+---  <td>Bronze</td>
+---  <td>362</td>
+---  <td>[126, 104, 63]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#69665C"}}></td>
+---  <td>Flint</td>
+---  <td>363</td>
+---  <td>[105, 102, 92]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#5A4C42"}}></td>
+---  <td>Dark taupe</td>
+---  <td>364</td>
+---  <td>[90, 76, 66]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6A3909"}}></td>
+---  <td>Burnt Sienna</td>
+---  <td>365</td>
+---  <td>[106, 57, 9]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#F8F8F8"}}></td>
+---  <td>Institutional white</td>
+---  <td>1001</td>
+---  <td>[248, 248, 248]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CDCDCD"}}></td>
+---  <td>Mid gray</td>
+---  <td>1002</td>
+---  <td>[205, 205, 205]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#111111"}}></td>
+---  <td>Really black</td>
+---  <td>1003</td>
+---  <td>[17, 17, 17]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF0000"}}></td>
+---  <td>Really red</td>
+---  <td>1004</td>
+---  <td>[255, 0, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFB000"}}></td>
+---  <td>Deep orange</td>
+---  <td>1005</td>
+---  <td>[255, 176, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B480FF"}}></td>
+---  <td>Alder</td>
+---  <td>1006</td>
+---  <td>[180, 128, 255]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#A34B4B"}}></td>
+---  <td>Dusty Rose</td>
+---  <td>1007</td>
+---  <td>[163, 75, 75]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#C1BE42"}}></td>
+---  <td>Olive</td>
+---  <td>1008</td>
+---  <td>[193, 190, 66]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFFF00"}}></td>
+---  <td>New Yeller</td>
+---  <td>1009</td>
+---  <td>[255, 255, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#0000FF"}}></td>
+---  <td>Really blue</td>
+---  <td>1010</td>
+---  <td>[0, 0, 255]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#002060"}}></td>
+---  <td>Navy blue</td>
+---  <td>1011</td>
+---  <td>[0, 32, 96]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#2154B9"}}></td>
+---  <td>Deep blue</td>
+---  <td>1012</td>
+---  <td>[33, 84, 185]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#04AFEC"}}></td>
+---  <td>Cyan</td>
+---  <td>1013</td>
+---  <td>[4, 175, 236]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#AA5500"}}></td>
+---  <td>CGA brown</td>
+---  <td>1014</td>
+---  <td>[170, 85, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#AA00AA"}}></td>
+---  <td>Magenta</td>
+---  <td>1015</td>
+---  <td>[170, 0, 170]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF66CC"}}></td>
+---  <td>Pink</td>
+---  <td>1016</td>
+---  <td>[255, 102, 204]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFAF00"}}></td>
+---  <td>Deep orange</td>
+---  <td>1017</td>
+---  <td>[255, 175, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#12EED4"}}></td>
+---  <td>Teal</td>
+---  <td>1018</td>
+---  <td>[18, 238, 212]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#00FFFF"}}></td>
+---  <td>Toothpaste</td>
+---  <td>1019</td>
+---  <td>[0, 255, 255]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#00FF00"}}></td>
+---  <td>Lime green</td>
+---  <td>1020</td>
+---  <td>[0, 255, 0]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#3A7D15"}}></td>
+---  <td>Camo</td>
+---  <td>1021</td>
+---  <td>[58, 125, 21]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#7F8E64"}}></td>
+---  <td>Grime</td>
+---  <td>1022</td>
+---  <td>[127, 142, 100]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#8C5B9F"}}></td>
+---  <td>Lavender</td>
+---  <td>1023</td>
+---  <td>[140, 91, 159]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#AFDDFF"}}></td>
+---  <td>Pastel light blue</td>
+---  <td>1024</td>
+---  <td>[175, 221, 255]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFC9C9"}}></td>
+---  <td>Pastel orange</td>
+---  <td>1025</td>
+---  <td>[255, 201, 201]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#B1A7FF"}}></td>
+---  <td>Pastel violet</td>
+---  <td>1026</td>
+---  <td>[177, 167, 255]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#9FF3E9"}}></td>
+---  <td>Pastel blue-green</td>
+---  <td>1027</td>
+---  <td>[159, 243, 233]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#CCFFCC"}}></td>
+---  <td>Pastel green</td>
+---  <td>1028</td>
+---  <td>[204, 255, 204]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFFFCC"}}></td>
+---  <td>Pastel yellow</td>
+---  <td>1029</td>
+---  <td>[255, 255, 204]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FFCC99"}}></td>
+---  <td>Pastel brown</td>
+---  <td>1030</td>
+---  <td>[255, 204, 153]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#6225D1"}}></td>
+---  <td>Royal purple</td>
+---  <td>1031</td>
+---  <td>[98, 37, 209]</td>
+---</tr>
+---<tr>
+---  <td style={{backgroundColor: "#FF00BF"}}></td>
+---  <td>Hot pink</td>
+---  <td>1032</td>
+---  <td>[255, 0, 191]</td>
+---</tr>
+---</tbody>
+---</table>
+BrickColor = {};
+---Returns the BrickColor Bright Blue.
+---@return BrickColor
+BrickColor.Blue = function() end;
+---Returns the BrickColor Dark stone grey.
+---@return BrickColor
+BrickColor.DarkGray = function() end;
+---@param paletteValue number
+---Constructs a BrickColor from its palette index.
+---@return BrickColor
+BrickColor.palette = function(paletteValue) end;
+---Returns the BrickColor Black.
+---@return BrickColor
+BrickColor.Black = function() end;
+---Returns the BrickColor Bright Red.
+---@return BrickColor
+BrickColor.Red = function() end;
+---Returns a random BrickColor.
+---@return BrickColor
+BrickColor.random = function() end;
+---Returns the BrickColor Bright Yellow.
+---@return BrickColor
+BrickColor.Yellow = function() end;
+---Returns the BrickColor White.
+---@return BrickColor
+BrickColor.White = function() end;
+---@overload fun(r: number, g: number, b: number)
+---@overload fun(val: string)
+---@overload fun(color: Color3)
+---@param val number
+---Constructs a BrickColor from its numerical index.
+---@return BrickColor
+BrickColor.new = function(val) end;
+---Returns the BrickColor Dark Green.
+---@return BrickColor
+BrickColor.Green = function() end;
+---Returns the BrickColor Medium stone grey.
+---@return BrickColor
+BrickColor.Gray = function() end;
+---@class CFrame
+---@field public identity CFrame
+---@field public Position Vector3
+---@field public Rotation CFrame
+---@field public X number
+---@field public Y number
+---@field public Z number
+---@field public LookVector Vector3
+---@field public RightVector Vector3
+---@field public UpVector Vector3
+---@field public XVector Vector3
+---@field public YVector Vector3
+---@field public ZVector Vector3
+---The `CFrame` data type, short for **coordinate frame**, describes a 3D
+---position and orientation. It is made up of a **positional** component and a
+---**rotational** component. It includes essential arithmetic operations for
+---working with 3D data on Roblox.
+---
+---```lua
+----- A canonical method of creating a CFrame at a certain position and Euler rotation (XYZ).
+---local cf = CFrame.new(0, 5, 0) * CFrame.Angles(math.rad(45), 0, 0)
+---```
+---
+---A `CFrameValue` object stores exactly one `CFrame` value in a Roblox object. For
+---an introduction to `CFrame` data type, see Understanding CFrame. To learn more
+---about `CFrame` math operations see CFrame Math Operations.
+---
+---## Components
+---
+---### Positional 
+---
+---The positional component is available as a `Vector3` in the **Position**
+---property. In addition, the components of a `CFrame object`'s position are also
+---available in the X, Y and Z properties like a Vector3. A CFrame placed at a
+---specific position without any rotation can be constructed using
+---`CFrame.new(Vector3)` or `CFrame.new(X, Y, Z)`.
+---
+---### Rotational
+---
+---CFrame stores 3D rotation data in a 3-by-3 **rotation matrix**. These values
+---are returned by the `CFrame:GetComponents` function after the X, Y and Z
+---positional values. This matrix is used internally when doing [calculations
+---involving
+---rotations](https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations).
+---They use [radians](https://en.wikipedia.org/wiki/Radian) as their unit (for
+---conversion to degrees, use `math.rad` or `math.deg`).
+---
+---The matrix below represents the components of a `CFrame` object's rotation matrix and their relationship with the various vector properties available (`LookVector`, `RightVector`, etc). Although the individual components of the rotation matrix are rarely useful by themselves, the vector properties which derive from them are much more useful.
+---
+---<table>
+---<tbody>
+---<tr><td></td>
+---  <td><strong>RightVector</strong>
+---  </td><td><strong>UpVector</strong>
+---  </td><td><strong>&ndash;LookVector<sup>&dagger;</sup></strong></td>
+---</tr>
+---<tr><td><strong>XVector</strong></td><td>R00</td><td>R01</td><td>R02</td></tr>
+---<tr><td><strong>YVector</strong></td><td>R10</td><td>R11</td><td>R12</td></tr>
+---<tr><td><strong>ZVector</strong></td><td>R20</td><td>R21</td><td>R22</td></tr>
+---</tbody>
+---</table>
+---
+---&dagger; Unlike `RightVector` and `UpVector`, `LookVector` represents the
+---negated right/third column components.
+CFrame = {};
+---@param rx number
+---@param ry number
+---@param rz number
+---Equivalent to `fromEulerAnglesYXZ`.
+---@return CFrame
+CFrame.fromOrientation = function(rx, ry, rz) end;
+---@param v Vector3
+---@param r number
+---Returns a rotated CFrame from a Unit Vector3 and a rotation in radians.
+---@return CFrame
+CFrame.fromAxisAngle = function(v, r) end;
+---@param at Vector3
+---@param lookAt Vector3
+---@param up Vector3
+---Returns a new CFrame located at `at` and facing towards `lookAt`,
+---optionally specifying the upward direction (by default, (0, 1, 0)).
+---
+---This function replaces the `CFrame.new(Vector3, Vector3)` constructor (see
+---above) which accomplished a similar task. This function allows you to
+---specify the `up` Vector, using the same default as the old constructor.
+---@return CFrame
+CFrame.lookAt = function(at, lookAt, up) end;
+---Returns an orthonormalized copy of the CFrame. The `BasePart/CFrame`
+---property automatically applies orthonormalization, but other APIs which
+---take CFrames do not, so this method will occasionally be necessary when
+---when incrementally updating a CFrame and using it with them.
+---@return CFrame
+CFrame.Orthonormalize = function() end;
+---@overload fun(pos: Vector3)
+---@overload fun(pos: Vector3, lookAt: Vector3)
+---@overload fun(x: number, y: number, z: number)
+---@overload fun(x: number, y: number, z: number, qX: number, qY: number, qZ: number, qW: number)
+---@overload fun(x: number, y: number, z: number, R00: number, R01: number, R02: number, R10: number, R11: number, R12: number, R20: number, R21: number, R22: number)
+---Creates a blank identity CFrame.
+---@return CFrame
+CFrame.new = function() end;
+---@param rx number
+---@param ry number
+---@param rz number
+---Returns a rotated CFrame using angles (rx, ry, rz) in radians. Rotations
+---are applied in Y, X, Z order.
+---@return CFrame
+CFrame.fromEulerAnglesYXZ = function(rx, ry, rz) end;
+---@param pos Vector3
+---@param vX Vector3
+---@param vY Vector3
+---@param vZ Vector3
+---Returns a CFrame from a translation and the columns of a rotation
+---matrix. If `vz` is excluded, the third column is calculated as
+---`[vx:Cross(vy).Unit]`.
+---@return CFrame
+CFrame.fromMatrix = function(pos, vX, vY, vZ) end;
+---@param rx number
+---@param ry number
+---@param rz number
+---Equivalent to `fromEulerAnglesXYZ`.
+---@return CFrame
+CFrame.Angles = function(rx, ry, rz) end;
+---@param rx number
+---@param ry number
+---@param rz number
+---Returns a rotated CFrame using angles (rx, ry, rz) in radians. Rotations
+---are applied in Z, Y, X order.
+---@return CFrame
+CFrame.fromEulerAnglesXYZ = function(rx, ry, rz) end;
+---@param v3 Vector3
+---@return Vector3
+---Returns a Vector3 transformed from Object to World space. Equivalent to
+---`[CFrame * v3]`.
+CFrame.PointToWorldSpace = function(self, v3) end;
+---@return Tuple<number>
+---Returns the values: x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22,
+---where R00-R22 represent the 3x3 rotation matrix of the CFrame, and xyz
+---represent the position of the CFrame.
+CFrame.GetComponents = function(self) end;
+---@return Tuple
+---Returns all 12 numerical components of the CFrame in the following order:
+---
+---```lua
+---x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22 = cf:components()
+---```
+---
+---(See the Rotational Component section above)
+CFrame.components = function(self) end;
+---@return number, number, number
+---Returns approximate angles that could be used to generate the CFrame, if
+---angles were applied in Z, Y, X order.
+CFrame.ToEulerAnglesXYZ = function(self) end;
+---@param cf CFrame
+---@return CFrame
+---Returns a CFrame transformed from Object to World space. Equivalent to
+---`[CFrame * cf]`.
+CFrame.ToWorldSpace = function(self, cf) end;
+---@return Vector3, number
+---Returns a tuple of a Vector3 and a number which represent the rotation
+---of the CFrame in the axis-angle representation.
+CFrame.ToAxisAngle = function(self) end;
+---@param v3 Vector3
+---@return Vector3
+---Returns a Vector3 transformed from World to Object space. Equivalent to
+---`[CFrame:inverse() * v3]`.
+CFrame.PointToObjectSpace = function(self, v3) end;
+---@return number, number, number
+---Returns approximate angles that could be used to generate the CFrame, if
+---angles were applied in Z, X, Y order. Equivalent to toEulerAnglesYXZ.
+CFrame.ToOrientation = function(self) end;
+---@return CFrame
+---Returns the inverse of the CFrame.
+CFrame.Inverse = function(self) end;
+---@param v3 Vector3
+---@return Vector3
+---Returns a Vector3 rotated from Object to World space. Equivalent to
+---`[(CFrame - CFrame.p) *v3]`.
+CFrame.VectorToWorldSpace = function(self, v3) end;
+---@return number, number, number
+---Returns approximate angles that could be used to generate the CFrame, if
+---angles were applied in Z, X, Y order.
+CFrame.ToEulerAnglesYXZ = function(self) end;
+---@param cf CFrame
+---@return CFrame
+---Returns a CFrame transformed from World to Object space. Equivalent to
+---`[CFrame:inverse() * cf]`.
+CFrame.ToObjectSpace = function(self, cf) end;
+---@param v3 Vector3
+---@return Vector3
+---Returns a Vector3 rotated from World to Object space. Equivalent to
+---`[(CFrame:inverse() - CFrame:inverse().p) * v3]`.
+CFrame.VectorToObjectSpace = function(self, v3) end;
+---@param goal CFrame
+---@param alpha number
+---@return CFrame
+---Returns a CFrame interpolated between this CFrame and the goal by the
+---fraction alpha.
+CFrame.Lerp = function(self, goal, alpha) end;
+---@class CatalogSearchParams
+---@field public SearchKeyword string
+---@field public MinPrice int
+---@field public MaxPrice int
+---@field public SortType CatalogSortType
+---@field public CategoryFilter CatalogCategoryFilter
+---@field public BundleType Array<BundleType>
+---@field public AssetTypes Array<AvatarAssetType>
+---The `CatalogSearchParams` data type stores the parameters of a
+---catalog search via `AvatarEditorService:SearchCatalog()`.
+---
+---When accessing the value of the `BundleTypes` or `AssetTypes` property the
+---returned table will be read-only to avoid confusion when not directly
+---accessing the `CatalogSearchParams` instance.
+---
+---For example, you can use these properties as follows:
+---
+---```lua
+---local params = CatalogSearchParams.new()
+---params.SearchKeyword = "Test"
+---params.MinPrice = 5000
+---params.MaxPrice = 10000
+---params.BundleTypes = {Enum.BundleType.Animations, Enum.BundleType.BodyParts}
+---
+---local types = params.BundleTypes 
+---for _, val in ipairs(types) do
+---  print(val)
+---end 
+----- table.insert(types, Enum.BundleType.Animations) -- This would not work because the table is read only
+---```
+CatalogSearchParams = {};
+---@class Color3
+---@field public R number
+---@field public G number
+---@field public B number
+---The `Color3` a data type describes a color using R, G and B components, which
+---are on the range `[0, 1]`. `Color3` is used for precise coloring of objects on
+---screen through properties like `BasePart/Color` and
+---`GuiObject/BackgroundColor3`. Unlike, the `BrickColor` data type, which
+---**describes** named colors, `Color3` describes **specific** colors.
+Color3 = {};
+---@param hex string
+---Returns a new Color3 from a six- or three-character
+---[hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format. A
+---preceding octothorpe (`#`) is ignored, if present. This function
+---interprets the given string as a typical web hex color in the format
+---`RRGGBB` or `RGB` (shorthand for `RRGGBB`). For example, `#FFAA00`
+---produces an orange color, and is the same as `#FA0`.
+---
+---The color returned can be converted back into hex using `Color3:toHex`,
+---although it is not guaranteed to return the exact same string as passed to
+---this function.
+---
+---```lua
+---print(Color3.fromHex("#FF0000")) --> 1, 0, 0
+---```
+---@return Color3
+Color3.fromHex = function(hex) end;
+---@param red number
+---@param green number
+---@param blue number
+---Returns a Color3 with the given red, green, and blue values. The
+---parameters should be on the range `[0, 1]`.
+---@return Color3
+Color3.new = function(red, green, blue) end;
+---@param red number
+---@param green number
+---@param blue number
+---Creates a Color3 with the given red, green, and blue components. Unlike
+---most other Color3 functions, the parameters for this function should be on
+---the range `[0, 255]`.
+---@return Color3
+Color3.fromRGB = function(red, green, blue) end;
+---@param hue number
+---@param saturation number
+---@param value number
+---Creates a Color3 with the given [hue](https://en.wikipedia.org/wiki/Hue),
+---[saturation](https://en.wikipedia.org/wiki/Colorfulness#Saturation), and
+---[value](https://en.wikipedia.org/wiki/Lightness). The parameters should be
+---on the range ``[0, 1]``.
+---@return Color3
+Color3.fromHSV = function(hue, saturation, value) end;
+---@param color Color3
+---@return number, number, number
+---Returns the [hue, saturation, and
+---value](https://en.wikipedia.org/wiki/HSL_and_HSV) of a Color3. This
+---function is the inverse operation of the `Color3.fromHSV` constructor.
+Color3.toHSV = function(color) end;
+---@param color Color3
+---@param alpha number
+---@return Color3
+---Returns a Color3 interpolated between two Color3 objects. Alpha is a
+---number from 0 to 1.
+Color3.Lerp = function(self, color, alpha) end;
+---@return number, number, number
+---Returns the [hue, saturation, and
+---value](https://en.wikipedia.org/wiki/HSL_and_HSV) of a Color3. This
+---function is the inverse operation of the `Color3.fromHSV` constructor.
+Color3.ToHSV = function(self) end;
+---@return string
+---Converts the color to a six-character hexadecimal string representing the
+---color in the format `RRGGBB`. It is not prefixed with an
+---octothorpe (`#`), although this can be concatenated easily.
+---
+---The returned string can be provided to `Color3.fromHex` to produce the
+---original color.
+---
+---```lua
+---print(Color3.new(0, 1, 0):ToHex()) --> "00FF00"
+---print(BrickColor.new("Really red").Color:ToHex()) --> "FF0000"
+---```
+Color3.ToHex = function(self) end;
+---@class ColorSequence
+---@field public Keypoints table
+---The `ColorSequence` data type represents a gradient of color values from `0`
+---to `1`. The color values are expressed using the
+---`ColorSequenceKeypoint` type. This type is used in various properties
+---of `ParticleEmitter`, `Trail`, and `Beam`. In Studio, this data type is edited
+---using a gradient editor:
+---
+---![Editing the Color property of a ParticleEmitter within Studio. The gradient
+---shows 5 `ColorSequenceKeypoint` at times 0, 0.25, 0.5, 0.75 and 1. The 2nd and
+---4th are blue and yellow, respectively.][1]
+---
+---The above gradient can be set using a script using the following call to
+---`ColorSequence.new()`:
+---
+---```lua
+---local white = Color3.new(1, 1, 1)
+---local lightBlue = Color3.new(0, 2/3, 1)
+---local yellow = Color3.new(1, 1, 0)
+---particleEmitter.Color = ColorSequence.new{
+---    ColorSequenceKeypoint.new(0, white),
+---    ColorSequenceKeypoint.new(0.25, lightBlue),
+---    ColorSequenceKeypoint.new(0.5, white),
+---    ColorSequenceKeypoint.new(0.75, yellow),
+---    ColorSequenceKeypoint.new(1, white)
+---}
+---```
+---
+---## Equality
+---
+---Two `ColorSequence` objects are equivalent if and only if the values of their
+---`ColorSequenceKeypoint` are equivalent, even if the two `ColorSequence`
+---would result in similar gradients.
+---
+---## Evaluation
+---
+---The `ColorSequence` type does not have a built-in method for getting the value
+---at a certain time/point. However, you can use the following function to
+---evaluate at a specific time.
+---
+---```lua
+---function evalCS(cs, time)
+---	-- If we are at 0 or 1, return the first or last value respectively
+---	if time == 0 then return cs.Keypoints[1].Value end
+---	if time == 1 then return cs.Keypoints[#cs.Keypoints].Value end
+---	-- Step through each sequential pair of keypoints and see if alpha
+---	-- lies between the points' time values.
+---	for i = 1, #cs.Keypoints - 1 do
+---		local this = cs.Keypoints[i]
+---		local next = cs.Keypoints[i + 1]
+---		if time >= this.Time and time < next.Time then
+---			-- Calculate how far alpha lies between the points
+---			local alpha = (time - this.Time) / (next.Time - this.Time)
+---			-- Evaluate the real value between the points using alpha
+---			return Color3.new(
+---				(next.Value.R - this.Value.R) * alpha + this.Value.R,
+---				(next.Value.G - this.Value.G) * alpha + this.Value.G,
+---				(next.Value.B - this.Value.B) * alpha + this.Value.B
+---			)
+---		end
+---	end
+---end
+---```
+---
+---You can use the function above like this:
+---
+---```lua
+---local cs = ColorSequence.new{
+---    ColorSequenceKeypoint.new(0, BrickColor.new("Really red").Color),
+---    ColorSequenceKeypoint.new(1, BrickColor.new("Really blue").Color)
+---}
+---print(evalCS(cs, 0.5)) 
+----- 0.5, 0, 0.5 (purple, since it's halfway between red and blue)
+---```
+---
+---  [1]: /assets/blt80328d6105a0c126/ParticleEmitter.Color.jpg
+ColorSequence = {};
+---@overload fun(c0: Color3, c1: Color3)
+---@overload fun(keypoints: table)
+---@param c Color3
+---Returns a sequence of two keypoints with `c` for both the start and end
+---values.
+---
+---```lua
+---local cs = ColorSequence.new(c)
+----- is equivalent to
+---local cs = ColorSequence.new{
+---    ColorSequenceKeypoint.new(0, c),
+---    ColorSequenceKeypoint.new(1, c)
+---}
+---```
+---@return ColorSequence
+ColorSequence.new = function(c) end;
+---@class ColorSequenceKeypoint
+---@field public Time number
+---@field public Value Color3
+ColorSequenceKeypoint = {};
+---@param time number
+---@param color Color3
+---Creates a keypoint with a specified time and color.
+---@return ColorSequenceKeypoint
+ColorSequenceKeypoint.new = function(time, color) end;
+---@class DateTime
+---@field public UnixTimestamp Integer
+---@field public UnixTimestampMillis Integer
+---The `DateTime` data type represents a moment in time using a [Unix
+---timestamp](https://en.wikipedia.org/wiki/Unix_time). It can be used to easily
+---format dates and times in specific locales. When converted to a string, a
+---string conversion of the stored timestamp integer is returned. They don't
+---store timezone values. Instead, timezones are considered when constructing and
+---using DateTime objects.
+---
+---DateTime objects are equal if and only if their `UnixTimestampMillis`
+---properties are equal.
+---
+---## Time Value Table
+---
+---The functions `ToUniversalTime()` and `ToLocalTime()` return a table of
+---time-related values, such as Year, Month, and Day. The format of the table
+---returned by these functions is described below, with each integer element in
+---descending size order:
+---
+---<table>
+---<thead>
+---  <tr>
+---    <td>Name</td>
+---    <td>Range</td>
+---    <td>Notes</td>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>Year</code></td><td>1400&ndash;9999</td><td>&ndash;</td>
+---</tr>
+---<tr>
+---  <td><code>Month</code></td><td>1&ndash;12</td><td >&ndash;</td>
+---</tr>
+---<tr>
+---  <td><code>Day</code></td><td>1&ndash;31</td><td >&ndash;</td>
+---</tr>
+---<tr>
+---  <td><code>Hour</code></td><td>0&ndash;23</td><td >&ndash;</td>
+---</tr>
+---<tr>
+---  <td><code>Minute</code></td><td>0&ndash;59</td><td >&ndash;</td>
+---</tr>
+---<tr>
+---  <td><code>Second</code></td><td>0&ndash;60</td><td>Usually
+---  0&ndash;59, sometimes 60 to accommodate leap seconds in certain
+---  systems.</td>
+---</tr> <tr>
+---  <td>Millisecond</td><td>0&ndash;999</td><td >&ndash;</td>
+---</tr>
+---</tbody>
+---</table>
+---
+---## String Format
+---
+---The `DateTime` object supports date/time conversion into a string
+---through the `FormatUniversalTime()` and `FormatLocalTime()` functions. They
+---both work the same except for which timezone the `DateTime` should be
+---interpreted in.
+---
+---
+---The first argument passed to these functions must be a string representing one
+---of the tokens shown below. The tokens are then replaced with a specific value
+---depending on the provided locale.
+---
+---
+---```lua
+---local dt = DateTime.now()
+----- The "dddd" token is replaced with the full day of the week
+---print("Today is " .. dt:FormatLocalTime("dddd", "en-us"))
+---
+----- For the "en-us" locale, the "LL" token equals "MMMM D, YYYY"
+---print("The date is " .. dt:FormatLocalTime("LL", "en-us"))
+---```
+---
+---### Composite Tokens
+---
+---
+---Depending on locale, these tokens replace to **specific combinations** of the
+---[elemental tokens](#elemental-tokens) described in the next section. This
+---produces a correct date/time string depending on the locale. For example, in English, the date has the "[month] [day]" as in "June 11". In French, the date is in a "[day] [month]" format as in "11
+---juin". These special rules are handled for you automatically through the
+---following composite tokens, so use these if you're displaying simple time
+---and/or date information.
+---
+---<table>
+---  <thead>
+---    <tr>
+---      <th>Token(s)</th>
+---      <th>Locale Examples (Format)</th>
+---    </tr>
+---  </thead>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Time</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>LT</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>8:30 PM</code> (<code>h:mm A</code>)</div>
+---        <div><code>zh-cn</code> : <code>20:30</code> (<code>HH:mm</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Time with Seconds</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>LTS</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>8:30:25 PM</code> (<code>h:mm:ss A</code>)</div>
+---        <div><code>zh-cn</code> : <code>20:30:25</code> (<code>HH:mm:ss</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Month (Number), Day, Year</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>L</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>09/04/1986</code> (<code>MM/DD/YYYY</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986/09/04</code> (<code>YYYY/MM/DD</code>)</div>
+---      </td>
+---    </tr>
+---    <tr>
+---      <td><code>l</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>9/4/1986</code> (<code>M/D/YYYY</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986/9/4</code> (<code>YYYY/M/D</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Month (Name), Day, Year</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>LL</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>September 4, 1986</code> (<code>MMMM D, YYYY</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日</code> (<code>YYYY年M月D日</code>)</div>
+---      </td>
+---    </tr>
+---    <tr>
+---      <td><code>ll</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>Sep 4, 1986</code> (<code>MMM D, YYYY</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日</code> (<code>YYYY年M月D日</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Month (Name), Day, Year, Time</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>LLL</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>September 4, 1986 8:30 PM</code> (<code>MMMM D, YYYY h:mm A</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日晚上8点30分</code> (<code>YYYY年M月D日Ah点mm分</code>)</div>
+---      </td>
+---    </tr>
+---    <tr>
+---      <td><code>lll</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>Sep 4, 1986 8:30 PM</code> (<code>MMM D, YYYY h:mm A</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日 20:30</code> (<code>YYYY年M月D日 HH:mm</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---    <thead>
+---    <tr>
+---      <th colspan=2>Day of Week, Month (Name), Day, Year, Time</th>
+---    </tr>
+---  </thead>
+---  <tbody>
+---    <tr>
+---      <td><code>LLLL</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>Thursday, September 4, 1986 8:30 PM</code> (<code>dddd, MMMM D, YYYY h:mm A</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日星期四晚上8点30分</code> (<code>YYYY年M月D日ddddAh点mm分</code>)</div>
+---      </td>
+---    </tr>
+---    <tr>
+---      <td><code>llll</code></td>
+---      <td>
+---        <div><code>en-us</code> : <code>Thu, Sep 4, 1986 8:30 PM</code> (<code>ddd, MMM D, YYYY h:mm A</code>)</div>
+---        <div><code>zh-cn</code> : <code>1986年9月4日星期四 20:30</code> (<code>YYYY年M月D日dddd HH:mm</code>)</div>
+---      </td>
+---    </tr>
+---  </tbody>
+---</table>
+---
+---### Elemental Tokens
+---
+---Each of these tokens replace to a **single value** and can be used as elements
+---of a larger time string. Avoid using these if you only need simple date and
+---time information because the composite tokens above are more appropriate for
+---those purposes.
+---
+---<table>
+---<thead>
+---  <tr>
+---    <th>Token(s)</th>
+---    <th>Examples</th>
+---  </tr>
+---</thead>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Year</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>YY</code></td>
+---  <td><code>70</code>, <code>71</code>, &hellip;, <code>29</code>, <code>30</code></td>
+---</tr>
+---<tr>
+---  <td><code>YYYY</code></td>
+---  <td><code>1970</code>, <code>1971</code>, &hellip;, <code>2029</code>, <code>2030</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Month</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>M</code></td>
+---  <td><code>1</code>, <code>2</code>, &hellip;, <code>11</code>, <code>12</code></td>
+---</tr>
+---<tr>
+---  <td><code>MM</code></td>
+---  <td><code>01</code>, <code>02</code>, &hellip;, <code>11</code>, <code>12</code></td>
+---</tr>
+---<tr>
+---  <td><code>MMM</code></td>
+---  <td><code>Jan</code>, <code>Feb</code>, &hellip;, <code>Nov</code>, <code>Dec</code></td>
+---</tr>
+---<tr>
+---  <td><code>MMMM</code></td>
+---  <td><code>January</code>, <code>February</code>, &hellip;, <code>November</code>, <code>December</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Day of Month</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>D</code></td>
+---  <td><code>1</code>, <code>2</code>, &hellip;, <code>30</code>, <code>31</code></td>
+---</tr>
+---<tr>
+---  <td><code>DD</code></td>
+---  <td><code>01</code>, <code>02</code>, &hellip;, <code>30</code>, <code>31</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Day of Year</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>DDD</code></td>
+---  <td><code>1</code>, <code>2</code>, &hellip;, <code>364</code>, <code>365</code></td>
+---</tr>
+---<tr>
+---  <td><code>DDDD</code></td>
+---  <td><code>001</code>, <code>002</code>, &hellip;, <code>364</code>, <code>365</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Day of Week</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>d</code></td>
+---  <td><code>0</code>, <code>1</code>, &hellip;, <code>5</code>, <code>6</code></td>
+---</tr>
+---<tr>
+---  <td><code>dd</code></td>
+---  <td><code>Su</code>, <code>Mo</code>, &hellip;, <code>Fr</code>, <code>Sa</code></td>
+---</tr>
+---<tr>
+---  <td><code>ddd</code></td>
+---  <td><code>Sun</code>, <code>Mon</code>, &hellip;, <code>Fri</code>, <code>Sat</code></td>
+---</tr>
+---<tr>
+---  <td><code>dddd</code></td>
+---  <td><code>Sunday</code>, <code>Monday</code>, &hellip;, <code>Friday</code>, <code>Saturday</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Hour</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>H</code></td>
+---  <td><code>0</code>, <code>1</code>, &hellip;, <code>22</code>, <code>23</code></td>
+---</tr>
+---<tr>
+---  <td><code>HH</code></td>
+---  <td><code>00</code>, <code>01</code>, &hellip;, <code>22</code>, <code>23</code></td>
+---</tr>
+---<tr>
+---  <td><code>h</code></td>
+---  <td><code>1</code>, <code>2</code>, &hellip;, <code>11</code>, <code>12</code></td>
+---</tr>
+---<tr>
+---  <td><code>hh</code></td>
+---  <td><code>01</code>, <code>02</code>, &hellip;, <code>11</code>, <code>12</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Minute</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>m</code></td>
+---  <td><code>0</code>, <code>1</code>, &hellip;, <code>58</code>, <code>59</code></td>
+---</tr>
+---<tr>
+---  <td><code>mm</code></td>
+---  <td><code>00</code>, <code>01</code>, &hellip;, <code>58</code>, <code>59</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Second</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>s</code></td>
+---  <td><code>0</code>, <code>1</code>, &hellip;, <code>58</code>, <code>59</code></td>
+---</tr>
+---<tr>
+---  <td><code>ss</code></td>
+---  <td><code>00</code>, <code>01</code>, &hellip;, <code>58</code>, <code>59</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>Fractional Second</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>S</code></td>
+---  <td><code>0</code>, <code>1</code>, &hellip;, <code>8</code>, <code>9</code></td>
+---</tr>
+---<tr>
+---  <td><code>SS</code></td>
+---  <td><code>00</code>, <code>01</code>, &hellip;, <code>98</code>, <code>99</code></td>
+---</tr>
+---<tr>
+---  <td><code>SSS</code></td>
+---  <td><code>000</code>, <code>001</code>, &hellip;, <code>998</code>, <code>999</code></td>
+---</tr>
+---</tbody>
+---  <thead>
+---  <tr>
+---    <th colspan=2>AM/PM</th>
+---  </tr>
+---</thead>
+---<tbody>
+---<tr>
+---  <td><code>A</code></td>
+---  <td><div><code>en-us</code> : <code>AM</code>, <code>PM</code></div>
+---        <div><code>zh-cn</code> : <code>凌晨|早上|上午|中午|下午|晚上</code></div></td>
+---</tr>
+---<tr>
+---  <td><code>a</code></td>
+---  <td><div><code>en-us</code> : <code>am</code>, <code>pm</code></div>
+---        <div><code>zh-cn</code> : <code>凌晨|早上|上午|中午|下午|晚上</code></div></td>
+---</tr>
+---</tbody>
+---</table>
+DateTime = {};
+---@param isoDate string
+---Returns a `DateTime` from an [ISO
+---8601](https://en.wikipedia.org/wiki/ISO_8601) date-time string in UTC
+---time, such as those returned by `ToIsoDate`. If the string parsing fails,
+---the function returns nil.
+---
+---An example ISO 8601 date-time string would be `2020-01-02T10:30:45Z`,
+---which represents January 2nd 2020 at 10:30 AM, 45 seconds.
+---@return DateTime
+DateTime.fromIsoDate = function(isoDate) end;
+---@param year Integer
+---@param month Integer
+---@param day Integer
+---@param hour Integer
+---@param minute Integer
+---@param second Integer
+---@param millisecond Integer
+---Returns a new `DateTime` using the given units from a UTC time. The values
+---accepted are similar to those found in the time value table returned by
+---`ToUniversalTime`.
+---
+---- Date units (year, month, day) that produce an invalid date will raise an error. For example, January 32nd or February 29th on a non-leap year.
+---- Time units (hour, minute, second, millisecond) that are outside their normal range are valid. For example, 90 minutes will cause the hour to roll over by 1; -10 seconds will cause the minute value to roll back by 1.
+---- Non-integer values are rounded down. For example, providing 2.5 hours will be equivalent to providing 2 hours, not 2 hours 30 minutes.
+---- Omitted values are assumed to be their lowest value in their normal range, except for year which defaults to 1970.
+---@return DateTime
+DateTime.fromUniversalTime = function(year, month, day, hour, minute, second, millisecond) end;
+---Returns a new `DateTime` representing the current moment in time.
+---@return DateTime
+DateTime.now = function() end;
+---@param unixTimestampMillis Integer
+---Create a new DateTime object from the given [Unix
+---timestamp](https://en.wikipedia.org/wiki/Unix_time), or the number of
+---**milliseconds** since January 1st, 1970 at 00:00 (UTC).
+---@return DateTime
+DateTime.fromUnixTimestampMillis = function(unixTimestampMillis) end;
+---@param year Integer
+---@param month Integer
+---@param day Integer
+---@param hour Integer
+---@param minute Integer
+---@param second Integer
+---@param millisecond Integer
+---Returns a new `DateTime` using the given units from a local time. The
+---values accepted are similar to those found in the time value table
+---returned by `ToLocalTime`.
+---
+---- Date units (year, month, day) that produce an invalid date will raise an error. For example, January 32nd or February 29th on a non-leap year.
+---- Time units (hour, minute, second, millisecond) that are outside their normal range are valid. For example, 90 minutes will cause the hour to roll over by 1; -10 seconds will cause the minute value to roll back by 1.
+---- Non-integer values are rounded down. For example, providing 2.5 hours will be equivalent to providing 2 hours, not 2 hours 30 minutes.
+---- Omitted values are assumed to be their lowest value in their normal range, except for year which defaults to 1970.
+---@return DateTime
+DateTime.fromLocalTime = function(year, month, day, hour, minute, second, millisecond) end;
+---@param unixTimestamp Integer
+---Returns a new `DateTime` object from the given [Unix
+---timestamp](https://en.wikipedia.org/wiki/Unix_time), or the number of
+---**seconds** since January 1st, 1970 at 00:00 (UTC).
+---@return DateTime
+DateTime.fromUnixTimestamp = function(unixTimestamp) end;
+---@return table
+---Converts the value of this `DateTime` object to Universal Coordinated Time
+---(UTC). The returned table contains the following keys: `Year`, `Month`,
+---`Day`, `Hour`, `Minute`, `Second`, `Millisecond`. For more details, see
+---the table in the `DateTime` description. The values within this table
+---could be passed to `fromUniversalTime` to produce the original `DateTime`
+---object.
+DateTime.ToUniversalTime = function(self) end;
+---@param format string
+---@param locale string
+---@return string
+---Generates a string from the `DateTime` value interpreted as Universal
+---Coordinated Time (UTC) and a format string. The format string should
+---contain tokens, which will replace to certain date/time values described
+---by the `DateTime` object. For details on all the available tokens, see
+---`DateTime` Format Strings.
+---
+---```lua
+---local dt = DateTime.now()
+----- For en-us, the "LL" token equals "MMM D, YYYY", which gives "June 11, 2020"
+---print("The date is " .. dt:FormatUniversalTime("LL", "en-us"))
+-----> "The date is June 11, 2020"
+---```
+DateTime.FormatUniversalTime = function(self, format, locale) end;
+---@param format string
+---@param locale string
+---@return string
+---Generates a string from the `DateTime` value interpreted as **local time**
+---and a format string. The format string should contain tokens, which will
+---replace to certain date/time values described by the `DateTime` object.
+---For details on all the available tokens, see `DateTime` Format Strings.
+---
+---```lua
+---local dt = DateTime.now()
+----- For en-us, the "LL" token equals "MMM D, YYYY", which gives "June 11, 2020"
+---print("The date is " .. dt:FormatLocalTime("LL", "en-us"))
+-----> "The date is June 11, 2020"
+---```
+DateTime.FormatLocalTime = function(self, format, locale) end;
+---@return table
+---Converts the value of this `DateTime` object to local time. The returned
+---table contains the following keys: `Year`, `Month`, `Day`, `Hour`,
+---`Minute`, `Second`, `Millisecond`. For more details, see the table in the
+---`DateTime` description. The values within this table could be passed to
+---`fromLocalTime` to produce the original `DateTime` object.
+DateTime.ToLocalTime = function(self) end;
+---@return string
+---Formats a date as a [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+---date-time string. The value returned by this function could be passed to
+---`fromIsoDate` to produce the original DateTime object.
+---
+---An example ISO 8601 date-time string would be `2020-01-02T10:30:45Z`, which represents January 2nd 2020 at 10:30 AM, 45 seconds.
+DateTime.ToIsoDate = function(self) end;
+---@class DockWidgetPluginGuiInfo
+---@field public InitialEnabled bool
+---@field public InitialEnabledShouldOverrideRestore bool
+---@field public FloatingXSize int
+---@field public FloatingYSize int
+---@field public MinWidth int
+---@field public MinHeight int
+---The `DockWidgetPluginGuiInfo` data type describes details for a
+---`DockWidgetPluginGui`. This datatype is used when constructing a `PluginGui`
+---via the plugin's `Plugin:CreateDockWidgetPluginGui()` method.
+DockWidgetPluginGuiInfo = {};
+---@param initDockState Enum.InitialDockState
+---@param initEnabled bool
+---@param overrideEnabledRestore bool
+---@param floatXSize int
+---@param floatYSize int
+---@param minWidth int
+---@param minHeight int
+---The main constructor function for the `DockWidgetPluginGuiInfo`.
+---@return DockWidgetPluginGuiInfo
+DockWidgetPluginGuiInfo.new = function(initDockState, initEnabled, overrideEnabledRestore, floatXSize, floatYSize, minWidth, minHeight) end;
+---@class Enum
+---The `Enum` data type represents an individual enum in Roblox. An individual
+---enum can be indexed through the `Enum` type, via the name of the enum itself.
+---All available enums on Roblox are listed on the [`Enum`
+---page](/reference/engine/enums).
+Enum = {};
+---@return Array
+---Returns an array of all the `datatype/EnumItem` options available for this
+---enum.
+Enum.GetEnumItems = function(self) end;
+---@class EnumItem
+---@field public Name string
+---@field public Value int
+---@field public EnumType Enum
+---The `EnumItem` datatype represents an individual item in a Roblox enum.
+EnumItem = {};
+---@class Enums
+---The `Enums` data type, more commonly known as `Enum` by its global variable in
+---Lua), acts as the root access point for all available enums on Roblox. All
+---enums on Roblox are indexed via their name through this datatype, and
+---developers can also utilize the `GetEnums()` method to get a list of all enums
+---on Roblox.
+Enums = {};
+---@return Array
+---Returns an array containing all available `datatype/Enum`s on Roblox.
+Enums.GetEnums = function(self) end;
+---@class Faces
+---@field public Top bool
+---@field public Bottom bool
+---@field public Left bool
+---@field public Right bool
+---@field public Back bool
+---@field public Front bool
+---The `Faces` data type contains six booleans representing whether a feature
+---is enabled for each face (`enum/NormalId`) of a Part. In other words, this
+---contains a boolean for each axes (X/Y/Z) in both directions
+---(positive/negative). The `Handles` object uses this data type to enable
+---whether a direction has a visible handle on a Part's face.
+---
+---```lua
+---local handles = Instance.new("Handles")
+---handles.Faces = Faces.new(Enum.NormalId.Front, Enum.NormalId.Left)
+---```
+---
+---Like most data types on Roblox, the Faces data type is immutable: you cannot assign to its properties once created.
+Faces = {};
+---@param eebcfcceebcaa Tuple
+---Creates a new Faces given some number of `enum/NormalId` as arguments. Each NormalId provided indicates the property of the same name in the new Faces will be true.
+---
+---- The `table.unpack` function can be used to unpack a table of NormalId to be included.
+---- Passing values that are not a `enum/NormalId` will do nothing; they are ignored silently.
+---@return Faces
+Faces.new = function(eebcfcceebcaa) end;
+---@class FloatCurveKey
+---@field public Interpolation KeyInterpolationMode
+---@field public Time number
+---@field public Value number
+---@field public RightTangent number
+---@field public LeftTangent number
+---A time-value pair used with `FloatCurve` instances.
+---
+---The `Interpolation` property dictates the interpolation mode for the segment
+---started by this key and ended by the next key on the curve. Each segment may
+---use a different interpolation mode. 
+---
+---The `LeftTangent` and `RightTangent` properties apply to the cubic
+---interpolation mode and define the desired tangent (slope) at the key.
+---Different left and right values can be used to encode discontinuities in slope
+---at the key. Attempting to set a `RightTangent` value on a key that doesn't use
+---the cubic interpolation mode will result in a runtime error. It is possible to
+---set the `LeftTangent` property on any key, as it will be used should the
+---preceding segment use cubic interpolation.
+FloatCurveKey = {};
+---@param time number
+---@param value number
+---@param Interpolation Enum.KeyInterpolationMode
+---Creates a new `FloatCurveKey` at a given time and value. `LeftTangent` and
+---RightTangent are left uninitialized. If not initialized, tangent values of
+---0 will be used when evaluating the curve.
+---@return FloatCurveKey
+FloatCurveKey.new = function(time, value, Interpolation) end;
+---@class Instance
+---The `Instance` data type holds the constructor for `Instance` objects.
+Instance = {};
+---@generic CLASSNAMEGENERIC : string
+---@param className `CLASSNAMEGENERIC`
+---@param parent? Instance
+---Creates an new object of type val. The parent argument is optional; If it
+---is supplied, the object will be parented to that object.
+---
+---**Performance note:** When the `Instance/Parent|Parent` of an object is
+---set, Luau listens to a variety of different property changes
+---for replication, rendering and physics. Therefore, it is recommended to
+---**set the Parent property last** when creating new objects. As such, you
+---should avoid using the second argument (`parent`) of this function. You
+---can read [this thread on the developer
+---forum](https://devforum.roblox.com/t/psa-dont-use-instance-new-with-parent-argument/30296)
+---for more information.
+---@return CLASSNAMEGENERIC
+Instance.new = function(className, parent) end;
+---@class NumberRange
+---@field public Min number
+---@field public Max number
+---The `NumberRange` represents a range of numbers.
+NumberRange = {};
+---@overload fun(minimum: number, maximum: number)
+---@param value number
+---Returns a new `NumberRange` with the minimum and maximum set to the
+---`value`.
+---@return NumberRange
+NumberRange.new = function(value) end;
+---@class NumberSequence
+---@field public Keypoints Array<NumberSequenceKeypoint>
+---The `NumberSequence` data type represents a series of number values from 0 to
+---1. The number values are expressed using the `datatype/NumberSequenceKeypoint`
+---type. This type is used in properties of `ParticleEmitter` to indicate
+---properties of particles over their lifetime. In Studio, this data type is
+---edited using a line graph:
+---
+---![A NumberSequence for a ParticleEmitter's Transparency][1]
+---
+---The above line graph can be set using a script using the following call to
+---`NumberSequence.new`:
+---
+---```lua
+---particleEmitter.Transparency = NumberSequence.new{
+---    NumberSequenceKeypoint.new(0, 0), -- (time, value)
+---    NumberSequenceKeypoint.new(.5, .75),
+---    NumberSequenceKeypoint.new(1, 1)
+---}
+---```
+---
+---## Equality
+---
+---Two `NumberSequence` objects are equivalent if and only if the values of their
+---`datatype/NumberSequenceKeypoint` are equivalent, even if the two
+---`NumberSequence` would result in similar graphs.
+---
+---## Evaluation
+---
+---The `NumberSequence` type does not have a built-in method for getting the
+---value at a certain time/point because keypoints can have random envelopes.
+---Assuming the envelope values of your keypoints are all 0, you can use the
+---following function to evaluate at a specific time:
+---
+---```lua
+---function evalNS(ns, time)
+---	-- If we are at 0 or 1, return the first or last value respectively
+---	if time == 0 then return ns.Keypoints[1].Value end
+---	if time == 1 then return ns.Keypoints[#ns.Keypoints].Value end
+---	-- Step through each sequential pair of keypoints and see if alpha
+---	-- lies between the points' time values.
+---	for i = 1, #ns.Keypoints - 1 do
+---		local this = ns.Keypoints[i]
+---		local next = ns.Keypoints[i + 1]
+---		if time >= this.Time and time < next.Time then
+---			-- Calculate how far alpha lies between the points
+---			local alpha = (time - this.Time) / (next.Time - this.Time)
+---			-- Evaluate the real value between the points using alpha
+---			return (next.Value - this.Value) * alpha + this.Value
+---		end
+---	end
+---end
+---```
+---
+---You can use the function above like this:
+---
+---```lua
+---local ns = NumberSequence.new{
+---	NumberSequenceKeypoint.new(0, 0),
+---	NumberSequenceKeypoint.new(.5, .8),
+---	NumberSequenceKeypoint.new(1, 1),
+---}
+---
+---print(evalNS(ns, 0))   --> 0
+---print(evalNS(ns, .25)) --> .4
+---print(evalNS(ns, .5))  --> .8
+---print(evalNS(ns, .75)) --> .9
+---print(evalNS(ns, 1))   --> 1
+---```
+---
+---  [1]: /assets/blt0d60ed8c7e23650a/ParticleEmitter.Transparency.jpg
+NumberSequence = {};
+---@overload fun(n0: number, n1: number)
+---@overload fun(Keypoints: table)
+---@param n number
+---Returns a `NumberSequence` with the start and end values set to the
+---provided `n`.
+---
+---```lua
+---local ns = NumberSequence.new(n)
+----- is equivalent to
+---local ns = NumberSequence.new{
+---	NumberSequenceKeypoint.new(0, n),
+---	NumberSequenceKeypoint.new(1, n),
+---}
+---```
+---@return NumberSequence
+NumberSequence.new = function(n) end;
+---@class NumberSequenceKeypoint
+---@field public Envelope number
+---@field public Time number
+---@field public Value number
+---The `NumberSequenceKeypoint` data type represents keypoints within a
+---NumberSequence with a particular time, value, and envelope size.
+NumberSequenceKeypoint = {};
+---@overload fun(time: number, value: number, envelop: number)
+---@param time number
+---@param value number
+---Returns a keypoint with a specified time and value.
+---@return NumberSequenceKeypoint
+NumberSequenceKeypoint.new = function(time, value) end;
+---@class OverlapParams
+---@field public FilterDescendantsInstances Array
+---@field public FilterType RaycastFilterType
+---@field public MaxParts number
+---@field public CollisionGroup string
+---The `OverlapParams` data type stores parameters for use with `WorldRoot`
+---boundary-querying functions, in particular
+---`WorldRoot/GetPartBoundsInBox|GetPartBoundsInBox`,
+---`WorldRoot/GetPartBoundsInRadius|GetPartBoundsInRadius` and
+---`WorldRoot/GetPartsInPart|GetPartsInPart`. The `FilterDescendantsInstances`
+---property stores an array of objects to use as either a whitelist or blacklist
+---based on the `FilterType` enum. The `CollisionGroup` property can specify a
+---collision group for the boundary query operation.
+---
+---This data type performs a similar role as the `datatype/RaycastParams` type.
+---
+---Unlike most datatypes in Luau, all the members of `OverlapParams` can be
+---changed without creating a new object. When performing boundary queries
+---repeatedly, you should use the same object.
+OverlapParams = {};
+---Returns a blank `datatype/OverlapParams` object. Unlike other datatype
+---constructors, this constructor does not have any parameters, so you should
+---set its properties appropriately.
+---@return OverlapParams
+OverlapParams.new = function() end;
+---@class PathWaypoint
+---@field public Action Enum.PathWaypointAction
+---@field public Position Vector3
+---@field public Label string
+---The `PathWaypoint` datatype constructed by a `Enum/PathWaypointAction` action, `DataType/Vector3` position, and `string` label which is used by the `PathfindingService` to create points along a generated path.
+---
+---The code block below constructs a `PathWaypoint` variable with
+---`Vector2.new(10, 10, 10)` as its position, `Enum.PathWaypointAction.Walk`
+---as its action, and `Custom Label` as its label:
+---
+---```lua
+---local pos = Vector3.new(10, 10, 10)
+---local waypoint = PathWaypoint.new(pos, Enum.PathWaypointAction.Walk, "Custom Label")
+---```
+---PathWaypoint can also be constructed by passing position and action. Label property will be set to default as empty string.
+---
+---```lua
+---local pos = Vector3.new(10, 10, 10)
+---local waypoint = PathWaypoint.new(pos, Enum.PathWaypointAction.Walk)
+---```
+---## Action
+---
+---The `Enum/PathWaypointAction|Action` describes the action to take in order to
+---reach this PathWaypoint. It can be set to one of the following enum values:
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Value</th>
+---			<th>Description</th>
+---		</tr>
+---	</thead>
+---	<tbody>
+---		<tr>
+---			<td>
+---				Walk
+---			</td>
+---			<td>0</td>
+---			<td>
+---				Walk action needed to reach this waypoint from the previous one.
+---			</td>
+---		</tr>
+---		<tr>
+---			<td>
+---				Jump
+---			</td>
+---			<td>1</td>
+---			<td>
+---				Jump action needed to reach this waypoint from the previous one.
+---			</td>
+---		</tr>
+---	</tbody>
+---</table>
+PathWaypoint = {};
+---@param position Vector3
+---@param action Enum.PathWaypointAction
+---@param abfbbbedffdddbbfe string
+---Returns a `PathWaypoint` object from the given `Vector3` position, `Enum.PathWaypointAction` action, and optional string label.
+---@return PathWaypoint
+PathWaypoint.new = function(position, action, abfbbbedffdddbbfe) end;
+---@class PhysicalProperties
+---@field public Density number
+---@field public Friction number
+---@field public Elasticity number
+---@field public FrictionWeight number
+---@field public ElasticityWeight number
+---The `PhysicalProperties` data type describes several physical properties of a
+---part: `Density`, `Elasticity`, and `Friction`. It is used in the
+---similarly-named `BasePart/CustomPhysicalProperties` property.
+---
+---## Weighting Behavior
+---
+---`PhysicalProperties` also provides weightings properties, `ElasticityWeight`
+---and `FrictionWeight`. When two parts interact, the `Friction` and `Elasticity`
+---between them are determined in the same way by the following pairwise weighted
+---average function:
+---
+---![(Friction_a * FrictionWeight_a + Friction_b * FrictionWeight_b) / (FrictionWeight_a + FrictionWeight_b)][1]
+---
+---Although the formula above refers to the Friction and FrictionWeight of two
+---parts, `A` and `B`, the formula is used in the same manner when determining
+---`Elasticity`. Generally, when the weight of `A` is much greater than that of
+---`B`, the actual value will be closer to `A`. If the weights are similar, then
+---the actual value will be close to the midpoint between their individual
+---values.
+---
+---## History
+---
+---`PhysicalProperties` was released in [November
+---2015](https://blog.roblox.com/2015/11/announcing-new-physical-material-properties/).
+---Previously, `BasePart` had individual `Friction` and `Elasticity` properties.
+---This was changed so that all physical properties of a part will replicate as
+---one, among other reasons. Its release was done over the course of three
+---months.
+---
+---
+---  [1]: /assets/bltf1f11533d788f341/FrictionWeight.png
+PhysicalProperties = {};
+---@overload fun(density: number, friction: number, elasticity: number)
+---@overload fun(density: number, friction: number, elasticity: number, frictionWeight: number, elasticityWeight: number)
+---@param material Enum.Material
+---Returns a `PhysicalProperties` container, with the density, friction, and elasticity specified for this Material.
+---@return PhysicalProperties
+PhysicalProperties.new = function(material) end;

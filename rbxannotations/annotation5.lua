@@ -1,0 +1,2683 @@
+---@class Enum.PoseEasingStyle
+---@field public Linear number | '0'
+---@field public Constant number | '1'
+---@field public Elastic number | '2'
+---@field public Cubic number | '3'
+---@field public Bounce number | '4'
+local PoseEasingStyle;
+---@diagnostic disable-next-line
+---@alias PoseEasingStyle Enum.PoseEasingStyle
+---@class Enum.PositionAlignmentMode
+---@field public OneAttachment number | '0'
+---@field public TwoAttachment number | '1'
+---The PositionAlignmentMode Enum is used to select the number of `Attachment`s
+---used in an alignment.
+local PositionAlignmentMode;
+---@diagnostic disable-next-line
+---@alias PositionAlignmentMode Enum.PositionAlignmentMode
+---@class Enum.PrivilegeType
+---@field public Banned number | '0'
+---@field public Visitor number | '10'
+---@field public Member number | '128'
+---@field public Admin number | '240'
+---@field public Owner number | '255'
+local PrivilegeType;
+---@diagnostic disable-next-line
+---@alias PrivilegeType Enum.PrivilegeType
+---@class Enum.ProductLocationRestriction
+---@field public AvatarShop number | '0'
+---@field public AllowedGames number | '1'
+---@field public AllGames number | '2'
+local ProductLocationRestriction;
+---@diagnostic disable-next-line
+---@alias ProductLocationRestriction Enum.ProductLocationRestriction
+---@class Enum.ProductPurchaseDecision
+---@field public NotProcessedYet number | '0'
+---@field public PurchaseGranted number | '1'
+---The `ProductPurchaseDecisionEnum` is used to work with `MarketplaceService`, and the sale of developer products.
+local ProductPurchaseDecision;
+---@diagnostic disable-next-line
+---@alias ProductPurchaseDecision Enum.ProductPurchaseDecision
+---@class Enum.ProximityPromptExclusivity
+---@field public OnePerButton number | '0'
+---@field public OneGlobally number | '1'
+---@field public AlwaysShow number | '2'
+local ProximityPromptExclusivity;
+---@diagnostic disable-next-line
+---@alias ProximityPromptExclusivity Enum.ProximityPromptExclusivity
+---@class Enum.ProximityPromptInputType
+---@field public Keyboard number | '0'
+---@field public Gamepad number | '1'
+---@field public Touch number | '2'
+local ProximityPromptInputType;
+---@diagnostic disable-next-line
+---@alias ProximityPromptInputType Enum.ProximityPromptInputType
+---@class Enum.ProximityPromptStyle
+---@field public Default number | '0'
+---@field public Custom number | '1'
+local ProximityPromptStyle;
+---@diagnostic disable-next-line
+---@alias ProximityPromptStyle Enum.ProximityPromptStyle
+---@class Enum.QualityLevel
+---@field public Automatic number | '0'
+---@field public Level01 number | '1'
+---@field public Level02 number | '2'
+---@field public Level03 number | '3'
+---@field public Level04 number | '4'
+---@field public Level05 number | '5'
+---@field public Level06 number | '6'
+---@field public Level07 number | '7'
+---@field public Level08 number | '8'
+---@field public Level09 number | '9'
+---@field public Level10 number | '10'
+---@field public Level11 number | '11'
+---@field public Level12 number | '12'
+---@field public Level13 number | '13'
+---@field public Level14 number | '14'
+---@field public Level15 number | '15'
+---@field public Level16 number | '16'
+---@field public Level17 number | '17'
+---@field public Level18 number | '18'
+---@field public Level19 number | '19'
+---@field public Level20 number | '20'
+---@field public Level21 number | '21'
+---Controls the rendering quality of the game. Higher levels correspond to higher
+---quality graphics.
+---
+---As QualityLevel increases, Roblox rendering engine increases the rendering
+---distance, shading quality, apparent geometry and texture resolution, limits on
+---particles that are being rendered, fidelity of trail effects, post-effect
+---quality and more. On low quality levels some post effects may be completely
+---disabled and objects that are far away will not be rendered.
+---
+---The specific effects of quality level on the individual elements of the scene
+---or individual rendering features are platform- and device- specific and can
+---not be relied upon.
+local QualityLevel;
+---@diagnostic disable-next-line
+---@alias QualityLevel Enum.QualityLevel
+---@class Enum.R15CollisionType
+---@field public OuterBox number | '0'
+---@field public InnerBox number | '1'
+---Internal enum used to save the the collision behavior setting for R15 characters.
+local R15CollisionType;
+---@diagnostic disable-next-line
+---@alias R15CollisionType Enum.R15CollisionType
+---@class Enum.RaycastFilterType
+---@field public Blacklist number | '0'
+---@field public Whitelist number | '1'
+---Used in a `datatype/RaycastParams` object to determine how its
+---`FilterDescendantsInstances` list will be used.
+local RaycastFilterType;
+---@diagnostic disable-next-line
+---@alias RaycastFilterType Enum.RaycastFilterType
+---@class Enum.RenderFidelity
+---@field public Automatic number | '0'
+---@field public Precise number | '1'
+---@field public Performance number | '2'
+---This enum determines the level of detail that solid-modeled and mesh parts
+---will be shown in.
+---
+---By default, solid-modeled and mesh parts will always be shown in precise
+---fidelity, no matter how far they are from the game camera. This improves their
+---appearance when viewed from any distance, but if a place has a large number of
+---detailed solid-modeled or mesh parts, it may reduce overall game performance.
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Distance From Camera</th>
+---            <th>Render Fidelity</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td>Less than 250 studs</td>
+---            <td>Highest</td>
+---        </tr>
+---        <tr>
+---            <td>250 to 500 studs</td>
+---            <td>Medium</td>
+---        </tr>
+---        <tr>
+---            <td>500 or more studs</td>
+---            <td>Lowest</td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---See also:
+---
+---- Improving Performance, an article discussing tips for analyzing and improving game performance.
+local RenderFidelity;
+---@diagnostic disable-next-line
+---@alias RenderFidelity Enum.RenderFidelity
+---@class Enum.RenderPriority
+---@field public First number | '0'
+---@field public Input number | '100'
+---@field public Camera number | '200'
+---@field public Character number | '300'
+---@field public Last number | '2000'
+---A list of standard reserved values in BindToRenderStep.
+---
+---See `RunService/BindToRenderStep` for the proper usage, as the enum itself isn't used.
+local RenderPriority;
+---@diagnostic disable-next-line
+---@alias RenderPriority Enum.RenderPriority
+---@class Enum.RenderingTestComparisonMethod
+---@field public psnr number | '0'
+---@field public diff number | '1'
+local RenderingTestComparisonMethod;
+---@diagnostic disable-next-line
+---@alias RenderingTestComparisonMethod Enum.RenderingTestComparisonMethod
+---@class Enum.ReplicateInstanceDestroySetting
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+local ReplicateInstanceDestroySetting;
+---@diagnostic disable-next-line
+---@alias ReplicateInstanceDestroySetting Enum.ReplicateInstanceDestroySetting
+---@class Enum.ResamplerMode
+---@field public Default number | '0'
+---@field public Pixelated number | '1'
+---Determines the image filtering used.
+local ResamplerMode;
+---@diagnostic disable-next-line
+---@alias ResamplerMode Enum.ResamplerMode
+---@class Enum.ReturnKeyType
+---@field public Default number | '0'
+---@field public Done number | '1'
+---@field public Go number | '2'
+---@field public Next number | '3'
+---@field public Search number | '4'
+---@field public Send number | '5'
+local ReturnKeyType;
+---@diagnostic disable-next-line
+---@alias ReturnKeyType Enum.ReturnKeyType
+---@class Enum.ReverbType
+---@field public NoReverb number | '0'
+---@field public GenericReverb number | '1'
+---@field public PaddedCell number | '2'
+---@field public Room number | '3'
+---@field public Bathroom number | '4'
+---@field public LivingRoom number | '5'
+---@field public StoneRoom number | '6'
+---@field public Auditorium number | '7'
+---@field public ConcertHall number | '8'
+---@field public Cave number | '9'
+---@field public Arena number | '10'
+---@field public Hangar number | '11'
+---@field public CarpettedHallway number | '12'
+---@field public Hallway number | '13'
+---@field public StoneCorridor number | '14'
+---@field public Alley number | '15'
+---@field public Forest number | '16'
+---@field public City number | '17'
+---@field public Mountains number | '18'
+---@field public Quarry number | '19'
+---@field public Plain number | '20'
+---@field public ParkingLot number | '21'
+---@field public SewerPipe number | '22'
+---@field public UnderWater number | '23'
+---The ReverbType Enum allows you to make audio in your game sound different,
+---depending on what "area" the sounds are in.
+---
+---Note that some of these do not appear to have any effect on the sound.
+local ReverbType;
+---@diagnostic disable-next-line
+---@alias ReverbType Enum.ReverbType
+---@class Enum.RibbonTool
+---@field public Select number | '0'
+---@field public Scale number | '1'
+---@field public Rotate number | '2'
+---@field public Move number | '3'
+---@field public Transform number | '4'
+---@field public ColorPicker number | '5'
+---@field public MaterialPicker number | '6'
+---@field public Group number | '7'
+---@field public Ungroup number | '8'
+---@field public None number | '9'
+local RibbonTool;
+---@diagnostic disable-next-line
+---@alias RibbonTool Enum.RibbonTool
+---@class Enum.RigType
+---@field public R15 number | '0'
+---@field public Rthro number | '1'
+---@field public RthroNarrow number | '2'
+---@field public Custom number | '3'
+---@field public None number | '4'
+---The type of rig being imported with the Avatar Importer
+local RigType;
+---@diagnostic disable-next-line
+---@alias RigType Enum.RigType
+---@class Enum.RollOffMode
+---@field public Inverse number | '0'
+---@field public Linear number | '1'
+---@field public InverseTapered number | '3'
+---@field public LinearSquare number | '2'
+---How 3D `Sound|Sounds` attenuate (fade out) as the distance between the
+---listener and the Sound's parent increases.
+---
+---## What is Attenuation?
+---Acoustic attenuation refers to how sound diminishes as it travels through a
+---medium or across increasing distances.
+---
+---## Inverse vs Linear Distance Attenuation
+---
+---Inverse distance attenuation (Enum.RollOffMode.Inverse) mirrors how sounds
+---attenuate in the real world. Under inverse distance attenuation, sounds will
+---begin to attenuate once the distance between the listener and the Sound's
+---parent exceeds `Sound/EmitterSize`. The rate of attenuation depends on the
+---emitter size, as sounds with larger EmitterSize's will attenuate at a slower
+---rate. Inverse rate of inverse distance attenuation is further influenced by
+---`SoundService/RolloffScale`.
+---
+---Note, `Sound/MaxDistance` will not effect attenuation under the inverse model
+---but will cause the sound to cut off completely once this distance is reached.
+---This can be particularly abrupt when using low values for max distance.
+---
+---Linear distance attenuation works differently. Under linear distance
+---attenuation the sound will attenuate between EmitterSize and MaxDistance,
+---falling silent once MaxDistance is reached. EmitterSize still denotes the
+---point at which the sound will begin attenuating. However, the audible volume
+---at any point now depends on the point the listener is at between EmitterSize
+---and MaxDistance. This means, in contrast to the inverse distance attenuation
+---model, the audible volume of the sound will approach silence at MaxDistance
+---point. This is less realistic, but may be more desirable in some cases.
+local RollOffMode;
+---@diagnostic disable-next-line
+---@alias RollOffMode Enum.RollOffMode
+---@class Enum.RotationOrder
+---@field public XYZ number | '0'
+---@field public XZY number | '1'
+---@field public YZX number | '2'
+---@field public YXZ number | '3'
+---@field public ZXY number | '4'
+---@field public ZYX number | '5'
+---Euler Angles encode a rotation in 3D space via a sequence of 3 rotations along
+---the 3 axis X Y Z. The RotationOrder Enum specifies the order in which the 3
+---rotations are applied.
+local RotationOrder;
+---@diagnostic disable-next-line
+---@alias RotationOrder Enum.RotationOrder
+---@class Enum.RotationType
+---@field public MovementRelative number | '0'
+---@field public CameraRelative number | '1'
+local RotationType;
+---@diagnostic disable-next-line
+---@alias RotationType Enum.RotationType
+---@class Enum.RuntimeUndoBehavior
+---@field public Aggregate number | '0'
+---@field public Snapshot number | '1'
+---@field public Hybrid number | '2'
+local RuntimeUndoBehavior;
+---@diagnostic disable-next-line
+---@alias RuntimeUndoBehavior Enum.RuntimeUndoBehavior
+---@class Enum.SaveFilter
+---@field public SaveAll number | '2'
+---@field public SaveWorld number | '0'
+---@field public SaveGame number | '1'
+local SaveFilter;
+---@diagnostic disable-next-line
+---@alias SaveFilter Enum.SaveFilter
+---@class Enum.SavedQualitySetting
+---@field public Automatic number | '0'
+---@field public QualityLevel1 number | '1'
+---@field public QualityLevel2 number | '2'
+---@field public QualityLevel3 number | '3'
+---@field public QualityLevel4 number | '4'
+---@field public QualityLevel5 number | '5'
+---@field public QualityLevel6 number | '6'
+---@field public QualityLevel7 number | '7'
+---@field public QualityLevel8 number | '8'
+---@field public QualityLevel9 number | '9'
+---@field public QualityLevel10 number | '10'
+local SavedQualitySetting;
+---@diagnostic disable-next-line
+---@alias SavedQualitySetting Enum.SavedQualitySetting
+---@class Enum.ScaleType
+---@field public Stretch number | '0'
+---@field public Slice number | '1'
+---@field public Tile number | '2'
+---@field public Fit number | '3'
+---@field public Crop number | '4'
+---Determines how an image (of a `ImageLabel` or `ImageButton`) is scaled. Below
+---is an example of different `ScaleType`s applied to the same `ImageLabel` or
+---`ImageButton`: 
+---
+---![ScaleType Example](assets/bltf55b26f47aa4ae56/ScaleType_Comparison.png)
+local ScaleType;
+---@diagnostic disable-next-line
+---@alias ScaleType Enum.ScaleType
+---@class Enum.ScreenOrientation
+---@field public LandscapeLeft number | '0'
+---@field public LandscapeRight number | '1'
+---@field public LandscapeSensor number | '2'
+---@field public Portrait number | '3'
+---@field public Sensor number | '4'
+---Indicates what orientation the game prefers to be played on mobile devices.
+local ScreenOrientation;
+---@diagnostic disable-next-line
+---@alias ScreenOrientation Enum.ScreenOrientation
+---@class Enum.ScrollBarInset
+---@field public None number | '0'
+---@field public ScrollBar number | '1'
+---@field public Always number | '2'
+---Indicates when the `ScrollingFrame` should be insetted by the space
+---needed to show the scroll bar.
+local ScrollBarInset;
+---@diagnostic disable-next-line
+---@alias ScrollBarInset Enum.ScrollBarInset
+---@class Enum.ScrollingDirection
+---@field public X number | '1'
+---@field public Y number | '2'
+---@field public XY number | '4'
+---This enum is used by `ScrollingFrame/ScrollingDirection` to specify the
+---direction scrolling is allowed.
+local ScrollingDirection;
+---@diagnostic disable-next-line
+---@alias ScrollingDirection Enum.ScrollingDirection
+---@class Enum.ServerAudioBehavior
+---@field public Enabled number | '0'
+---@field public Muted number | '1'
+---@field public OnlineGame number | '2'
+local ServerAudioBehavior;
+---@diagnostic disable-next-line
+---@alias ServerAudioBehavior Enum.ServerAudioBehavior
+---@class Enum.SignalBehavior
+---@field public Default number | '0'
+---@field public Immediate number | '1'
+---@field public Deferred number | '2'
+---@field public AncestryDeferred number | '3'
+local SignalBehavior;
+---@diagnostic disable-next-line
+---@alias SignalBehavior Enum.SignalBehavior
+---@class Enum.SizeConstraint
+---@field public RelativeXY number | '0'
+---@field public RelativeXX number | '1'
+---@field public RelativeYY number | '2'
+---Used to constrain the scale of a GUI object.
+local SizeConstraint;
+---@diagnostic disable-next-line
+---@alias SizeConstraint Enum.SizeConstraint
+---@class Enum.SortDirection
+---@field public Ascending number | '0'
+---@field public Descending number | '1'
+local SortDirection;
+---@diagnostic disable-next-line
+---@alias SortDirection Enum.SortDirection
+---@class Enum.SortOrder
+---@field public Name number | '0'
+---@field public Custom number | '1'
+---@field public LayoutOrder number | '2'
+---Used by `UIGridStyleLayout/SortOrder` to order the elements in the layout.
+local SortOrder;
+---@diagnostic disable-next-line
+---@alias SortOrder Enum.SortOrder
+---@class Enum.SpecialKey
+---@field public Insert number | '0'
+---@field public Home number | '1'
+---@field public End number | '2'
+---@field public PageUp number | '3'
+---@field public PageDown number | '4'
+---@field public ChatHotkey number | '5'
+local SpecialKey;
+---@diagnostic disable-next-line
+---@alias SpecialKey Enum.SpecialKey
+---@class Enum.StartCorner
+---@field public TopLeft number | '0'
+---@field public TopRight number | '1'
+---@field public BottomLeft number | '2'
+---@field public BottomRight number | '3'
+---Used by `UIGridLayout/StartCorner` to decide where the first element is
+---placed.
+local StartCorner;
+---@diagnostic disable-next-line
+---@alias StartCorner Enum.StartCorner
+---@class Enum.Status
+---@field public Poison number | '0'
+---@field public Confusion number | '1'
+---The purpose of this Enum is unknown. It may have been used with the unfinished
+---RbxStatus library which would have allowed you to add conditions to a
+---Humanoid.
+local Status;
+---@diagnostic disable-next-line
+---@alias Status Enum.Status
+---@class Enum.StreamOutBehavior
+---@field public Default number | '0'
+---@field public LowMemory number | '1'
+---@field public Opportunistic number | '2'
+---Determines how content is streamed out from Player clients. This is a
+---temporary rollout API. In the future, streaming will always run on
+---Opportunistic mode.
+local StreamOutBehavior;
+---@diagnostic disable-next-line
+---@alias StreamOutBehavior Enum.StreamOutBehavior
+---@class Enum.StreamingPauseMode
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public ClientPhysicsPause number | '2'
+---The StreamingPauseMode enum is used to control `Workspace/StreamingPauseMode`
+---behavior.
+---
+---Default behavior is currently equivalent to disabled, but may change in the
+---future.
+---
+---The disabled mode indicates that gameplay continues unchanged even if player
+---does not have the minimum streaming radius available.
+---
+---In ClientPhysicsPause mode client-side physics is paused when the player
+---doesn't have the minimum radius present, and resumed when the minimum radius
+---is available.
+---
+---See also:
+---
+---  - `Workspace/StreamingEnabled`, controls whether network streaming is enabled for the place or not
+--- - `Workspace/StreamingMinRadius`, the minimum distance that parts will be streamed to players with high priority
+--- - `Workspace/StreamingTargetRadius`, the maximum distance that parts will be streamed to players
+local StreamingPauseMode;
+---@diagnostic disable-next-line
+---@alias StreamingPauseMode Enum.StreamingPauseMode
+---@class Enum.StudioCloseMode
+---@field public None number | '0'
+---@field public CloseStudio number | '1'
+---@field public CloseDoc number | '2'
+local StudioCloseMode;
+---@diagnostic disable-next-line
+---@alias StudioCloseMode Enum.StudioCloseMode
+---@class Enum.StudioDataModelType
+---@field public Edit number | '0'
+---@field public PlayClient number | '1'
+---@field public PlayServer number | '2'
+---@field public Standalone number | '3'
+---@field public None number | '4'
+local StudioDataModelType;
+---@diagnostic disable-next-line
+---@alias StudioDataModelType Enum.StudioDataModelType
+---@class Enum.StudioScriptEditorColorCategories
+---@field public Default number | '0'
+---@field public Operator number | '1'
+---@field public Number number | '2'
+---@field public String number | '3'
+---@field public Comment number | '4'
+---@field public Keyword number | '5'
+---@field public Builtin number | '6'
+---@field public Method number | '7'
+---@field public Property number | '8'
+---@field public Nil number | '9'
+---@field public Bool number | '10'
+---@field public Function number | '11'
+---@field public Local number | '12'
+---@field public Self number | '13'
+---@field public LuauKeyword number | '14'
+---@field public FunctionName number | '15'
+---@field public TODO number | '16'
+---@field public Background number | '17'
+---@field public SelectionText number | '18'
+---@field public SelectionBackground number | '19'
+---@field public FindSelectionBackground number | '20'
+---@field public MatchingWordBackground number | '21'
+---@field public Warning number | '22'
+---@field public Error number | '23'
+---@field public Whitespace number | '24'
+---@field public ActiveLine number | '25'
+---@field public DebuggerCurrentLine number | '26'
+---@field public DebuggerErrorLine number | '27'
+---@field public Ruler number | '28'
+---@field public Bracket number | '29'
+---@field public MenuPrimaryText number | '30'
+---@field public MenuSecondaryText number | '31'
+---@field public MenuSelectedText number | '32'
+---@field public MenuBackground number | '33'
+---@field public MenuSelectedBackground number | '34'
+---@field public MenuScrollbarBackground number | '35'
+---@field public MenuScrollbarHandle number | '36'
+---@field public MenuBorder number | '37'
+---@field public DocViewCodeBackground number | '38'
+local StudioScriptEditorColorCategories;
+---@diagnostic disable-next-line
+---@alias StudioScriptEditorColorCategories Enum.StudioScriptEditorColorCategories
+---@class Enum.StudioScriptEditorColorPresets
+---@field public RobloxDefault number | '0'
+---@field public Extra1 number | '1'
+---@field public Extra2 number | '2'
+---@field public Custom number | '3'
+local StudioScriptEditorColorPresets;
+---@diagnostic disable-next-line
+---@alias StudioScriptEditorColorPresets Enum.StudioScriptEditorColorPresets
+---@class Enum.StudioStyleGuideColor
+---@field public MainBackground number | '0'
+---@field public Titlebar number | '1'
+---@field public Dropdown number | '2'
+---@field public Tooltip number | '3'
+---@field public Notification number | '4'
+---@field public ScrollBar number | '5'
+---@field public ScrollBarBackground number | '6'
+---@field public TabBar number | '7'
+---@field public Tab number | '8'
+---@field public FilterButtonDefault number | '9'
+---@field public FilterButtonHover number | '10'
+---@field public FilterButtonChecked number | '11'
+---@field public FilterButtonAccent number | '12'
+---@field public FilterButtonBorder number | '13'
+---@field public FilterButtonBorderAlt number | '14'
+---@field public RibbonTab number | '15'
+---@field public RibbonTabTopBar number | '16'
+---@field public Button number | '17'
+---@field public MainButton number | '18'
+---@field public RibbonButton number | '19'
+---@field public ViewPortBackground number | '20'
+---@field public InputFieldBackground number | '21'
+---@field public Item number | '22'
+---@field public TableItem number | '23'
+---@field public CategoryItem number | '24'
+---@field public GameSettingsTableItem number | '25'
+---@field public GameSettingsTooltip number | '26'
+---@field public EmulatorBar number | '27'
+---@field public EmulatorDropDown number | '28'
+---@field public ColorPickerFrame number | '29'
+---@field public CurrentMarker number | '30'
+---@field public Border number | '31'
+---@field public DropShadow number | '32'
+---@field public Shadow number | '33'
+---@field public Light number | '34'
+---@field public Dark number | '35'
+---@field public Mid number | '36'
+---@field public MainText number | '37'
+---@field public SubText number | '38'
+---@field public TitlebarText number | '39'
+---@field public BrightText number | '40'
+---@field public DimmedText number | '41'
+---@field public LinkText number | '42'
+---@field public WarningText number | '43'
+---@field public ErrorText number | '44'
+---@field public InfoText number | '45'
+---@field public SensitiveText number | '46'
+---@field public ScriptSideWidget number | '47'
+---@field public ScriptBackground number | '48'
+---@field public ScriptText number | '49'
+---@field public ScriptSelectionText number | '50'
+---@field public ScriptSelectionBackground number | '51'
+---@field public ScriptFindSelectionBackground number | '52'
+---@field public ScriptMatchingWordSelectionBackground number | '53'
+---@field public ScriptOperator number | '54'
+---@field public ScriptNumber number | '55'
+---@field public ScriptString number | '56'
+---@field public ScriptComment number | '57'
+---@field public ScriptKeyword number | '58'
+---@field public ScriptBuiltInFunction number | '59'
+---@field public ScriptWarning number | '60'
+---@field public ScriptError number | '61'
+---@field public ScriptWhitespace number | '62'
+---@field public ScriptRuler number | '63'
+---@field public DocViewCodeBackground number | '64'
+---@field public DebuggerCurrentLine number | '65'
+---@field public DebuggerErrorLine number | '66'
+---@field public DiffFilePathText number | '67'
+---@field public DiffTextHunkInfo number | '68'
+---@field public DiffTextNoChange number | '69'
+---@field public DiffTextAddition number | '70'
+---@field public DiffTextDeletion number | '71'
+---@field public DiffTextSeparatorBackground number | '72'
+---@field public DiffTextNoChangeBackground number | '73'
+---@field public DiffTextAdditionBackground number | '74'
+---@field public DiffTextDeletionBackground number | '75'
+---@field public DiffLineNum number | '76'
+---@field public DiffLineNumSeparatorBackground number | '77'
+---@field public DiffLineNumNoChangeBackground number | '78'
+---@field public DiffLineNumAdditionBackground number | '79'
+---@field public DiffLineNumDeletionBackground number | '80'
+---@field public DiffFilePathBackground number | '81'
+---@field public DiffFilePathBorder number | '82'
+---@field public ChatIncomingBgColor number | '83'
+---@field public ChatIncomingTextColor number | '84'
+---@field public ChatOutgoingBgColor number | '85'
+---@field public ChatOutgoingTextColor number | '86'
+---@field public ChatModeratedMessageColor number | '87'
+---@field public Separator number | '88'
+---@field public ButtonBorder number | '89'
+---@field public ButtonText number | '90'
+---@field public InputFieldBorder number | '91'
+---@field public CheckedFieldBackground number | '92'
+---@field public CheckedFieldBorder number | '93'
+---@field public CheckedFieldIndicator number | '94'
+---@field public HeaderSection number | '95'
+---@field public Midlight number | '96'
+---@field public StatusBar number | '97'
+---@field public DialogButton number | '98'
+---@field public DialogButtonText number | '99'
+---@field public DialogButtonBorder number | '100'
+---@field public DialogMainButton number | '101'
+---@field public DialogMainButtonText number | '102'
+---@field public InfoBarWarningBackground number | '103'
+---@field public InfoBarWarningText number | '104'
+---@field public ScriptEditorCurrentLine number | '105'
+---@field public ScriptMethod number | '106'
+---@field public ScriptProperty number | '107'
+---@field public ScriptNil number | '108'
+---@field public ScriptBool number | '109'
+---@field public ScriptFunction number | '110'
+---@field public ScriptLocal number | '111'
+---@field public ScriptSelf number | '112'
+---@field public ScriptLuauKeyword number | '113'
+---@field public ScriptFunctionName number | '114'
+---@field public ScriptTodo number | '115'
+---@field public ScriptBracket number | '116'
+---@field public AttributeCog number | '117'
+local StudioStyleGuideColor;
+---@diagnostic disable-next-line
+---@alias StudioStyleGuideColor Enum.StudioStyleGuideColor
+---@class Enum.StudioStyleGuideModifier
+---@field public Default number | '0'
+---@field public Selected number | '1'
+---@field public Pressed number | '2'
+---@field public Disabled number | '3'
+---@field public Hover number | '4'
+local StudioStyleGuideModifier;
+---@diagnostic disable-next-line
+---@alias StudioStyleGuideModifier Enum.StudioStyleGuideModifier
+---@class Enum.Style
+---@field public AlternatingSupports number | '0'
+---@field public BridgeStyleSupports number | '1'
+---@field public NoSupports number | '2'
+---The Style Enum is used to set what style of supports the `TrussPart` has.
+local Style;
+---@diagnostic disable-next-line
+---@alias Style Enum.Style
+---@class Enum.SurfaceConstraint
+---@field public None number | '0'
+---@field public Hinge number | '1'
+---@field public SteppingMotor number | '2'
+---@field public Motor number | '3'
+---This item is deprecated and is replaced by the `Enum/SurfaceType` enum.
+local SurfaceConstraint;
+---@diagnostic disable-next-line
+---@alias SurfaceConstraint Enum.SurfaceConstraint
+---@class Enum.SurfaceGuiSizingMode
+---@field public FixedSize number | '0'
+---@field public PixelsPerStud number | '1'
+---Used by `SurfaceGui/SizingMode` to control the sizing behavior of a
+---`SurfaceGui`.
+local SurfaceGuiSizingMode;
+---@diagnostic disable-next-line
+---@alias SurfaceGuiSizingMode Enum.SurfaceGuiSizingMode
+---@class Enum.SurfaceType
+---@field public Smooth number | '0'
+---@field public Glue number | '1'
+---@field public Weld number | '2'
+---@field public Studs number | '3'
+---@field public Inlet number | '4'
+---@field public Universal number | '5'
+---@field public Hinge number | '6'
+---@field public Motor number | '7'
+---@field public SteppingMotor number | '8'
+---@field public SmoothNoOutlines number | '10'
+---Used to determine how a surface should be displayed on a part and how automatic surface joints should behave.
+---
+---## Surface behavior
+---
+---When surface joining is on, all planar touching flat sides of parts will weld
+---together, regardless of SurfaceType. This does not affect Hinge, Motor,
+---SteppingMotor.
+---
+--- - Glue, Studs, Inlets, Universal, Weld, and Smooth surfaces will all create Weld instances
+--- - Spheres will not surface-weld to anything. The rounded sides of cylinders will not surface-weld, but the flat end sides will.
+---
+---## Surface appearance
+---
+---Stud, Inlet, Universal, Weld, and Glue Surface textures only appear on
+---plastic material parts, both in-game and in Studio.
+---
+---See also:
+---
+--- - `Workspace/JoinToOutsiders`, creates joints between the specified parts and any touching parts depending on the parts' surfaces and the specified joint creation mode
+--- - `Enum/JointCreationMode`, the way joints are created between two surfaces
+local SurfaceType;
+---@diagnostic disable-next-line
+---@alias SurfaceType Enum.SurfaceType
+---@class Enum.SwipeDirection
+---@field public Right number | '0'
+---@field public Left number | '1'
+---@field public Up number | '2'
+---@field public Down number | '3'
+---@field public None number | '4'
+---The SwipeDirection Enum represents the direction in which a user swipes on a
+---`UserInputService/TouchEnabled` device.
+---
+---The `GuiObject/TouchSwipe|GuiObject.TouchSwipe` and
+---`UserInputService/TouchSwipe|UserInputService.TouchSwipe` events pass this
+---enum as an argument.
+local SwipeDirection;
+---@diagnostic disable-next-line
+---@alias SwipeDirection Enum.SwipeDirection
+---@class Enum.TableMajorAxis
+---@field public RowMajor number | '0'
+---@field public ColumnMajor number | '1'
+---Used to indicate whether the direct siblings of a `UITableLayout` are
+---considered the rows or the columns. The children of the direct siblings are
+---the columns or rows, respectively.
+local TableMajorAxis;
+---@diagnostic disable-next-line
+---@alias TableMajorAxis Enum.TableMajorAxis
+---@class Enum.Technology
+---@field public Legacy number | '0'
+---@field public Voxel number | '1'
+---@field public Compatibility number | '2'
+---@field public ShadowMap number | '3'
+---@field public Future number | '4'
+---The Technology enum represents the different lighting systems available for
+---rendering the 3D world. It is used by the `Lighting/Technology` property.
+local Technology;
+---@diagnostic disable-next-line
+---@alias Technology Enum.Technology
+---@class Enum.TeleportMethod
+---@field public TeleportToSpawnByName number | '0'
+---@field public TeleportToPlaceInstance number | '1'
+---@field public TeleportToPrivateServer number | '2'
+---@field public TeleportPartyAsync number | '3'
+---@field public TeleportUnknown number | '4'
+local TeleportMethod;
+---@diagnostic disable-next-line
+---@alias TeleportMethod Enum.TeleportMethod
+---@class Enum.TeleportResult
+---@field public Success number | '0'
+---@field public Failure number | '1'
+---@field public GameNotFound number | '2'
+---@field public GameEnded number | '3'
+---@field public GameFull number | '4'
+---@field public Unauthorized number | '5'
+---@field public Flooded number | '6'
+---@field public IsTeleporting number | '7'
+---Describes the result of a teleport.
+local TeleportResult;
+---@diagnostic disable-next-line
+---@alias TeleportResult Enum.TeleportResult
+---@class Enum.TeleportState
+---@field public RequestedFromServer number | '0'
+---@field public Started number | '1'
+---@field public WaitingForServer number | '2'
+---@field public Failed number | '3'
+---@field public InProgress number | '4'
+---Determines the current teleportation state of a player.
+local TeleportState;
+---@diagnostic disable-next-line
+---@alias TeleportState Enum.TeleportState
+---@class Enum.TeleportType
+---@field public ToPlace number | '0'
+---@field public ToInstance number | '1'
+---@field public ToReservedServer number | '2'
+---Determines the type of teleport destination for a `TeleportService` teleport
+---call.
+local TeleportType;
+---@diagnostic disable-next-line
+---@alias TeleportType Enum.TeleportType
+---@class Enum.TerrainAcquisitionMethod
+---@field public None number | '0'
+---@field public Legacy number | '1'
+---@field public Template number | '2'
+---@field public Generate number | '3'
+---@field public Import number | '4'
+---@field public Convert number | '5'
+---@field public EditAddTool number | '6'
+---@field public EditSeaLevelTool number | '7'
+---@field public EditReplaceTool number | '8'
+---@field public RegionFillTool number | '9'
+---@field public RegionPasteTool number | '10'
+---@field public Other number | '11'
+local TerrainAcquisitionMethod;
+---@diagnostic disable-next-line
+---@alias TerrainAcquisitionMethod Enum.TerrainAcquisitionMethod
+---@class Enum.TerrainFace
+---@field public Top number | '0'
+---@field public Side number | '1'
+---@field public Bottom number | '2'
+local TerrainFace;
+---@diagnostic disable-next-line
+---@alias TerrainFace Enum.TerrainFace
+---@class Enum.TextChatMessageStatus
+---@field public Unknown number | '1'
+---@field public Success number | '2'
+---@field public Sending number | '3'
+---@field public TextFilterFailed number | '4'
+---@field public Floodchecked number | '5'
+---@field public InvalidPrivacySettings number | '6'
+---@field public InvalidTextChannelPermissions number | '7'
+---@field public MessageTooLong number | '8'
+---Indicates the status of a `TextChatMessage`.
+local TextChatMessageStatus;
+---@diagnostic disable-next-line
+---@alias TextChatMessageStatus Enum.TextChatMessageStatus
+---@class Enum.TextFilterContext
+---@field public PublicChat number | '1'
+---@field public PrivateChat number | '2'
+local TextFilterContext;
+---@diagnostic disable-next-line
+---@alias TextFilterContext Enum.TextFilterContext
+---@class Enum.TextInputType
+---@field public Default number | '0'
+---@field public NoSuggestions number | '1'
+---@field public Number number | '2'
+---@field public Email number | '3'
+---@field public Phone number | '4'
+---@field public Password number | '5'
+---@field public PasswordShown number | '6'
+---@field public Username number | '7'
+---@field public OneTimePassword number | '8'
+local TextInputType;
+---@diagnostic disable-next-line
+---@alias TextInputType Enum.TextInputType
+---@class Enum.TextTruncate
+---@field public None number | '0'
+---@field public AtEnd number | '1'
+---Controls the truncation of text when using the TextTruncate property.
+local TextTruncate;
+---@diagnostic disable-next-line
+---@alias TextTruncate Enum.TextTruncate
+---@class Enum.TextXAlignment
+---@field public Left number | '0'
+---@field public Center number | '2'
+---@field public Right number | '1'
+---Determines horizontal alignment of text.
+---
+---Used by `TextLabel/TextXAlignment|TextLabel`,
+---`TextButton/TextXAlignment|TextButton`, and `TextBox/TextXAlignment|TextBox`.
+local TextXAlignment;
+---@diagnostic disable-next-line
+---@alias TextXAlignment Enum.TextXAlignment
+---@class Enum.TextYAlignment
+---@field public Top number | '0'
+---@field public Center number | '1'
+---@field public Bottom number | '2'
+---Determines vertical alignment of text.
+---
+---Used by `TextLabel/TextYAlignment|TextLabel`,
+---`TextButton/TextYAlignment|TextButton`, and `TextBox/TextYAlignment|TextBox`.
+local TextYAlignment;
+---@diagnostic disable-next-line
+---@alias TextYAlignment Enum.TextYAlignment
+---@class Enum.TextureMode
+---@field public Stretch number | '0'
+---@field public Wrap number | '1'
+---@field public Static number | '2'
+---Describes how the texture of a `Trail` or `Beam` behaves.
+local TextureMode;
+---@diagnostic disable-next-line
+---@alias TextureMode Enum.TextureMode
+---@class Enum.TextureQueryType
+---@field public NonHumanoid number | '0'
+---@field public NonHumanoidOrphaned number | '1'
+---@field public Humanoid number | '2'
+---@field public HumanoidOrphaned number | '3'
+---Used to get memory information about textures.
+local TextureQueryType;
+---@diagnostic disable-next-line
+---@alias TextureQueryType Enum.TextureQueryType
+---@class Enum.ThreadPoolConfig
+---@field public Auto number | '0'
+---@field public PerCore1 number | '101'
+---@field public PerCore2 number | '102'
+---@field public PerCore3 number | '103'
+---@field public PerCore4 number | '104'
+---@field public Threads1 number | '1'
+---@field public Threads2 number | '2'
+---@field public Threads3 number | '3'
+---@field public Threads4 number | '4'
+---@field public Threads8 number | '8'
+---@field public Threads16 number | '16'
+---Controls the thread pooling scheme of the underlying 'TaskScheduler'.
+---
+---See TaskScheduler for details.
+local ThreadPoolConfig;
+---@diagnostic disable-next-line
+---@alias ThreadPoolConfig Enum.ThreadPoolConfig
+---@class Enum.ThrottlingPriority
+---@field public Extreme number | '2'
+---@field public ElevatedOnServer number | '1'
+---@field public Default number | '0'
+---Controls the amount of throttling under the `HttpRbxApiService`.
+local ThrottlingPriority;
+---@diagnostic disable-next-line
+---@alias ThrottlingPriority Enum.ThrottlingPriority
+---@class Enum.ThumbnailSize
+---@field public Size48x48 number | '0'
+---@field public Size180x180 number | '1'
+---@field public Size420x420 number | '2'
+---@field public Size60x60 number | '3'
+---@field public Size100x100 number | '4'
+---@field public Size150x150 number | '5'
+---@field public Size352x352 number | '6'
+---Describes the resolution of a user thumbnail being returned by
+---GetUserThumbnailAsync.
+local ThumbnailSize;
+---@diagnostic disable-next-line
+---@alias ThumbnailSize Enum.ThumbnailSize
+---@class Enum.ThumbnailType
+---@field public HeadShot number | '0'
+---@field public AvatarBust number | '1'
+---@field public AvatarThumbnail number | '2'
+---Describes the type of user thumbnail that should be returned by
+---GetUserThumbnailAsync.
+local ThumbnailType;
+---@diagnostic disable-next-line
+---@alias ThumbnailType Enum.ThumbnailType
+---@class Enum.TickCountSampleMethod
+---@field public Fast number | '0'
+---@field public Benchmark number | '1'
+---@field public Precise number | '2'
+---Compute time using a faster, but less precise method.
+local TickCountSampleMethod;
+---@diagnostic disable-next-line
+---@alias TickCountSampleMethod Enum.TickCountSampleMethod
+---@class Enum.TopBottom
+---@field public Top number | '0'
+---@field public Center number | '1'
+---@field public Bottom number | '2'
+---Sets where the object is on the side of its parent.
+local TopBottom;
+---@diagnostic disable-next-line
+---@alias TopBottom Enum.TopBottom
+---@class Enum.TouchCameraMovementMode
+---@field public Default number | '0'
+---@field public Follow number | '2'
+---@field public Classic number | '1'
+---@field public Orbital number | '3'
+---Changes the touch camera movement mode currently in-use by the client
+---using a TouchEnabled device.
+local TouchCameraMovementMode;
+---@diagnostic disable-next-line
+---@alias TouchCameraMovementMode Enum.TouchCameraMovementMode
+---@class Enum.TouchMovementMode
+---@field public Default number | '0'
+---@field public Thumbstick number | '1'
+---@field public DPad number | '2'
+---@field public Thumbpad number | '3'
+---@field public ClickToMove number | '4'
+---@field public DynamicThumbstick number | '5'
+---The TouchMovementMode Enum is used to change the movement controller on Roblox
+---Mobile.
+local TouchMovementMode;
+---@diagnostic disable-next-line
+---@alias TouchMovementMode Enum.TouchMovementMode
+---@class Enum.TriStateBoolean
+---@field public Unknown number | '0'
+---@field public True number | '1'
+---@field public False number | '2'
+local TriStateBoolean;
+---@diagnostic disable-next-line
+---@alias TriStateBoolean Enum.TriStateBoolean
+---@class Enum.TweenStatus
+---@field public Canceled number | '0'
+---@field public Completed number | '1'
+---Describes the completion status of a `GuiObject` tween function.
+---
+---Passed as an argument to the callback function provided to
+---`GuiObject/TweenPosition`, `GuiObject/TweenSize`, and
+---`GuiObject/TweenSizeAndPosition`.
+---
+---Not to be confused for `Enum/PlaybackState` which is used with `TweenService`.
+local TweenStatus;
+---@diagnostic disable-next-line
+---@alias TweenStatus Enum.TweenStatus
+---@class Enum.UITheme
+---@field public Light number | '0'
+---@field public Dark number | '1'
+local UITheme;
+---@diagnostic disable-next-line
+---@alias UITheme Enum.UITheme
+---@class Enum.UiMessageType
+---@field public UiMessageError number | '0'
+---@field public UiMessageInfo number | '1'
+---Controls the UI message under the `GuiService`.
+local UiMessageType;
+---@diagnostic disable-next-line
+---@alias UiMessageType Enum.UiMessageType
+---@class Enum.UsageContext
+---@field public Default number | '0'
+---@field public Preview number | '1'
+local UsageContext;
+---@diagnostic disable-next-line
+---@alias UsageContext Enum.UsageContext
+---@class Enum.UserCFrame
+---@field public Head number | '0'
+---@field public LeftHand number | '1'
+---@field public RightHand number | '2'
+---Determines what body part is being tracked by a VR device, and what its CFrame actually is.
+local UserCFrame;
+---@diagnostic disable-next-line
+---@alias UserCFrame Enum.UserCFrame
+---@class Enum.UserInputState
+---@field public Begin number | '0'
+---@field public Change number | '1'
+---@field public End number | '2'
+---@field public Cancel number | '3'
+---@field public None number | '4'
+---The **UserInputState** enum describes the state of an input that is currently
+---or was recently performed. It is used by the `InputObject/UserInputState`
+---property of the same name, as well as various `UserInputService` and
+---`GuiObject` events.
+---
+---Depending on the `enum/UserInputType`, input may follow states differently.
+---
+---  * Simple button and key presses generally follow a simple **Begin** &rarr; **End** flow.
+---    * Gamepad trigger buttons are similar to button presses, but will use **Change** as the state of the button changes.
+---  * Mouse movement generally follows **Begin** (mouse-over) &rarr; **Change** &rarr; **End** (mouse-leave).
+---    * Touch input behaves somewhat similarly to mouse movement. **Begin** and **End** occur when the user starts or ends touching the screen, respectively. The same `InputObject` is used for the same touch point.
+---  * Gamepad thumbstick controls will cause **Change** to occur each frame the position changes.
+---
+---## Cancel
+---
+---In the context of `ContextActionService`, binding action-handling functions
+---using `ContextActionService/BindAction|BindAction` provides a UserInputState
+---to the action handler when a relevant input is performed. If an in-progress
+---input associated with a bound action is then
+---`ContextActionService/UnbindAction|unbound` or becomes relevant to a different
+---input, the **Cancel** UserInputState is passed, indicating that the input is
+---no longer relevant to the action.
+local UserInputState;
+---@diagnostic disable-next-line
+---@alias UserInputState Enum.UserInputState
+---@class Enum.UserInputType
+---@field public MouseButton1 number | '0'
+---@field public MouseButton2 number | '1'
+---@field public MouseButton3 number | '2'
+---@field public MouseWheel number | '3'
+---@field public MouseMovement number | '4'
+---@field public Touch number | '7'
+---@field public Keyboard number | '8'
+---@field public Focus number | '9'
+---@field public Accelerometer number | '10'
+---@field public Gyro number | '11'
+---@field public Gamepad1 number | '12'
+---@field public Gamepad2 number | '13'
+---@field public Gamepad3 number | '14'
+---@field public Gamepad4 number | '15'
+---@field public Gamepad5 number | '16'
+---@field public Gamepad6 number | '17'
+---@field public Gamepad7 number | '18'
+---@field public Gamepad8 number | '19'
+---@field public TextInput number | '20'
+---@field public InputMethod number | '21'
+---@field public None number | '22'
+---The **UserInputType** enum describes the kind of input being performed (mouse,
+---keyboard, gamepad, touch, etc). This enum is used by the
+---`InputObject/UserInputType` property of the same name, as well as various
+---`UserInputService` and `GuiObject` events.
+local UserInputType;
+---@diagnostic disable-next-line
+---@alias UserInputType Enum.UserInputType
+---@class Enum.VRTouchpad
+---@field public Left number | '0'
+---@field public Right number | '1'
+---Used to universally identify a VR touchpad that is used by either the left, or
+---right hand.
+local VRTouchpad;
+---@diagnostic disable-next-line
+---@alias VRTouchpad Enum.VRTouchpad
+---@class Enum.VRTouchpadMode
+---@field public Touch number | '0'
+---@field public VirtualThumbstick number | '1'
+---@field public ABXY number | '2'
+---Used to identify the behavior of a specified VR touchpad.
+local VRTouchpadMode;
+---@diagnostic disable-next-line
+---@alias VRTouchpadMode Enum.VRTouchpadMode
+---@class Enum.VelocityConstraintMode
+---@field public Line number | '0'
+---@field public Plane number | '1'
+---@field public Vector number | '2'
+---The velocity constraint mode sets how the attachment velocity is constrained.
+---The velocity can be constrained to a line, a plane or a vector.  See each mode
+---for more details.
+local VelocityConstraintMode;
+---@diagnostic disable-next-line
+---@alias VelocityConstraintMode Enum.VelocityConstraintMode
+---@class Enum.VerticalAlignment
+---@field public Center number | '0'
+---@field public Top number | '1'
+---@field public Bottom number | '2'
+---Determines how grid is placed within it's parent's container in the y
+---direction.
+local VerticalAlignment;
+---@diagnostic disable-next-line
+---@alias VerticalAlignment Enum.VerticalAlignment
+---@class Enum.VerticalScrollBarPosition
+---@field public Left number | '1'
+---@field public Right number | '0'
+---Indicates the side that the vertical scrollbar will be located at.
+local VerticalScrollBarPosition;
+---@diagnostic disable-next-line
+---@alias VerticalScrollBarPosition Enum.VerticalScrollBarPosition
+---@class Enum.VibrationMotor
+---@field public Large number | '0'
+---@field public Small number | '1'
+---@field public LeftTrigger number | '2'
+---@field public RightTrigger number | '3'
+---@field public LeftHand number | '4'
+---@field public RightHand number | '5'
+---Describes various types of motor size (Small and Large), with various triggers
+---(LeftTrigger, RightTrigger, LeftHand, RightHand).
+local VibrationMotor;
+---@diagnostic disable-next-line
+---@alias VibrationMotor Enum.VibrationMotor
+---@class Enum.VirtualCursorMode
+---@field public Default number | '0'
+---@field public Disabled number | '1'
+---@field public Enabled number | '2'
+---Enables Virtual Cursor mode within an experience. By default, this property is
+---disabled.
+local VirtualCursorMode;
+---@diagnostic disable-next-line
+---@alias VirtualCursorMode Enum.VirtualCursorMode
+---@class Enum.VirtualInputMode
+---@field public Recording number | '1'
+---@field public Playing number | '2'
+---@field public None number | '0'
+local VirtualInputMode;
+---@diagnostic disable-next-line
+---@alias VirtualInputMode Enum.VirtualInputMode
+---@class Enum.VoiceChatState
+---@field public Idle number | '0'
+---@field public Joining number | '1'
+---@field public JoiningRetry number | '2'
+---@field public Joined number | '3'
+---@field public Leaving number | '4'
+---@field public Ended number | '5'
+---@field public Failed number | '6'
+local VoiceChatState;
+---@diagnostic disable-next-line
+---@alias VoiceChatState Enum.VoiceChatState
+---@class Enum.WaterDirection
+---@field public NegX number | '0'
+---@field public X number | '1'
+---@field public NegY number | '2'
+---@field public Y number | '3'
+---@field public NegZ number | '4'
+---@field public Z number | '5'
+---This Enum was once used to set the direction of `Terrain` water.
+local WaterDirection;
+---@diagnostic disable-next-line
+---@alias WaterDirection Enum.WaterDirection
+---@class Enum.WaterForce
+---@field public None number | '0'
+---@field public Small number | '1'
+---@field public Medium number | '2'
+---@field public Strong number | '3'
+---@field public Max number | '4'
+---The WaterForce Enum is used to work with `Terrain` water cells.
+local WaterForce;
+---@diagnostic disable-next-line
+---@alias WaterForce Enum.WaterForce
+---@class Enum.WrapLayerDebugMode
+---@field public None number | '0'
+---@field public BoundCage number | '1'
+---@field public LayerCage number | '2'
+---@field public BoundCageAndLinks number | '3'
+---@field public Reference number | '4'
+---@field public Rbf number | '5'
+---@field public OuterCage number | '6'
+---@field public ReferenceMeshAfterMorph number | '7'
+---@field public HSROuterDetail number | '8'
+---@field public HSROuter number | '9'
+---@field public HSRInner number | '10'
+---@field public HSRInnerReverse number | '11'
+---The "Editor only" property for visualizing Wrap Deformer internals and debugging cage mesh-related issues.
+---
+---This debug visualization only works when Wrap Deformer is active and does not work if Wrap Deformer is not active or incorrectly configured.
+---
+local WrapLayerDebugMode;
+---@diagnostic disable-next-line
+---@alias WrapLayerDebugMode Enum.WrapLayerDebugMode
+---@class Enum.WrapTargetDebugMode
+---@field public None number | '0'
+---@field public TargetCageOriginal number | '1'
+---@field public TargetCageCompressed number | '2'
+---@field public TargetCageInterface number | '3'
+---@field public TargetLayerCageOriginal number | '4'
+---@field public TargetLayerCageCompressed number | '5'
+---@field public TargetLayerInterface number | '6'
+---@field public Rbf number | '7'
+---@field public OuterCageDetail number | '8'
+---The "Editor only" property for visualizing Wrap Deformer internals and debugging cage mesh-related issues.
+---
+---This debug visualization only works when Wrap Deformer is active and does not work if Wrap Deformer is not active or incorrectly configured.
+---
+local WrapTargetDebugMode;
+---@diagnostic disable-next-line
+---@alias WrapTargetDebugMode Enum.WrapTargetDebugMode
+---@class Enum.ZIndexBehavior
+---@field public Global number | '0'
+---@field public Sibling number | '1'
+---Used by `LayerCollector/ZIndexBehavior` to control how the `GuiObject/ZIndex`
+---property behaves for descendants.
+local ZIndexBehavior;
+---@diagnostic disable-next-line
+---@alias ZIndexBehavior Enum.ZIndexBehavior
+---@diagnostic disable
+---@return Stats
+---Returns the `Stats` service. It is preferred that developers use
+---`ServiceProvider/GetService` to retrieve it instead.
+stats = function() end;
+---@param delayTime number
+---@param callback function
+---@return void
+---Schedules a function to be executed after `delayTime` seconds have passed,
+---without yielding the current thread. This function allows multiple Lua
+---threads to be executed in parallel from the same stack. The delay will
+---have a minimum duration of 29 milliseconds, but this minimum may be higher
+---depending on the target framerate and various throttling conditions. If
+---the `delayTime` parameter is not specified, the minimum duration will be
+---used.
+delay = function(delayTime, callback) end;
+---@return number
+---Returns how much time has elapsed, in seconds, since the UNIX epoch, on
+---the current local session's computer. The UNIX epoch is represented by the
+---date January 1st, 1970.
+tick = function() end;
+---@return DebuggerManager
+---Returns the `DebuggerManager` class, which acts as an interface for
+---Roblox's Lua debugger feature.
+DebuggerManager = function() end;
+---@param object Variant
+---@return string
+---Returns the type of the object specified, as a string. This function is
+---more accurate than Lua's native `type` function, as it does not denote
+---Roblox-specific types as `userdata`.
+typeof = function(object) end;
+---@return number
+---Returns how much time has elapsed since the current instance of Roblox was
+---started. In Roblox Studio, this begins counting up from the moment Roblox
+---Studio starts running, not just when opening a place.
+elapsedTime = function() end;
+---@param module ModuleScript
+---@return Variant
+---Runs the supplied `ModuleScript` if it has not been run already, and
+---returns what the ModuleScript returned (in both cases).
+---
+---If the ModuleScript the user wants to use has been uploaded to Roblox
+---(with the instance's name being 'MainModule'), it can be loaded by using
+---the require function on the asset ID of the ModuleScript, though only on
+---the server.
+require = function(module) end;
+---@param libraryName string
+---@return RbxLibrary
+---LoadLibrary cannot be used anymore and will raise an error when called. However, it is still possible to load the modules that this function once did. Please see [this announcement post](https://devforum.roblox.com/t/loadlibrary-is-going-to-be-removed-on-february-3rd/382516) about its removal for more information. You can download [this Roblox Model file](https://devforum.roblox.com/uploads/short-url/bSMD1kiXg4uFGtNPDnTo2PpHu1A.rbxmx) which contains ModuleScripts that provide equivalent libraries.
+---
+---Returns a built-in Roblox library, based on the libraryName specified.
+---There are currently 3 available libraries:
+---
+---
+---- RbxGui
+---- RbxUtility
+---- RbxStamper
+LoadLibrary = function(libraryName) end;
+---@param seconds number
+---@return number, number
+---Yields the current thread until the specified amount of seconds have
+---elapsed.
+---
+---The delay will have a minimum duration of 29 milliseconds, but this
+---minimum may be higher depending on the target framerate and various
+---throttling conditions. If the `seconds` parameter is not specified, the
+---minimum duration will be used. This function returns:
+---
+---- Actual time yielded (in seconds).
+---- Total time since the software was initialized (in seconds).
+wait = function(seconds) end;
+---@return number
+---Returns the amount of time, in seconds, that has elapsed since the current
+---game instance started running. If the current game instance is not
+---running, this will be `0`.
+time = function() end;
+---@return UserSettings
+---Returns the `UserSettings` object, which is used to read information from
+---the current user's game menu settings.
+UserSettings = function() end;
+---@param prefix string
+---@return void
+---Prints `Current identity is [ID]` to the output, where [ID] corresponds to
+---the current thread's security context level.
+printidentity = function(prefix) end;
+---@param params Tuple
+---@return void
+---Behaves identically to Lua's print function, except the output is styled
+---as a warning, with yellow text and a timestamp. This function accepts any
+---number of arguments, and will attempt to convert them into strings which
+---will then be joined together with spaces between them.
+warn = function(params) end;
+---@return string
+---Returns the current version of Roblox as a string. The integers in the
+---version string are separated by periods, and each integers represent the
+---following, in order:
+---
+---- Generation - The current generation of the application shell that is hosting the client.
+---- Version - The current release version of Roblox.
+---- Patch - The current patch number for this version of Roblox.
+---- Commit - The ID of the last internal commit that was accepted into this version of the client.
+version = function() end;
+---@param callback function
+---@return void
+---Runs the specified callback function in a separate thread, without
+---yielding the current thread.
+---
+---The function will be executed the next time Roblox's Task Scheduler runs
+---an update cycle. This delay will take at least 29 milliseconds but can
+---arbitrarily take longer, depending on the target framerate and various
+---throttling conditions.
+---
+---The callback function is invoked with two arguments: 
+---
+---1. The first being the amount of time which elapsed from when spawn was called to when the function was invoked.
+---2. The second being equivalent to elapsedTime() or roughly how long the engine has been running.
+---
+---```lua
+---spawn(print) -- 0.0079617658390703 451.55683163643
+---````
+spawn = function(callback) end;
+---@return PluginManager
+---Returns the `PluginManager` which is a deprecated singleton that was
+---previously required to create plugins. It still has applicable uses, such
+---as if you need to create a Plugin object from Roblox Studio's command bar.
+PluginManager = function() end;
+---@return GlobalSettings
+---Returns the `GlobalSettings` object, which can be used to access the
+---settings objects that are used in Roblox Studio's settings menu.
+settings = function() end;
+---@type Enums
+Enum = {};
+---@type DataModel
+game = {};
+---@type Plugin
+plugin = {};
+---@type Array
+shared = {};
+---@type LuaSourceContainer
+script = {};
+---@type Workspace
+workspace = {};
+---@diagnostic enable
+---@class bit32
+---This library is a back-ported feature from [Lua
+---5.2](https://www.lua.org/manual/5.2/manual.html#6.7) that provides functions
+---to perform bitwise operations.
+bit32 = {};
+---@param x number
+---@return number
+---Returns the bitwise negation of `x`. For any integer `x`, the following
+---identity holds:
+---
+---```lua
+---assert(bit32.bnot(x) == (-1 - x) % 2^32)
+---```
+bit32.bnot = function(x) end;
+---@param x number
+---@param disp number
+---@return number
+---Returns the number `x` rotated `disp` bits to the right. The number `disp`
+---may be any representable integer.
+---
+---For any valid displacement, the following identity holds:
+---
+---```lua
+---assert(bit32.rrotate(x, disp) == bit32.rrotate(x , disp % 32))
+---```
+---
+---In particular, negative displacements rotate to the left.
+bit32.rrotate = function(x, disp) end;
+---@param numbers Tuple
+---@return number
+---Returns the bitwise *or* of its operands.
+bit32.bor = function(numbers) end;
+---@param x number
+---@param disp number
+---@return number
+---Returns the number `x` shifted `disp` bits to the right. The number `disp`
+---may be any representable integer. Negative displacements shift to the
+---left. In any direction, vacant bits are filled with zeros. In particular,
+---displacements with absolute values higher than 31 result in zero (all bits
+---are shifted out).
+---
+---For positive displacements, the following equality holds:
+---
+---```lua
+---assert(bit32.rshift(b, disp) == math.floor(b % 2^32 / 2^disp))
+---```
+---
+---This shift operation is what is called logical shift.
+bit32.rshift = function(x, disp) end;
+---@param n number
+---@param v number
+---@param field number
+---@param width number
+---@return number
+---Returns a copy of `n` with the bits `field` to `field + width - 1`
+---replaced by the value `v`. See `bit32.extract` for details about `field`
+---and `width`.
+bit32.replace = function(n, v, field, width) end;
+---@param numbers Tuple
+---@return number
+---Returns the bitwise *exclusive or* of its operands.
+bit32.bxor = function(numbers) end;
+---@param numbers Tuple
+---@return number
+---Returns the bitwise *and* of its operands.
+bit32.band = function(numbers) end;
+---@param n number
+---@param field number
+---@param width number
+---@return number
+---Returns the unsigned number formed by the bits `field` to `field + width -
+---1` from `n`. Bits are numbered from 0 (least significant) to 31 (most
+---significant). All accessed bits must be in the range [0, 31]. The default
+---for `width` is 1.
+bit32.extract = function(n, field, width) end;
+---@param x number
+---@param disp number
+---@return number
+---Returns the number `x` shifted `disp` bits to the right. The number `disp`
+---may be any representable integer. Negative displacements shift to the
+---left.
+---
+---This shift operation is what is called arithmetic shift. Vacant bits on
+---the left are filled with copies of the higher bit of `x`; vacant bits on
+---the right are filled with zeros. In particular, displacements with
+---absolute values higher than 31 result in zero or 0xFFFFFFFF (all original
+---bits are shifted out).
+bit32.arshift = function(x, disp) end;
+---@param x number
+---@param disp number
+---@return number
+---Returns the number `x` rotated `disp` bits to the left. The number `disp`
+---may be any representable integer. For any valid displacement, the
+---following identity holds:
+---
+---```lua
+---assert(bit32.lrotate(x, disp) == bit32.lrotate(x, disp % 32))
+---```
+---
+---In particular, negative displacements rotate to the right.
+bit32.lrotate = function(x, disp) end;
+---@param numbers Tuple
+---@return boolean
+---Returns a boolean signalling whether the bitwise *and* of its operands is
+---different from zero.
+bit32.btest = function(numbers) end;
+---@param x number
+---@param disp number
+---@return number
+---Returns the number `x` shifted `disp` bits to the left. The number `disp`
+---may be any representable integer. Negative displacements shift to the
+---right. In any direction, vacant bits are filled with zeros. In particular,
+---displacements with absolute values higher than 31 result in zero (all bits
+---are shifted out).
+---
+---For positive displacements, the following equality holds:
+---
+---```lua
+---assert(bit32.lshift(b, disp) == (b * 2^disp) % 2^32)
+---```
+bit32.lshift = function(x, disp) end;
+---@class coroutine
+---A **coroutine** is used to perform multiple tasks at the same time from within
+---the same script. Such tasks might include producing values from inputs or
+---performing work on a subroutine when solving a larger problem. A task doesn't
+---even need to have a defined ending point, but it does need to define
+---particular times at which it **yields** (pause) to let other things be
+---worked on.
+---
+---## Using Coroutines
+---
+---A new coroutine can be created by providing a function to
+---`coroutine.create()`. Once created, a coroutine doesn't begin running until
+---the first call to `coroutine.resume()` which passes the arguments to the
+---function. This call returns when the function either halts or calls
+---`coroutine.yield()` and, when this happens, `coroutine.resume()` returns
+---either the values returned by the function, the values sent to
+---`coroutine.yield()`, or an error message. If it does error, the second return
+---value is the thrown error.
+---
+---```lua
+---local function task(...)
+---	-- This function might do some work for a bit then yield some value
+---	coroutine.yield("first")  -- To be returned by coroutine.resume()
+---	-- The function continues once it is resumed again
+---	return "second"
+---end
+---
+---local taskCoro = coroutine.create(task)
+----- Call resume for the first time, which runs the function from the beginning
+---local success, result = coroutine.resume(taskCoro, ...)
+---print(success, result)  --> true, first (task called coroutine.yield())
+----- Continue running the function until it yields or halts
+---success, result = coroutine.resume(taskCoro)
+---print(success, result)  --> true, second (task halted because it returned "second")
+---```
+---
+---During the lifetime of the coroutine, you can call `coroutine.status()` to
+---inspect its status:
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Status</th>
+---            <th>Meaning</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td><b>suspended</b></td> <td>The coroutine is waiting to be
+---            resumed. Coroutines begin in this state and enter it when their
+---            function calls <code>coroutine.yield()</code>.</td>
+---        </tr>
+---        <tr>
+---            <td><b>running</b></td>
+---            <td>The coroutine is running right now.</td>
+---        </tr>
+---        <tr>
+---            <td><b>normal</b></td> <td>The coroutine is awaiting the yield of
+---            another coroutine; in other words, it has resumed another
+---            coroutine.</td>
+---        </tr>
+---        <tr>
+---            <td><b>dead</b></td> <td>The function has halted (returned or
+---            thrown an&nbsp;error). The coroutine cannot be used further.</td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---### Wrapping Coroutines
+---
+---When working with coroutines, you can also forgo the use of the coroutine
+---object and instead use a wrapper function. Such a wrapper function will resume
+---a particular coroutine when it is called and will return only the yielded
+---values. You can do this using `coroutine.wrap()`:
+---
+---```lua
+----- Create coroutine and return a wrapper function that resumes it
+---local f = coroutine.wrap(task)
+----- Resume the coroutine as if we called coroutine.resume()
+---local result = f()
+----- If an error occurs it will be raised here!
+----- This differs from coroutine.resume() which acts similar to pcall()
+---```
+---
+---The first value returned from `coroutine.resume()` describes whether a
+---coroutine ran without errors. However, functions returned by
+---`coroutine.wrap()` will not do this: instead they directly return the values
+---returned or passed to `coroutine.yield()`, if any. Should an error have
+---occurred while running the coroutine function, the error is raised on the call
+---of the returned function.
+---
+---### Producer Pattern Example
+---
+---Imagine a task that produces repetitions of a word: each time it produces a
+---repetition, the next one will produce one more. For example, providing `Hello`
+---will produce `Hello`, `HelloHello`, `HelloHelloHello`, etc. To do this, you
+---can define `repeatThis()`:
+---
+---```lua
+----- This function repeats a word every time its coroutine is resumed
+---local function repeatThis(word)
+---	local repetition = ""
+---	while true do
+---		-- Do one repetition then yield the result
+---		repetition = repetition .. word
+---		coroutine.yield(repetition)
+---	end
+---end
+---```
+---
+---To run this function as a coroutine, you can use `coroutine.create()` followed
+---by multiple calls to `coroutine.resume()`:
+---
+---```lua
+---local repetitionCoro = coroutine.create(repeatThis)
+---print(coroutine.resume(repetitionCoro, "Hello"))  -- true, Hello
+---print(coroutine.resume(repetitionCoro))           -- true, HelloHello
+---print(coroutine.resume(repetitionCoro))           -- true, HelloHelloHello
+---```
+---
+---For this producer function, you can also use `coroutine.wrap()` to get a
+---function that produces values:
+---
+---```lua
+---local f = coroutine.wrap(repeatThis)
+---print(f("Hello"))  -- Hello
+---print(f())         -- HelloHello
+---print(f())         -- HelloHelloHello
+---````
+coroutine = {};
+---@param f function
+---@return thread
+---Creates a new coroutine, with body f. f must be a Lua function. Returns a
+---function that resumes the coroutine each time it is called. Any arguments
+---passed to the function behave as the extra arguments to resume. Returns
+---the same values returned by resume, except the first boolean. In case of
+---error, propagates the error.
+coroutine.wrap = function(f) end;
+---@param afdffaadecefeacb Tuple
+---@return Tuple<Variant>
+---Suspends the execution of the calling coroutine. Any arguments to yield
+---are passed as extra results to resume.
+coroutine.yield = function(afdffaadecefeacb) end;
+---@return thread
+---Returns the running coroutine.
+coroutine.running = function() end;
+---@param co thread
+---@return string
+---Returns the status of coroutine co, as a string: 'running', if the
+---coroutine is running (that is, it called status); 'suspended', if the
+---coroutine is suspended in a call to yield, or if it has not started
+---running yet; 'normal' if the coroutine is active but not running (that is,
+---it has resumed another coroutine); and 'dead' if the coroutine has
+---finished its body function, or if it has stopped with an error.
+coroutine.status = function(co) end;
+---@param f function
+---@return thread
+---Creates a new coroutine, with body f. f must be a Lua function.
+coroutine.create = function(f) end;
+---@param co thread
+---@param val1 Variant
+---@param accbabfcaae Variant
+---@return bool, Variant<Tuple, string>
+---Starts or continues the execution of coroutine `co`. The first time you
+---resume a coroutine, it starts running its body. The values val1, ... are
+---passed as the arguments to the body function. If the coroutine has
+---yielded, resume restarts it; the values val1, ... are passed as the
+---results from the yield. If the coroutine runs without any errors, resume
+---returns true plus any values passed to yield (if the coroutine yields) or
+---any values returned by the body function (if the coroutine terminates). If
+---there is any error, resume returns false plus the error message.
+coroutine.resume = function(co, val1, accbabfcaae) end;
+---@class debug
+---Provides a few basic functions for debugging code in Roblox.
+---Unlike the `debug` library found in Lua natively, this version has been
+---heavily sandboxed. Roblox does, however, have debugging functionality similar
+---to Lua's native debugging functionality (see the
+---`DebuggerManager` class).
+debug = {};
+---@overload fun(kw_function: function, options: string): Tuple
+---@overload fun(level: number, options: string): Tuple
+---@param thread thread
+---@param level number
+---@param options string
+---@return Tuple
+---Allows programmatic inspection of the call stack.
+---
+---  * `thread` (thread) - A thread as returned by `coroutine.create`.
+---  * `level` - A `number` to describe the point at which information from the call stack information should be returned.
+---    * A value of `1` represents the function which is calling `debug.info`. 
+---    * A value of `2` represents the function that called that function, and so on. Out-of-bounds values result in no values returned.
+---  * `options` - A string that represents the information to be returned. It must contain exactly 0 or 1 of each of the following characters and no others: `slnaf`
+---    * `s` - `string`. The function source identifier, equal to the full name of the script the function is defined in
+---    * `l` - `number`. If `functionOrLevel` is a function, the line the function is defined on. If `functionOrLevel` is a number (examining a stack frame), the line number of the function call
+---    * `n` - `string`. The name of the function, may be nil for anonymous functions and C functions without an assigned debug name.
+---    * `a` - `number`, `boolean`. Arity of the function, which refers to the parameter count and whether the function is variadic.
+---    * `f` - `function`. The function which was inspected.
+---
+---This function differs from `debug.traceback` in that it guarantees the
+---format of the data it returns. This is useful not only for general logging
+---and filtering purposes, but also for sending the data to systems expecting
+---structured input, such as crash aggregation.
+---
+---This function is similar to `debug.getinfo`, an unavailable part of the
+---standard Lua library which serves a similar purpose.
+debug.info = function(thread, level, options) end;
+---@return void
+---Resets the tag assigned by `debug.setmemorycategory` to the automatically
+---assigned value (typically, the script name).
+debug.resetmemorycategory = function() end;
+---@param label string
+---@return void
+---Starts profiling for a MicroProfiler label.
+debug.profilebegin = function(label) end;
+---@overload fun(thread: thread, message: string, level: number): string
+---@param message string
+---@param level number
+---@return string
+---Returns a traceback of the current function call stack as a string. In
+---other words, a description of the functions that have been called up to
+---this point. The `level` parameter specifies what level of the call stack
+---to consider, with `1` being the call of `debug.traceback` itself, `2` being the
+---call of the function calling `debug.traceback` (if there is one) and so on.
+---
+---During debugging, `debug.traceback` answers the question "how did my code
+---get here?" much like an error stack trace, but without stopping the
+---execution of the script. See the example below with several function
+---calls: `c()` calls `b()`, `b()` calls `a()`, and `a()` calls `debug.traceback`.
+---
+---```lua
+---local function a()
+---	print(debug.traceback("Specific moment during a()"))
+---end
+---
+---local function b()
+---	a()
+---end
+---
+---local function c()
+---	b()
+---end
+---
+---a()
+---```
+---
+---The previous code produces an output similar to, but not guaranteed to be
+---exactly like, the following:
+---
+---```lua
+---Specific moment during a()
+---ServerScriptService.Script:2 function a
+---ServerScriptService.Script:6 function b
+---ServerScriptService.Script:10 function c
+---ServerScriptService.Script:13
+---```
+---
+---<Alert severity='warning'> The format of the returned traceback is
+---{' '}<strong>not defined</strong> and may change at any time; use only for
+---debug diagnostics and error analytics. It's recommended that you
+---{' '}<strong>never</strong> parse the return value of this function for
+---specific information, such as script names or line numbers. </Alert>
+debug.traceback = function(message, level) end;
+---@param tag string
+---@return void
+---Assigns a custom tag name to the current thread's memory category in the
+---Developer Console. Useful for analyzing memory usage of multiple threads
+---in the same script which would otherwise be grouped together under the
+---same tag/name.
+debug.setmemorycategory = function(tag) end;
+---@return void
+---Stops profiling for the most recent MicroProfiler label that
+---`debug.profilebegin` opened.
+debug.profileend = function() end;
+---@class math
+---@field public huge number
+---@field public pi number
+---This library is an interface to the standard C math library, providing all of
+---its functions inside the `math` table.
+math = {};
+---@param x number
+---@param min number
+---@param max number
+---@return number
+---Returns a number between min and max, inclusive.
+math.clamp = function(x, min, max) end;
+---@param x number
+---@return int
+---Returns the smallest integer larger than or equal to x.
+math.ceil = function(x) end;
+---@param x number
+---@param y number
+---@return number
+---Returns x^y. (You can also use the expression x^y to compute this value.)
+math.pow = function(x, y) end;
+---@param x number
+---@param dfcbdbadadfcf number
+---@return number
+---Returns the maximum value among the numbers passed to the function.
+math.max = function(x, dfcbdbadadfcf) end;
+---@param x number
+---@return number
+---Returns the angle x (given in degrees) in radians.
+math.rad = function(x) end;
+---@param x number
+---@return number
+---Returns the tangent of x (assumed to be in radians).
+math.tan = function(x) end;
+---@param x number
+---@return number
+---Returns the base-10 logarithm of x.
+math.log10 = function(x) end;
+---@param x number
+---@return number
+---Returns the square root of x. (You can also use the expression x^0.5 to
+---compute this value.)
+math.sqrt = function(x) end;
+---@param x number
+---@return number
+---Returns the cosine of x (assumed to be in radians).
+math.cos = function(x) end;
+---@param x number
+---@return number, number
+---Returns two numbers, the integral part of x and the fractional part of x.
+math.modf = function(x) end;
+---@param x number
+---@return number
+---Returns the hyperbolic cosine of x.
+math.cosh = function(x) end;
+---@param x number
+---@return number
+---Returns the sine of x (assumed to be in radians).
+math.sin = function(x) end;
+---@param x number
+---@return number
+---Returns the angle x (given in radians) in degrees.
+math.deg = function(x) end;
+---@param m number
+---@param n number
+---@return number
+---An interface to the simple pseudo-random generator function rand provided
+---by ANSI C. (No guarantees can be given for its statistical properties.)
+---When called without arguments, returns a uniform pseudo-random real number
+---in the range [0,1). When called with an integer number m, math.random
+---returns a uniform pseudo-random integer in the range [1, m]. When called
+---with two integer numbers m and  n, math.random returns a uniform
+---pseudo-random integer in the range [m, n].
+math.random = function(m, n) end;
+---@param x number
+---@return number
+---Returns the value e^x.
+math.exp = function(x) end;
+---@param x number
+---@return number
+---Returns the absolute value of x.
+math.abs = function(x) end;
+---@param x number
+---@return int
+---Returns the largest integer smaller than or equal to x.
+math.floor = function(x) end;
+---@param x number
+---@return number
+---Returns the integer with the smallest difference between it and the given
+---number. For example, the value 5.8 returns 6.
+---
+---For values like 0.5 that are equidistant to two integers, the value with
+---the greater difference between it and zero is chosen. In other words, the
+---function **rounds away from zero**: 0.5 rounds to 1; -0.5 rounds to -1.
+math.round = function(x) end;
+---@param x number
+---@param y number
+---@return number
+---Returns the remainder of the division of x by y that rounds the quotient
+---towards zero.
+math.fmod = function(x, y) end;
+---@param x number
+---@return void
+---Sets x as the seed for the pseudo-random generator: equal seeds produce
+---equal sequences of numbers.
+math.randomseed = function(x) end;
+---@param x number
+---@return int
+---Returns -1 if x < 0, 0 if x == 0, or 1 if x > 0.
+math.sign = function(x) end;
+---@param x number
+---@return number
+---Returns the arc cosine of x.
+math.acos = function(x) end;
+---@param x number
+---@return number, int
+---Returns m and e such that x = m*2^e, e is an integer and the absolute
+---value of m is in the range [0.5, 1) (or zero when x is zero).
+math.frexp = function(x) end;
+---@param x number
+---@return number
+---Returns the arc sine of x.
+math.asin = function(x) end;
+---@param x number
+---@return number
+---Returns the hyperbolic sine of x.
+math.sinh = function(x) end;
+---@param x number
+---@return number
+---Returns the arc tangent of x (in radians).
+math.atan = function(x) end;
+---@param x number
+---@param e int
+---@return number
+---Returns x*2^e (e should be an integer).
+math.ldexp = function(x, e) end;
+---@param y number
+---@param x number
+---@return number
+---Returns the arc tangent of y/x (in radians), but uses the signs of both
+---parameters to find the quadrant of the result. It also handles correctly
+---the case of x being zero.
+math.atan2 = function(y, x) end;
+---@param x number
+---@param y number
+---@param z number
+---@return number
+---Returns a perlin noise value. The returned value is most often between the range [-1, 1]. 
+---
+---The returned value is sometimes will be outside of the range [-1,1], so if
+---the interval is critical to you, you should use `math.clamp(noise, -1, 1)`
+---on the output.
+---
+---If you leave arguments out, they will be interpreted as zero, so
+---`math.noise(1.158)` is equivalent to `math.noise(1.158, 0, 0)` and
+---`math.noise(1.158, 5.723)` is equivalent to `math.noise(1.158, 5.723, 0)`.
+---
+---The function uses a perlin noise algorithm to assign fixed values to
+---coordinates. For example, `math.noise(1.158, 5.723)` will always return
+---`0.48397532105446` and `math.noise(1.158, 6)` will always return
+---`0.15315161645412`.
+---
+---If x, y and z are all integers, the return value will be 0. For fractional
+---values of x, y and z, the return value will gradually fluctuate between
+----0.5 and 0.5. For coordinates that are close to each other, the return
+---values will also be close to each other.
+math.noise = function(x, y, z) end;
+---@param x number
+---@param ecfbaecadbcccedc number
+---@return number
+---Returns the minimum value among the numbers passed to the function.
+math.min = function(x, ecfbaecadbcccedc) end;
+---@param x number
+---@return number
+---Returns the hyperbolic tangent of x.
+math.tanh = function(x) end;
+---@param x number
+---@param base number
+---@return number
+---Returns the logarithm of x using the given base, or the mathematical
+---constant e if no base is provided (natural logarithm).
+math.log = function(x, base) end;
+---@class os
+---This library currently serves the purpose of providing information about the
+---system time under the UTC format. It has been heavily sandboxed from the
+---standard Lua `os` library and does not allow you to perform any
+---system-altering operations.
+os = {};
+---@param t2 int
+---@param t1 int
+---@return int
+---Returns the number of seconds from t1 to t2. The difference is computed
+---assuming that t1 and t2 are correctly casted to the
+---[time_t](http://en.cppreference.com/w/cpp/chrono/c/time_t) format.
+os.difftime = function(t2, t1) end;
+---@param formatString string
+---@param time int
+---@return Dictionary
+---Formats the given `formatString` with date/time information based on the given time, or if not provided, the value returned by `os.time`. The following specifiers (based on the C function strftime) are supported:
+---
+---<table>
+---  <thead>
+---    <tr>
+---      <th>Specifier</th>
+---      <th>Meaning</th>
+---      <th>Example<sup>&dagger;</sup></th>
+---     </tr>
+---  </thead>
+---<tbody>
+---<tr><td>%a</td><td>Abbreviated weekday name *</td> <td>Wed</td></tr>
+---<tr><td>%A</td><td>Full weekday name *</td>        <td>Wednesday</td></tr>
+---<tr><td>%b</td><td>Abbreviated month name *</td>   <td>Sep</td></tr>
+---<tr><td>%B</td><td>Full month name *</td>          <td>September</td></tr>
+---<tr><td>%c</td><td>Date and time *</td>            <td>09/16/98 23:48:10</td></tr>
+---<tr><td>%d</td><td>Day of the month</td>         <td>16</td></tr>
+---<tr><td>%H</td><td>Hour, using 24-hour clock</td><td>23</td></tr>
+---<tr><td>%I</td><td>Hour, using 12-hour clock</td><td>11</td></tr>
+---<tr><td>%j</td><td>Day of year</td>              <td>259</td></tr>
+---<tr><td>%m</td><td>Month</td>                    <td>09</td></tr>
+---<tr><td>%M</td><td>Minute</td>                   <td>48</td></tr>
+---<tr><td>%p</td><td>Either "AM" or "PM"</td>      <td>pm</td></tr>
+---<tr><td>%S</td><td>Second</td>                   <td>10</td></tr>
+---<tr><td>%U</td><td>Week number (first Sunday as the first day of week one)</td><td>37</td></tr>
+---<tr><td>%w</td><td>Weekday</td>                  <td>3</td></tr>
+---<tr><td>%W</td><td>Week number (first Monday as the first day of week one)</td><td>37</td></tr>
+---<tr><td>%x</td><td>Date *</td>                     <td>09/16/98</td></tr>
+---<tr><td>%X</td><td>Time *</td>                     <td>23:48:10</td></tr>
+---<tr><td>%y</td><td>Two-digit year</td>           <td>98</td></tr>
+---<tr><td>%Y</td><td>Full year</td>                <td>1998</td></tr>
+---<tr><td>%z</td><td>ISO 8601 offset from UTC in timezone (1 minute = 1, 1 hour = 100)</td><td>-0400</td></tr>
+---<tr><td>%Z</td><td>Timezone name or abbreviation *</td><td>Eastern Daylight Time</td></tr>
+---<tr><td>%%</td><td>The % character</td>          <td>%</td></tr>
+---</tbody>
+---</table>
+---
+---\* This value can vary depending on the current locale.
+---
+---&dagger; The example provided is for September 16th, 1998 (a Wednesday) at 11:48:10 PM (23:48:10), ran using locale "en-us" in Eastern Time (ET).
+---
+---If the provided `formatString` is exactly  `"*t"` (local time) or `"!*t"` (UTC time), this function instead returns a dictionary containing the following components, which are normally available in the specifiers above.
+---
+---<table>
+---  <thead>
+---    <tr>
+---      <th>Field</th>
+---      <th>Type</th>
+---      <th>Description</th>
+---    </tr>
+---  </thead>
+---<tbody>
+---  <tr>
+---    <td>year</td>
+---    <td>int</td>
+---    <td>An integer that describes the current year of the Current Era (ex. 2017)</td>
+---  </tr>
+---  <tr>
+---    <td>month</td>
+---    <td>int</td>
+---    <td>An integer between 1 and 12 (starting from January) that describes the current month.</td>
+---  </tr>
+---  <tr>
+---    <td>wday</td>
+---    <td>int</td>
+---    <td>An integer between 1 and 7 (starting from Sunday) that describes the current week day.</td>
+---  </tr>
+---  <tr>
+---    <td>yday</td>
+---    <td>int</td>
+---    <td>An integer between 1 and 366 describing how many days we are into the year.<br />There can be 366 days if it is a leap year.</td>
+---  </tr>
+---  <tr>
+---    <td>day</td>
+---    <td>int</td>
+---    <td>An integer between 1 and 31 describing the current day of the month.</td>
+---  </tr>
+---  <tr>
+---    <td>hour</td>
+---    <td>int</td>
+---    <td>An integer between 1 and 24 describing the current hour of the day.</td>
+---  </tr>
+---  <tr>
+---    <td>min</td>
+---    <td>int</td>
+---    <td>An integer between 0 and 59 describing the current minute of the hour.</td>
+---  </tr>
+---  <tr>
+---    <td>sec</td>
+---    <td>int</td>
+---    <td>An integer between 0 and 60 describing the current second of the hour.<br />(60 because the function is described to indicate leap seconds, but in practice it probably doesn't).</td>
+---  </tr>
+---  <tr>
+---    <td>isdst</td>
+---    <td>bool</td>
+---    <td>A boolean describing if daylight savings time is currently active.</td>
+---  </tr>
+---</tbody>
+---</table>
+os.date = function(formatString, time) end;
+---@return double
+---Returns the amount of CPU time used by Lua in seconds. This value has high
+---precision, about 1 microsecond, and is intended for use in benchmarking.
+---
+---```lua
+----- Record the initial time:
+---local startTime = os.clock()
+----- Do something you want to measure the performance of:
+---local a, b = 0, 1
+---for i = 1, 5000000 do
+---    a, b = b, a
+---end
+----- Measure amount of time this took:
+---local deltaTime = os.clock() - startTime
+---print("Elapsed time: " .. deltaTime)
+----->  Elapsed time: 0.044425600033719 (actual number may vary)
+---```
+os.clock = function() end;
+---@param time table
+---@return int
+---Returns how many seconds have passed since the [Unix
+---epoch](https://en.wikipedia.org/wiki/Unix_time) (1 January 1970,
+---00:00:00), under current UTC time. If provided a table formatted similarly
+---to that returned by `os.date`, it will return the number of seconds since
+---that time instead.
+---
+---```lua
+---print(os.time()) --> 1586982482 (ran at approx. April 15th, 2020 at 1:28 PM PST)
+---print(os.time({
+---   year=2020, month=4, day=15, -- Date components
+---   hour=16, min=28, sec=0 -- Time components
+---})) --> 1586968080
+---```
+os.time = function(time) end;
+---@class string
+---This library provides generic functions for string manipulation such as
+---finding and extracting substrings and matching patterns. It provides all of
+---its functions inside the global `string` variable.
+---
+---For practical details on these functions, see Formatting and Converting
+---Strings and String Patterns.
+string = {};
+---@param s string
+---@param i int
+---@param j int
+---@return string
+---Returns the substring of `s` that starts at `i` and continues until j. `i`
+---and `j` can be negative. `i` defaults to 1 and `j` defaults to `-j`.
+string.sub = function(s, i, j) end;
+---@param s string
+---@param pattern string
+---@param init number
+---@return string
+---Looks for the first match of pattern in the string `s`. If a match is
+---found, it is returned; otherwise, it returns nil. A third, optional
+---numerical argument, init, specifies where to start the search; its default
+---value is 1 and can be negative.
+string.match = function(s, pattern, init) end;
+---@param s string
+---@param pattern string
+---@param replacement Variant
+---@param replacements number
+---@return string, number
+---Short for global substitution. Returns a copy of `s` in which all (or the
+---first n, if given) occurrences of the pattern are substituted (replaced)
+---with the given `replacement`. The second value returned is the total
+---number of substitutions made.
+---
+---The `replacement` can be one of several types, each used differently to
+---determine the actual string:
+---
+---- string: The pattern is replaced with the string directly
+---- table: The string that matched the pattern is looked up in the table as a key, and the value (string) is what replaces it, if it exists.
+---- function: Called with the string that matched the pattern, should return the string to replace the matched pattern.
+---
+---An optional final argument can be provided which specifies the maximum
+---number of substitutions to make (for example, stop after 2 replacements)
+---
+---#### Various Examples
+---
+---```lua
+----- Simple replacement
+---string.gsub("I love tacos!", "tacos", "Roblox") --> I love Roblox! 1
+----- Using a pattern (hint: %w+ matches whole words)
+---string.gsub("I like red!", "%w+", "word") --> word word word 3
+----- Replacement table
+---string.gsub("I play Roblox.", "%w+", {I="Je", play="joue à"}) --> Je joue à Roblox. 3
+----- Replacement function
+---string.gsub("I have 2 cats.", "%d+", function (n) return tonumber(n) * 12 end) --> I have 24 cats. 1
+----- Replace only twice
+---string.gsub("aaa", "a", "b", 2) --> "bba", 2
+---```
+string.gsub = function(s, pattern, replacement, replacements) end;
+---@param s string
+---@param n int
+---@return string
+---Returns a string that is the concatenation of `n` copies of the string
+---`s`.
+string.rep = function(s, n) end;
+---@param abbfadeacc int
+---@return string
+---Receives zero or more integers and returns a string with length equal to
+---the number of arguments that has each character has the internal numerical
+---code equal to its corresponding argument.
+string.char = function(abbfadeacc) end;
+---@param s string
+---@return string
+---Returns a copy of a string with all lowercase letters changed to
+---uppercase.
+string.upper = function(s) end;
+---@param s string
+---@param i number
+---@param j number
+---@return int
+---Returns the internal numerical codes of the characters `s[i], s[i+1], ...,
+---s[j]`. The default value for `i` is 1; the default value for `j` is `i`.
+---These indices are corrected following the same rules of function
+---string.sub.
+string.byte = function(s, i, j) end;
+---@param formatstring string
+---@param cfafbacab string
+---@return string
+---Returns a formatted version of its variable number of arguments following
+---the description given in its first argument (which must be a string).
+string.format = function(formatstring, cfafbacab) end;
+---@param s string
+---@param pattern string
+---@param init number
+---@param plain bool
+---@return number, number
+---Looks for the first match of pattern in the string `s`. If it finds a
+---match, then it returns the indices of `s` where the occurrence starts and
+---ends; otherwise, it returns nil. A third, optional numerical argument init
+---specifies where to start the search; its default value is 1 and can be
+---negative. A value of true as a fourth, optional argument plain turns off
+---the pattern matching facilities, so the function does a plain "find
+---substring" operation, with no characters in the pattern being considered
+---"magic". Note that if _plain_ is given, then _init_ must be given as well.
+string.find = function(s, pattern, init, plain) end;
+---@param s string
+---@return string
+---Returns a string that is the string `s` reversed.
+string.reverse = function(s) end;
+---@param s string
+---@return int
+---Returns the length of a string.
+string.len = function(s) end;
+---@param s string
+---@param pattern string
+---@return function
+---Returns an iterator function that returns the next captures from pattern
+---over the string `s` each time it's called.
+string.gmatch = function(s, pattern) end;
+---@param s string
+---@param separator string
+---@return table
+---Splits a string into parts based on the defined separator character(s),
+---returning a table of ordered results. 
+---
+---If an empty "slice" is located, that part will be returned as an empty
+---string. For instance `string.split("abc||def", "|")` will return a table
+---with three strings: `"abc"`, `""`, and `"def"`. 
+---
+---```lua
+---local values = input:split(",")
+---print(values[1], values[2], values[3])
+---```
+---
+---Also note that whitespace from the original string will be preserved, for
+---example `string.split("abc _ def", "_")` will honor the whitespace on both
+---sides of the `_` separator. By default, the separator character is `,` but
+---you can specify an alternative character or series of characters.
+---
+---**Corner Cases**
+---
+---#### Empty String
+---
+---```lua
+---"" --> ""
+---```
+---
+---#### Empty Slices
+---
+---```lua
+---"foo,,bar" --> "foo", "", "bar"
+---",foo" --> "", "foo"
+---"foo," --> "foo", ""
+---"," --> "", ""
+---",," --> "", "", ""
+---```
+---
+---#### Whitespace Preserved
+---
+---```lua
+---"   whitespace   " --> "   whitespace   "
+---"foo , bar" --> "foo ", " bar"
+---```
+---
+---#### Invalid UTF-8
+---
+---```lua
+---"\xFF" --> "\xFF"
+---"\xFD,\xFE" --> "\xFD", "\xFE"
+---```
+---
+---#### Unicode
+---
+---```lua
+---"，" --> U+FF0C FULLWIDTH COMMA
+---"我很高兴，你呢？" --> "我很高兴", "你呢？"
+---"•" --> U+2022 BULLET
+---"hello•world" --> "hello", "world"
+---```
+string.split = function(s, separator) end;
+---@param s string
+---@return string
+---Returns a copy of a string with all uppercase letters changed to
+---lowercase.
+string.lower = function(s) end;
+---@class table
+---This library provides generic functions for table/array manipulation,
+---providing all its functions inside the global `table` variable. Most functions
+---in the `table` library assume that the table represents an array or a list.
+---For these functions, the "length" of a table means the result of the length
+---operator.
+table = {};
+---@overload fun(t: Array, value: Variant): void
+---@param t Array
+---@param pos number
+---@param value Variant
+---@return void
+---Inserts the provided value to the target position of the array.
+table.insert = function(t, pos, value) end;
+---@param table table
+---@return void
+---Sets the value for all keys within the given table to nil. This causes the
+---`#` operator to return `0` for the given table. The allocated capacity of
+---the table's array portion is maintained, which allows for efficient re-use
+---of the space.
+---
+---```lua
+---local grades = {95, 82, 71, 92, 100, 60}
+---print(grades[4], #grades) --> 92, 6
+---table.clear(grades)
+---print(grades[4], #grades) --> nil, 0
+----- If grades is filled again with the same number of entries,
+----- no potentially expensive array resizing will occur
+----- because the capacity was maintained by table.clear.
+---```
+---
+---This function does not delete/destroy the table provided to it. This
+---function is meant to be used specifically for tables that are to be
+---re-used.
+table.clear = function(table) end;
+---@param t Array
+---@param comp function
+---@return void
+---Sorts elements of array t in a given order, from `t[1]` to `t[#t]`. If
+---`comp` is given, then it must be a function that receives two elements and
+---returns true when the first element must come before the second in the
+---final order (so that not `comp(t[i+1],t[i])` will be true after the sort).
+---If `comp` is not given, then the standard Lua operator `<` is used
+---instead.
+table.sort = function(t, comp) end;
+---@param haystack table
+---@param needle Variant
+---@param init number
+---@return Variant
+---Within the given array-like table `haystack`, find the first occurrence of
+---value `needle`, starting from index `init` or the beginning if not
+---provided. If the value is not found, `nil` is returned.
+---
+---A [linear search](https://en.wikipedia.org/wiki/Linear_search) algorithm
+---is performed.
+---
+---```lua
+---local t = {"a", "b", "c", "d", "e"}
+---print(table.find(t, "d")) --> 4
+---print(table.find(t, "z")) --> nil, because z is not in the table
+---print(table.find(t, "b", 3)) --> nil, because b appears before index 3
+---```
+table.find = function(haystack, needle, init) end;
+---@param t Array
+---@param f function
+---@return void
+---This is similar to table.foreach() except that index-value pairs are
+---passed, not key-value pairs.
+table.foreachi = function(t, f) end;
+---@param t Array
+---@param sep string
+---@param i int
+---@param j int
+---@return string
+---Given an array where all elements are strings or numbers, returns the
+---string `t[i] ... sep ... t[i+1] ... sep ...
+---t[j]`. The default value for sep is an empty string, the default for
+---`i` is 1, and the default for `j` is #t. If i is greater than `j`, returns the
+---empty string.
+table.concat = function(t, sep, i, j) end;
+---@param t Array
+---@param pos number
+---@return Variant
+---Removes from array t the element at position pos, returning the value of
+---the removed element. When pos is an integer between `1` and `#t`, it
+---shifts down the elements `t[pos+1], t[pos+2], ..., t[#t]` and erases
+---element `t[#t]`. The index `pos` can also be `0` when `#t` is `0` or
+---`#t+1`; in those cases, the function erases the element `t[pos]``.
+table.remove = function(t, pos) end;
+---@param t table
+---@return table
+---This function makes the given table read-only, effectively "freezing" it
+---in its current state. Attempting to modify a frozen table throws an error.
+---
+---This freezing effect is shallow, which means that you can write to a table
+---within a frozen table. To deep freeze a table, call this function
+---recursively on all of the descending tables.
+table.freeze = function(t) end;
+---@param list table
+---@param i number
+---@param j number
+---@return Tuple
+---Returns the elements from the given list. This function is equivalent to:
+---
+---```lua
+---return list[i], list[i+1], ..., list[j]
+---```
+---
+---By default, `i` is 1 and `j` is the length of `list`.
+---
+---```lua
+---local t = {1, 2, 3}
+---local one, two, three = table.unpack(t)
+---print(one, two, three) -- 1 2 3
+---```
+---
+---This same functionality is also provided by the built-in `unpack`
+---function.
+table.unpack = function(list, i, j) end;
+---@param a1 table
+---@param f number
+---@param e number
+---@param t number
+---@param a2 table
+---@return table
+---Moves elements from table `a1` to table `a2`, performing the equivalent to
+---the following multiple assignment: `a2[t], ... = a1[f], ..., a1[e]`. The
+---default for `a2` is `a1`. The destination range can overlap with the
+---source range. The number of elements to be moved must fit in a Lua
+---integer.
+---
+---Returns the destination table `a2`.
+---
+---```lua
+---src = {"a", "b", "c", "d", "e"}
+---dst = {"v", "w", "x", "y", "z"}
+---table.move(src, 2, 4, 1, dst) -- Move index 2 through 4 in src to index 1 in dst
+---print(table.concat(dst)) --> bcdyz
+---```
+table.move = function(a1, f, e, t, a2) end;
+---@param t table
+---@return bool
+---This function returns `true` if the given table is frozen and `false` if
+---it isn't frozen. You can freeze tables using `table.freeze()`.
+table.isfrozen = function(t) end;
+---@param cebcafcabebadbadbd Variant
+---@return Variant
+---Returns a new table with all arguments stored into keys 1, 2, etc. and
+---with a field "n" with the total number of arguments. Note that the
+---resulting table may not be a sequence.
+---
+---```lua
+---local t = table.pack(1, 2, 3)
+---print(table.concat(t, ", ")) --> 1, 2, 3
+---```
+table.pack = function(cebcafcabebadbadbd) end;
+---@param t Array
+---@return number
+---Returns the number of elements in the table passed.
+table.getn = function(t) end;
+---@param count number
+---@param value Variant
+---@return table
+---Creates a table with the array portion allocated to the given `number` of
+---elements, optionally filled with the given `value`.
+---
+---```lua
+---local t = table.create(3, "Roblox")
+---print(table.concat(t)) --> RobloxRobloxRoblox
+---```
+---
+---If you are inserting into large array-like tables and are certain of a
+---reasonable upper limit to the number of elements, it's recommended to use
+---this function to initialize the table. This ensures the table's array
+---portion of its memory is sufficiently sized, as resizing it can be
+---expensive. For small quantities this is typically not noticeable.
+table.create = function(count, value) end;
+---@param t Array
+---@param f function
+---@return void
+---Iterates over the provided table, passing the key and value of each
+---iteration over to the provided function.
+table.foreach = function(t, f) end;
+---@class task
+---The **task** library allows for functions and threads to be scheduled with the
+---Task Scheduler.
+---
+---The functions available in this library generally support functions and
+---threads. In most cases using a function is sufficient, but for more advanced
+---cases it's recommended you familiarize yourself with the
+---[coroutine](./coroutine) library.
+task = {};
+---@return void
+---Causes the following code to be run in parallel. If the script is already running in parallel, no change occurs. For more information, see [Parallel Scripting](/scripting/scripts/parallel-scripting).
+task.desynchronize = function() end;
+---@param thread thread
+---@return void
+---Cancels a thread and closes it, preventing it from being resumed manually
+---or by the task scheduler.
+---
+---This function can be used with other members of the task library that
+---return a thread to cancel them before they are resumed. For example:
+---
+---```lua
+---local thread = task.delay(5, function ()
+---  print("Hello world!")
+---end)
+---
+---task.cancel(thread)
+---```
+task.cancel = function(thread) end;
+---@param functionOrThread function | thread
+---@param aeabbedaeecd Variant
+---@return thread
+---Accepts a function or a thread (as returned by coroutine.create) and
+---calls/resumes it immediately through the engine's scheduler. Arguments
+---after the first are sent to the function/thread. This function does not
+---return any value, even if the provided function returns one immediately.
+---
+---This function is based on the fastSpawn pattern rather than being a
+---replacement for the deprecated global `spawn` function. It is recommended
+---that this function be used in place of fastSpawn.
+task.spawn = function(functionOrThread, aeabbedaeecd) end;
+---@param functionOrThread function | thread
+---@param dadfcbffacba Variant
+---@return thread
+---Accepts a function or a thread (as returned by coroutine.create) and
+---defers it until the next [resumption
+---cycle](https://devforum.roblox.com/t/1240569), at which point it is
+---resumed with the engine's scheduler like with `task.spawn`. Arguments
+---after the first are sent to the function/thread. This function does not
+---return any value, even if the provided function returns one immediately.
+---
+---This function should be used when a similar behavior to `task.spawn` is
+---desirable, but the thread does not need to run immediately.
+task.defer = function(functionOrThread, dadfcbffacba) end;
+---@return void
+---Causes the following code to be run in serial. If the script is already running in serial, no change occurs. For more information, see [Parallel Scripting](/scripting/scripts/parallel-scripting).
+task.synchronize = function() end;
+---@param duration number
+---@return number
+---Yields the current thread until the given duration (in seconds) has
+---elapsed, then resumes the thread on the next
+---`RunService/Heartbeat|Heartbeat` step. The actual amount of time elapsed
+---is returned.
+---
+---If no duration is given, it will default to zero (0). This means the
+---thread resumes on the very next step, which is equivalent in behavior to
+---`RunService.Heartbeat:Wait()`
+---
+---Unlike the deprecated global `wait`, this function **does not throttle**
+---and guarantees the resumption of the thread on the first Heartbeat that
+---occurs when it is due. This function also only returns the elapsed time
+---and nothing else.
+task.wait = function(duration) end;
+---@param duration number
+---@param functionOrThread function | thread
+---@param dfcdbbaccbc Variant
+---@return thread
+---Accepts a function or a thread (as returned by coroutine.create) and
+---schedules it to be called/resumed on the next
+---`RunService/Heartbeat|Heartbeat` after the given amount of time in seconds
+---has elapsed. Arguments after the second are sent to the function/thread.
+---
+---This function differs from the deprecated global `delay` function in that
+---**no throttling occurs**: on the very same Heartbeat step in which enough
+---time has passed, the function is guaranteed to be called/resumed.
+---Providing a duration of zero (0) will guarantee that the function is
+---called on the very next Heartbeat.
+---
+---You can calculate the actual time passed by calling `os.clock` upon
+---scheduling and in the scheduled function.
+task.delay = function(duration, functionOrThread, dfcdbbaccbc) end;
+---@class utf8
+---@field public charpattern string
+---This library provides basic support for `UTF-8` encoding. This library does
+---not provide any support for Unicode other than the handling of the encoding.
+---Any operation that needs the meaning of a character, such as character
+---classification, is outside its scope.
+---
+---Unless stated otherwise, all functions that expect a byte position as a
+---parameter assume that the given position is either the start of a byte
+---sequence or one plus the length of the subject string. As in the string
+---library, negative indices count from the end of the string.
+---
+---You can find a large catalog of usable `UTF-8`characters
+---[here](https://www.w3schools.com/charsets/ref_html_utf8.asp).
+utf8 = {};
+---@param str string
+---@return string
+---Converts the input string to Normal Form D, which tries to break up
+---composed characters into decomposed characters.
+utf8.nfdnormalize = function(str) end;
+---@param s string
+---@param n int
+---@param i int
+---@return int
+---Returns the position (in bytes) where the encoding of the n-th codepoint
+---of `s` (counting from byte position `i`) starts. A negative `n` gets
+---characters before position `i`. The default for `i` is `1` when `n` is
+---non-negative and `#s + 1` otherwise, so that `utf8.offset(s, -n)` gets the
+---offset of the n-th character from the end of the string. If the specified
+---character is neither in the subject nor right after its end, the function
+---returns `nil`.
+utf8.offset = function(s, n, i) end;
+---@param str string
+---@param i int
+---@param j int
+---@return Tuple<int>
+---Returns the codepoints (as integers) from all codepoints in the provided
+---string (str) that start between byte positions `i` and `j` (both
+---included). The default for `i` is `1` and for `j` is `i`. It raises an error
+---if it meets any invalid byte sequence.
+utf8.codepoint = function(str, i, j) end;
+---@param str string
+---@return function, string, int
+---Returns an iterator function so that the construction:
+---
+---```lua
+---for position, codepoint in utf8.codes(str) do 
+---	-- body
+---end
+---```
+---
+---will iterate over all codepoints in string `str`. It raises an error if it
+---meets any invalid byte sequence.
+utf8.codes = function(str) end;
+---@param str string
+---@return string
+---Converts the input string to Normal Form C, which tries to convert
+---decomposed characters into composed characters.
+utf8.nfcnormalize = function(str) end;
+---@param codepoints Tuple<int>
+---@return string
+---Receives zero or more codepoints as integers, converts each one to its
+---corresponding UTF-8 byte sequence and returns a string with the
+---concatenation of all these sequences.
+utf8.char = function(codepoints) end;
+---@param str string
+---@param i number
+---@param j number
+---@return function
+---Returns an iterator function so that
+---
+---```lua
+---for first, last in utf8.graphemes(str) do 
+---	local grapheme = s:sub(first, last) 
+---	-- body
+---end
+---```
+---
+---will iterate the grapheme clusters of the string.
+utf8.graphemes = function(str, i, j) end;
+---@param s string
+---@param i int
+---@param j int
+---@return int
+---Returns the number of UTF-8 codepoints in the string _str_ that start
+---between positions `i` and `j` (both inclusive). The default for `i` is `1`
+---and for `j` is `-1`. If it finds any invalid byte sequence, returns a nil
+---value plus the position of the first invalid byte.
+utf8.len = function(s, i, j) end;
+---@class Enum.SelectionBehavior
+---@field public Escape number | '0'
+---@field public Stop number | '1'
+local SelectionBehavior;
+---@diagnostic disable-next-line
+---@alias SelectionBehavior Enum.SelectionBehavior
+---@class Enum.PropertyStatus
+---@field public Ok number | '0'
+---@field public Warning number | '1'
+---@field public Error number | '2'
+local PropertyStatus;
+---@diagnostic disable-next-line
+---@alias PropertyStatus Enum.PropertyStatus
