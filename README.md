@@ -146,7 +146,7 @@ The API Engine reference has a bunch of consistencies, I have tried to account f
 The following pages are explicitly generated despite not being in the [reference list](https://create.roblox.com/docs/reference/engine):
 - [`SelectionBehavior`](https://create.roblox.com/docs/reference/engine/enums/SelectionBehavior)
 - [`PropertyStatus`](https://create.roblox.com/docs/reference/engine/enums/PropertyStatus)
-- ['WrapLayerAutoSkin'](https://create.roblox.com/docs/reference/engine/enums/WrapLayerAutoSkin)
+- [`WrapLayerAutoSkin`](https://create.roblox.com/docs/reference/engine/enums/WrapLayerAutoSkin)
 
 Any other annotation has to be specified using `---@type CLASSNAME` before it, where `CLASSNAME` is the class you want to attach the annotations of to a variable.
 An example:
