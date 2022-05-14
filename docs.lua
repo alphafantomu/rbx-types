@@ -1,20 +1,21 @@
 
-local require, assert, print, next, tostring= require, assert, print, next, tostring;
+local assert, print, next, tostring			= assert, print, next, tostring;
 local os, string, table 					= os, string, table;
 local date 									= os.date;
 local format 								= string.format;
 local insert, concat 						= table.insert, table.concat;
 
-local uuid 									= require('resty.jit-uuid');
-
+local CLASS_PATTERN							= '---@class %s';
 local OVERLOAD_PATTERN 						= '---@overload fun(%s)';
 local CLASS_GENERIC_PATTERN 				= '---@generic %s : string';
 local TYPE_PATTERN 							= '---@type %s';
+local VARARG_PATTERN 						= '---@vararg %s';
 local FIELD_PATTERN 						= '---@field %s %s %s';
 local PARAMETER_PATTERN 					= '---@param %s %s';
 local RETURN_PATTERN 						= '---@return %s';
 local CLASS_DEFINITION_PATTERN 				= 'local %s;';
-local GLOBAL_REFERENCE_PATTERN 				= '%s = {};';
+local GLOBAL_REFERENCE_PATTERN 				= '%s = nil;';
+local GLOBAL_DEFINITION_PATTERN 			= '%s.%s = nil;';
 local FUNCTION_DEFINITION_PATTERN 			= '%s.%s = function(%s) end;';
 local GLOBAL_FUNCTION_DEFINITION_PATTERN 	= '%s = function(%s) end;';
 local CLASS_GENERIC 						= 'CLASSNAMEGENERIC';
@@ -22,6 +23,7 @@ local CLASS_GENERIC 						= 'CLASSNAMEGENERIC';
 local keywords 								= {['and'] = 0;['break'] = 0;['do'] = 0;['else'] = 0;['elseif'] = 0;['end'] = 0;['false'] = 0;['for'] = 0;['function'] = 0;['if'] = 0;['in'] = 0;['local'] = 0;['nil'] = 0;['not'] = 0;['or'] = 0;['repeat'] = 0;['return'] = 0;['then'] = 0;['true'] = 0;['until'] = 0;['while'] = 0;};
 local defined_types 						= {['nil'] = 0;any = 0;boolean = 0;string = 0;number = 0;integer = 0;['function'] = 0;table = 0;thread = 0;userdata = 0;lightuserdata = 0;};
 local requires_generic 						= {Instance = {TO_REPLACE = 'className';new = 0;FindFirstAncestorOfClass = 0;FindFirstAncestorWhichIsA = 0;FindFirstChildOfClass = 0;FindFirstChildWhichIsA = 0;}; ServiceProvider = {TO_REPLACE = 'className';FindService = 0;getService = 0;service = 0;GetService = 0;};};
+local requires_optional						= {Instance = {new = {parent = 0;}};task = {wait = {duration = 0;}}};
 local undefined_types 						= {};
 local type_searched_cache 					= {};
 
@@ -88,16 +90,6 @@ local fixForAnnotations = function(md)
 end;
 
 ---@param s string
----@return string
----Adjusts `s` for the syntax check with variable names, all spaces are replaced with `_` + all quotation marks are removed, and if puncuation is detected besides `_` and `-`,
----then a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) is generated to replace `s` with removed digits and `-`, otherwise returns the fixed `s`.
-local fixForSyntax = function(s)
-	s = s:gsub('"', ''):gsub('%s', '_');
-	local words_only = s:gsub('[_%-]', ''):match('(%w+)');
-	return words_only ~= s and uuid():gsub('[-%d]', '') or s;
-end;
-
----@param s string
 ---@param name string
 ---@return string
 ---Removes `name` from `s` and any `.` or `:`
@@ -107,9 +99,28 @@ end;
 
 ---@param s string
 ---@return string
----Removes lua tuple representation (`...`) from `s`
-local omitTupleRepresentation = function(s)
-	return s:gsub('%.%.%.', '');
+---Omits all other characters except for the tuple representation
+local tupleRepresentationOnly = function(s)
+	return s:match('%.%.%.');
+end;
+
+---@param s string
+---@return boolean IsTuple
+---Determines if `s` has a tuple representation in it, `...` and `others...`  are considered tuple representations
+local hasTupleRepresentation = function(s)
+	return s:match('%.%.%.') ~= nil;
+end;
+
+---@param s string
+---@return string
+---Adjusts `s` for the syntax check with variable names, if the name has a space, parenthesis, slash, or a dash then it will be removved, any periods will be removed as long as it is not a tuple
+---then a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) is generated to replace `s` with removed digits and `-`, otherwise returns the fixed `s`.
+local fixForSyntax = function(s)
+	s = s:gsub('[%s%(%)%/%-"]', '');
+	if (hasTupleRepresentation(s) == false) then
+		s = s:gsub('%.', '');
+	end;
+	return s;
 end;
 
 ---@param s string
@@ -168,7 +179,7 @@ end;
 ---@param inherits table<number, string>
 ---Sends a EmmyLua style class definition to `stream` with inheritance
 local pipeClassHeader = function(stream, inherits)
-	refWrite(stream, '---@class '..stream.name, #inherits > 0 and ' : '..concat(inherits, ', '), '\n');
+	refWrite(stream, format(CLASS_PATTERN, stream.name..(#inherits > 0 and ' : '..concat(inherits, ', ') or '')), '\n')
 end;
 
 ---@param returns table
@@ -184,7 +195,7 @@ local getReturnFormat = function(returns)
 			local closure_datatype = closure.type;
 			recordType(closure_datatype);
 			insert(return_names, closure_datatype);
-		else print('rbx-types: found unknown return typename:', closure__typename);
+		else print('docs: found unknown return typename:', closure__typename);
 		end;
 	end;
 	return return_names;
@@ -194,38 +205,41 @@ end;
 ---@param parameters table
 ---@param parameter_names? table
 ---@param parameter_extension? table
----@param qualified? table<string, number|string>
+---@param qualified_generic? table<string, number|string>
+---@param qualified_optional? table<string, number>
 ---@return boolean ParameterReplacedWithGeneric
 ---Gets the parameter name if `parameter_names` is specified, and parameter format for EmmyLua fun() if `parameter_extension` is specified
 ---
 ---If `stream` is specified, EmmyLua style parameters will be piped into the stream
 ---If `qualified` is specified, then parameters will be checked to swap with generics
-local pipeParameters = function(stream, parameters, parameter_names, parameter_extension, qualified)
+local pipeParameters = function(stream, parameters, parameter_names, parameter_extension, qualified_generic, qualified_optional)
 	local replaced_with_generic, no_generic_header = false, true;
 	local n = #parameters;
 	for i = 1, n do
 		local parameter = parameters[i];
 		local parameter__typename = parameter.__typename;
 		if (parameter__typename == 'Parameter') then
-			local parameter_name = omitTupleRepresentation(replaceKeywords(fixForSyntax(parameter.name)));
+			local parameter_name = replaceKeywords(fixForSyntax(parameter.name)); --omitTupleRepresentation(replaceKeywords(fixForSyntax(parameter.name)));
 			local parameter_datatype = parameter.type;
 			recordType(parameter_datatype);
 			if (stream) then
-				---@diagnostic disable-next-line
-				local replace_with_generic = qualified and parameter_name == qualified.TO_REPLACE;
-				if (no_generic_header and qualified) then
+				local replace_with_generic = qualified_generic and parameter_name == qualified_generic.TO_REPLACE; ---@diagnostic disable-line
+				if (no_generic_header and qualified_generic) then
 					refWrite(stream, format(CLASS_GENERIC_PATTERN, CLASS_GENERIC), '\n');
 					no_generic_header = false;
 				end;
 				replaced_with_generic = replaced_with_generic or replace_with_generic;
-				refWrite(stream, format(PARAMETER_PATTERN, stream.name == 'Instance' and parameter_name == 'parent' and 'parent?' or parameter_name, replace_with_generic and '`'..CLASS_GENERIC..'`' or parameter_datatype), '\n');
+				if (hasTupleRepresentation(parameter_name)) then
+					refWrite(stream, format(VARARG_PATTERN, parameter_datatype), '\n');
+				else refWrite(stream, format(PARAMETER_PATTERN, qualified_optional and qualified_optional[parameter_name] and parameter_name..'?' or parameter_name, replace_with_generic and '`'..CLASS_GENERIC..'`' or parameter_datatype), '\n'); ---@diagnostic disable-line
+				end;
 			end;
 			if (parameter_names) then
-				insert(parameter_names, parameter_name);
+				insert(parameter_names, hasTupleRepresentation(parameter_name) and tupleRepresentationOnly(parameter_name) or parameter_name);
 			end; if (parameter_extension) then
 				insert(parameter_extension, parameter_name..': '..parameter_datatype);
 			end;
-		else print('rbx-types: found unknown parameter typename:', parameter__typename);
+		else print('docs: found unknown parameter typename:', parameter__typename);
 		end;
 	end;
 	return replaced_with_generic;
@@ -244,17 +258,19 @@ local pipeGlobalProperties = function(stream, properties)
 			recordType(datatype);
 			refWrite(stream, format(TYPE_PATTERN, datatype), '\n');
 			refWrite(stream, format(GLOBAL_REFERENCE_PATTERN, field.name), '\n');
-		else print('rbx-types: found unknown global property typename:', __typename);
+		else print('docs: found unknown global property typename:', __typename);
 		end;
 	end;
 end;
 
 ---@param stream table
 ---@param properties table
----Gets `properties` and pipes them into `stream` as EmmyLua style public fields
+---@return table AnnotationStream
+---Gets `properties` and pipes them into `stream` as EmmyLua style public fields, returns an array of strings to write to the stream
 local pipeClassProperties = function(stream, properties)
 	local name = stream.name;
 	local n = #properties;
+	local field_binds = {};
 	for i = 1, n do
 		local field = properties[i];
 		local __typename = field.__typename;
@@ -263,16 +279,21 @@ local pipeClassProperties = function(stream, properties)
 			local datatype = field.type;
 			recordType(datatype);
 			refWrite(stream, format(FIELD_PATTERN, 'public', index, datatype), '\n');
-		else print('rbx-types: found unknown class property typename:', __typename);
+			insert(field_binds, '---'..fixForAnnotations(field.description));
+			insert(field_binds, format(GLOBAL_DEFINITION_PATTERN, name, index));
+		else print('docs: found unknown class property typename:', __typename);
 		end;
 	end;
+	return field_binds;
 end;
 
 ---@param stream table
 ---@param events table
----Gets `events` and pipes them into `stream` as EmmyLua style public fields with an adjusted format to account for `RbxScriptSignal`
+---@return table AnnotationStream
+---Gets `events` and pipes them into `stream` as EmmyLua style public fields with an a new class to account for `RBXScriptSignal.Connect`, returns an array of strings to write to the stream
 local pipeEvents = function(stream, events)
 	local name = stream.name;
+	local event_binds = {};
 	local n = #events;
 	for i = 1, n do
 		local event = events[i];
@@ -281,10 +302,15 @@ local pipeEvents = function(stream, events)
 			local index = omitClassName(event.name, name);
 			local parameter_extension = {};
 			pipeParameters(nil, event.parameters, nil, parameter_extension);
-			refWrite(stream, format(FIELD_PATTERN, 'public', index, 'fun('..concat(parameter_extension, ', ')..'): RbxScriptSignal'), '\n');
-		else print('rbx-types: found unknown event typename:', __typename);
+			refWrite(stream, format(FIELD_PATTERN, 'public', index, 'RBXScriptSignal.'..index), '\n');
+			insert(event_binds, format(CLASS_PATTERN, 'RBXScriptSignal.'..index..' : RBXScriptSignal'));
+			insert(event_binds, format(FIELD_PATTERN, 'public', 'Connect', 'fun(self: RBXScriptSignal.'..index..', callback: fun('..concat(parameter_extension, ', ')..')): RBXScriptConnection'));
+			insert(event_binds, '---'..fixForAnnotations(event.description));
+			insert(event_binds, format(GLOBAL_DEFINITION_PATTERN, name, index));
+		else print('docs: found unknown event typename:', __typename);
 		end;
 	end;
+	return event_binds;
 end;
 
 ---@param stream table
@@ -305,10 +331,12 @@ local pipeMethods = function(stream, methods)
 			local constructor_block = load_block[linkage];
 			local substream = constructor_block == nil and {} or nil;
 			local parameter_names, parameter_extension = {'self'}, {'self'};
-			local qualified = requires_generic[name];
-			qualified = qualified and qualified[index] and qualified or nil;
-			generic_detected = generic_detected or (qualified ~= nil);
-			local generic_applied = pipeParameters(substream, method.parameters, parameter_names, parameter_extension, qualified);
+			local qualified_generic = requires_generic[name];
+			qualified_generic = qualified_generic and qualified_generic[index] and qualified_generic or nil;
+			local qualified_optional = requires_optional[name];
+			qualified_optional = qualified_optional and qualified_optional[index] or nil;
+			generic_detected = generic_detected or (qualified_generic ~= nil);
+			local generic_applied = pipeParameters(substream, method.parameters, parameter_names, parameter_extension, qualified_generic, qualified_optional);
 			if (constructor_block) then
 				insert(constructor_block, format(OVERLOAD_PATTERN, concat(parameter_extension, ', '))..(#return_names > 0 and ': '..concat(return_names, ', ') or ''));
 			else
@@ -319,7 +347,7 @@ local pipeMethods = function(stream, methods)
 				constructor_block.returns = generic_applied and format(RETURN_PATTERN, CLASS_GENERIC) or format(RETURN_PATTERN, concat(return_names, ', '));
 				constructor_block.fields = concat(substream);
 			end;
-		else print('rbx-types: found unknown method typename:', __typename);
+		else print('docs: found unknown method typename:', __typename);
 		end;
 	end;
 	for _, overload_block in next, load_block do
@@ -351,7 +379,9 @@ local pipeFunctions = function(stream, functions)
 			local constructor_block = load_block[linkage];
 			local substream = constructor_block == nil and {} or nil;
 			local parameter_names, parameter_extension = {}, {};
-			pipeParameters(substream, fx.parameters, parameter_names, parameter_extension);
+			local qualified_optional = requires_optional[name];
+			qualified_optional = qualified_optional and qualified_optional[index] or nil;
+			pipeParameters(substream, fx.parameters, parameter_names, parameter_extension, nil, qualified_optional);
 			if (constructor_block) then
 				insert(constructor_block, format(OVERLOAD_PATTERN, concat(parameter_extension, ', '))..(#return_names > 0 and ': '..concat(return_names, ', ') or ''));
 			else
@@ -362,7 +392,7 @@ local pipeFunctions = function(stream, functions)
 				constructor_block.returns = format(RETURN_PATTERN, concat(return_names, ', '));
 				constructor_block.fields = concat(substream);
 			end;
-		else print('rbx-types: found unknown function typename:', __typename);
+		else print('docs: found unknown function typename:', __typename);
 		end;
 	end;
 	for _, overload_block in next, load_block do
@@ -404,7 +434,7 @@ local pipeGlobalFunctions = function(stream, functions)
 				constructor_block.returns = format(RETURN_PATTERN, concat(return_names, ', '));
 				constructor_block.fields = concat(substream);
 			end;
-		else print('rbx-types: found unknown global function typename:', __typename);
+		else print('docs: found unknown global function typename:', __typename);
 		end;
 	end;
 	for _, overload_block in next, load_block do
@@ -436,10 +466,12 @@ local pipeConstructors = function(stream, constructors)
 			local constructor_block = load_block[linkage];
 			local parameter_names, parameter_extension = {}, {};
 			local substream = constructor_block == nil and {name = name} or nil;
-			local qualified = requires_generic[name];
-			qualified = qualified and qualified[index] and qualified or nil;
-			generic_detected = generic_detected or (qualified ~= nil);
-			generic_applied = pipeParameters(substream, constructor.parameters, parameter_names, parameter_extension, qualified);
+			local qualified_generic = requires_generic[name];
+			qualified_generic = qualified_generic and qualified_generic[index] and qualified_generic or nil;
+			generic_detected = generic_detected or (qualified_generic ~= nil);
+			local qualified_optional = requires_optional[name];
+			qualified_optional = qualified_optional and qualified_optional[index] or nil;
+			generic_applied = pipeParameters(substream, constructor.parameters, parameter_names, parameter_extension, qualified_generic, qualified_optional);
 			if (constructor_block) then
 				insert(constructor_block, format(OVERLOAD_PATTERN, concat(parameter_extension, ', ')));
 			else
@@ -449,7 +481,7 @@ local pipeConstructors = function(stream, constructors)
 				constructor_block.main = format(FUNCTION_DEFINITION_PATTERN, name, index, concat(parameter_names, ', '));
 				constructor_block.fields = concat(substream);
 			end;
-		else print('rbx-types: found unknown constructor typename:', __typename);
+		else print('docs: found unknown constructor typename:', __typename);
 		end;
 	end;
 	for _, constructor_block in next, load_block do
@@ -473,6 +505,7 @@ end;
 local pipeItems = function(stream, items)
 	local name = stream.name;
 	local n = #items;
+	local item_binds = {};
 	for i = 1, n do
 		local item = items[i];
 		local __typename = item.__typename;
@@ -480,9 +513,12 @@ local pipeItems = function(stream, items)
 			local index = omitClassName(item.name, name);
 			local value = item.value;
 			refWrite(stream, format(FIELD_PATTERN, 'public', index, 'number | \''..tostring(value)..'\''), '\n');
-		else print('rbx-types: found unknown item typename:', __typename);
+			insert(item_binds, '---'..fixForAnnotations(item.summary));
+			insert(item_binds, format(GLOBAL_DEFINITION_PATTERN, name, index));
+		else print('docs: found unknown item typename:', __typename);
 		end;
 	end;
+	return item_binds;
 end;
 
 ---@param api table
@@ -497,10 +533,10 @@ docs.generateClass = function(api)
 	pipeClassHeader(stream, api.inherits);
 
 	-- Property Fields --
-	pipeClassProperties(stream, api.properties);
+	local fields = pipeClassProperties(stream, api.properties);
 
-	-- Raw Event Fields --
-	pipeEvents(stream, api.events);
+	-- Event Fields --
+	local event_classes = pipeEvents(stream, api.events);
 
 	-- Class Description --
 	pipeAsComment(stream, api.description);
@@ -508,8 +544,20 @@ docs.generateClass = function(api)
 	-- Class Definition Binding --
 	refWrite(stream, format(CLASS_DEFINITION_PATTERN, name), '\n');
 
+	-- Property Field Annotations --
+	local n_fields = #fields;
+	for i = 1, n_fields do
+		refWrite(stream, fields[i], '\n');
+	end;
+
 	-- Method Fields --
 	pipeMethods(stream, api.methods);
+
+	-- Event Field Annotations --
+	local n_event_classes = #event_classes;
+	for i = 1, n_event_classes do
+		refWrite(stream, event_classes[i], '\n');
+	end;
 
 	defined_types[name] = 0;
 	if (#stream < 1) then
@@ -530,13 +578,19 @@ docs.generateDatatype = function(api)
 	refWrite(stream, '---@class '..name, '\n');
 
 	-- Property Fields --
-	pipeClassProperties(stream, api.properties);
+	local fields = pipeClassProperties(stream, api.properties);
 
 	-- Type Description --
 	pipeAsComment(stream, api.description);
 
 	-- Type Definition Binding --
 	refWrite(stream, format(GLOBAL_REFERENCE_PATTERN, name), '\n');
+
+	-- Property Field Annotations --
+	local n_fields = #fields;
+	for i = 1, n_fields do
+		refWrite(stream, fields[i], '\n');
+	end;
 
 	-- Constructor Fields --
 	pipeConstructors(stream, api.constructors);
@@ -566,12 +620,20 @@ docs.generateEnum = function(api)
 	refWrite(stream, '---@class Enum.'..name, '\n');
 
 	-- Item Fields --
-	pipeItems(stream, api.items);
+	local items = pipeItems(stream, api.items);
 
 	-- Enum Description --
 	pipeAsComment(stream, api.description);
 
 	refWrite(stream, format(CLASS_DEFINITION_PATTERN, name), '\n');
+
+	-- Item Field Annotations --
+	local n_items = #items;
+	for i = 1, n_items do
+		refWrite(stream, items[i], '\n');
+	end;
+
+	refWrite(stream, 'Enum.'..name..' = '..name..';', '\n');
 	refWrite(stream, '---@diagnostic disable-next-line', '\n');
 	refWrite(stream, '---@alias '..name..' Enum.'..name, '\n');
 
@@ -618,13 +680,19 @@ docs.generateLibrary = function(api)
 	refWrite(stream, '---@class '..name, '\n');
 
 	-- Property Fields --
-	pipeClassProperties(stream, api.properties);
+	local fields = pipeClassProperties(stream, api.properties);
 
 	-- Library Description --
 	pipeAsComment(stream, api.description);
 
 	-- Library Definition Binding --
 	refWrite(stream, format(GLOBAL_REFERENCE_PATTERN, name), '\n');
+
+	-- Property Field Annotations --
+	local n_fields = #fields;
+	for i = 1, n_fields do
+		refWrite(stream, fields[i], '\n');
+	end;
 
 	-- Library Functions --
 	pipeFunctions(stream, api.functions);
@@ -640,15 +708,17 @@ end;
 ---Checks and prints any unsupported types found while generating documents
 docs.printUnsupportedTypes = function()
 	local n_types = #undefined_types;
+	local filtered_unsupported_types = {};
 	for i = 1, n_types do
 		local annotation_type = undefined_types[i];
 		if (defined_types[annotation_type] == nil) then
-			print('rbx-types: unsupported type detected ('..annotation_type..')');
+			print('docs: unsupported type detected ('..annotation_type..')');
+			insert(filtered_unsupported_types, annotation_type);
 		end;
 	end;
+	undefined_types = filtered_unsupported_types;
+	return filtered_unsupported_types;
 end;
-
---nonexistent SelectionBehavior, PropertyStatus
 
 ---@return table
 ---Creates the basis and definitions as a stream for annotations, additionally defining the types themselves to a cache for unknown type checks
@@ -656,7 +726,6 @@ end;
 ---This is really important, as Roblox's [Engine Reference](https://create.roblox.com/docs/reference/engine) has a lot of specific types that are not naturally 
 ---supported by EmmyLua style annotations, this is also to fix documentation inconsistencies such as:
 --- - `CoordinateFrame` (`CFrame`)
---- - `RbxScriptSignal` (`RBXScriptSignal`)
 --- - `Integer` (`int`/`integer`)
 --- - `integer` (`int`/`Integer`)
 ---
@@ -693,7 +762,6 @@ docs.generateDocsStream = function()
 	refWrite(stream, '---@alias RbxLibrary table', '\n');
 	refWrite(stream, '---@alias RotationCurveKey table', '\n');
 	refWrite(stream, '---@alias CoordinateFrame CFrame', '\n');
-	refWrite(stream, '---@alias RbxScriptSignal RBXScriptSignal', '\n');
 	defined_types.void 					= 0;
 	defined_types.int64 				= 0;
 	defined_types.int 					= 0;
@@ -717,7 +785,6 @@ docs.generateDocsStream = function()
 	defined_types.RbxLibrary 			= 0;
 	defined_types.RotationCurveKey 		= 0;
 	defined_types.CoordinateFrame 		= 0;
-	defined_types.RbxScriptSignal 		= 0;
 	return stream;
 end;
 

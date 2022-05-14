@@ -1,6 +1,6 @@
 -- rbx-types annotations document --
 -- This is an automatically generated annotations document designed for EmmyLua or similar variations
--- This document was generated on Thu May 12 14:13:58 2022
+-- This document was generated on Fri May 13 22:18:07 2022
 -- You can find rbx-types here: https://github.com/alphafantomu/rbx-types
 ---@alias void nil
 ---@alias int64 number
@@ -27,20 +27,16 @@
 ---@alias RbxLibrary table
 ---@alias RotationCurveKey table
 ---@alias CoordinateFrame CFrame
----@alias RbxScriptSignal RBXScriptSignal
 ---@class ABTestService : Instance
----@field public OnBrowserTrackerABTestLoadingStatusChanged fun(status: ABTestLoadingStatus): RbxScriptSignal
----@field public OnUserABTestLoadingStatusChanged fun(status: ABTestLoadingStatus, userId: int64): RbxScriptSignal
+---@field public OnBrowserTrackerABTestLoadingStatusChanged RBXScriptSignal.OnBrowserTrackerABTestLoadingStatusChanged
+---@field public OnUserABTestLoadingStatusChanged RBXScriptSignal.OnUserABTestLoadingStatusChanged
 local ABTestService;
----@param name string
----@return string
-ABTestService.GetVariant = function(self, name) end;
----@return int64
-ABTestService.GetPendingOrInitializedUserId = function(self) end;
----@return void
-ABTestService.WaitUntilUserABTestsInitialized = function(self) end;
 ---@return void
 ABTestService.ClearUserVariations = function(self) end;
+---@return void
+ABTestService.WaitUntilUserABTestsInitialized = function(self) end;
+---@return int64
+ABTestService.GetPendingOrInitializedUserId = function(self) end;
 ---@param userId int64
 ---@return void
 ABTestService.InitializeForUserId = function(self, userId) end;
@@ -50,105 +46,140 @@ ABTestService.GetUserABTestLoadingStatus = function(self) end;
 ABTestService.WaitUntilBrowserTrackerABTestsInitialized = function(self) end;
 ---@return ABTestLoadingStatus
 ABTestService.GetBrowserTrackerABTestLoadingStatus = function(self) end;
+---@param name string
+---@return string
+ABTestService.GetVariant = function(self, name) end;
+---@class RBXScriptSignal.OnBrowserTrackerABTestLoadingStatusChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OnBrowserTrackerABTestLoadingStatusChanged, callback: fun(status: ABTestLoadingStatus)): RBXScriptConnection
+---
+ABTestService.OnBrowserTrackerABTestLoadingStatusChanged = nil;
+---@class RBXScriptSignal.OnUserABTestLoadingStatusChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OnUserABTestLoadingStatusChanged, callback: fun(status: ABTestLoadingStatus, userId: int64)): RBXScriptConnection
+---
+ABTestService.OnUserABTestLoadingStatusChanged = nil;
 ---@class Accessory : Accoutrement, Instance
 ---@field public AccessoryType AccessoryType
----The Accessory Instance is the parent Instance of all accessories
----(regardless of their specific accessory type). It typically has a child
----Handle with a child Attachment and a WrapLayer in the case of Layered
----Clothing.
+---The Accessory Instance is the parent Instance of all accessories (regardless
+---of their specific accessory type). It typically has a child Handle with a
+---child Attachment and a WrapLayer in the case of Layered Clothing.
 ---
 ---The Accessory class is the successor to the legacy Hat system. It's
 ---cross-compatible with both the legacy R6 character system and the new R15
 ---character system.
 ---
----If you insert an `Attachment` into the Accessory's Handle with the same
----name as an `Attachment` in one of the character's limbs, they connect and
----ignore properties inherited from the `Accoutrement` class. Otherwise, the
----Accessory functions identically to a `Hat`.
+---If you insert an `Attachment` into the Accessory's Handle with the same name
+---as an `Attachment` in one of the character's limbs, they connect and ignore
+---properties inherited from the `Accoutrement` class. Otherwise, the Accessory
+---functions identically to a `Hat`.
 ---
----Note: If there are two matching `Attachments`, the resulting `Weld` is a
----child of the Accessory's Handle. This differs from the legacy behavior of
----Hats where the Weld is always a child of the Head of the character.
+---Note: If there are two matching `Attachments`, the resulting `Weld` is a child
+---of the Accessory's Handle. This differs from the legacy behavior of Hats where
+---the Weld is always a child of the Head of the character.
 ---
 local Accessory;
+---Specifies the AccessoryType of the Accessory. Is
+---`Enum/AccessoryType|AccessoryType.Unknown` unless you equip the Accessory
+---through the player spawning process or `Humanoid/ApplyDescription`. If
+---available on the Avatar shop, you can set `Enum/AccessoryType` to
+---categorize the Accessory item (for example, "Hat" or "Face").
+---
+Accessory.AccessoryType = nil;
 ---@class Accoutrement : Instance
 ---@field public AttachmentForward Vector3
 ---@field public AttachmentPoint CFrame
 ---@field public AttachmentPos Vector3
 ---@field public AttachmentRight Vector3
 ---@field public AttachmentUp Vector3
----An Accoutrement welds its child `Part|part` called "Handle" to the Head of
----a player's character. You can change the position and rotation of the
----Handle part using the `Accoutrement/AttachmentPos|AttachmentPos`,
+---An Accoutrement welds its child `Part|part` called "Handle" to the player's
+---character. You can change the position and rotation of the Handle part using
+---the `Accoutrement/AttachmentPos|AttachmentPos`,
 ---`Accoutrement/AttachmentRight|Right`,
----`Accoutrement/AttachmentForward|Forward`, and
----`Accoutrement/AttachmentUp|Up` properties.
+---`Accoutrement/AttachmentForward|Forward`, and `Accoutrement/AttachmentUp|Up`
+---properties.
 ---
----Parts descending from an accoutrement are massless when attach to other
----parts (e.g. with a Weld) as long as they are not the root part of the
----assembly that `BasePart/GetRootPart|GetRootPart()` returns.
----`BasePart/GetMass|GetMass()` returns 0 for parts in this case, and it
----doesn't add to the total mass or rotational inertia of the Assembly.
+---Parts descending from an accoutrement are massless when attach to other parts
+---(e.g. with a Weld) as long as they are not the root part of the assembly that
+---`BasePart/GetRootPart|GetRootPart()` returns. `BasePart/GetMass|GetMass()`
+---returns 0 for parts in this case, and it doesn't add to the total mass or
+---rotational inertia of the Assembly.
 ---
 ---This doesn't apply to a part descending from an accoutrement when an
 ---accoutrement welds to another part that is massless or one if its parts
----otherwise becomes root. This also doesn't apply for the root part, and it
----has mass like a normal part.
+---otherwise becomes root. This also doesn't apply for the root part, and it has
+---mass like a normal part.
 ---
 local Accoutrement;
----@class Actor : Model, PVInstance, Instance
----An `Actor` is a container for code that can be safely split into its own thread using `task.desynchronize()`. It should also contain the instances used by its scripts.
+---Sets the offset position of the object on the Player.
 ---
----To learn more about using Actors, see [Parallel Scripting](/scripting/scripts/parallel-scripting).
+Accoutrement.AttachmentForward = nil;
+---The exact CFrame of the Accoutrement.
+---
+Accoutrement.AttachmentPoint = nil;
+---Sets the position of the object on the Player.
+---
+Accoutrement.AttachmentPos = nil;
+---Sets the offset position of the object on the Player.
+---
+Accoutrement.AttachmentRight = nil;
+---Sets the offset position of the object on the Player.
+---
+Accoutrement.AttachmentUp = nil;
+---@class Actor : Model, PVInstance, Instance
+---An `Actor` is a container for code that can be safely split into its own
+---thread using `task.desynchronize()`. It should also contain the instances used
+---by its scripts.
+---
+---To learn more about using Actors, see
+---[Parallel Scripting](/scripting/scripts/parallel-scripting).
+---
 local Actor;
 ---@class AdService : Instance
----@field public VideoAdClosed fun(adShown: bool): RbxScriptSignal
----This AdService class was historically a service for displaying mobile
----video ads as a form of game monetization. Roblox has decommissioned it,
----and it is no longer operational.
+---@field public VideoAdClosed RBXScriptSignal.VideoAdClosed
+---This AdService class was historically a service for displaying mobile video
+---ads as a form of game monetization. Roblox has decommissioned it, and it is no
+---longer operational.
 ---
 ---<img src="/assets/bltdfe3e11c754fe5e2/AdserviceIPad.png" alt="iPad displaying an ad" />
 ---
 ---It allows game creators to utilize a the service and display video ads to
----mobile players on supported iOS and Android devices. Players were able to
----view up to 5 ads per hour across the site.
+---mobile players on supported iOS and Android devices. Players were able to view
+---up to 5 ads per hour across the site.
 ---
 ---## Best Practices
 ---
 ---- You couldn't play an ad more than five times in an hour, in any mobile
 ---  instance.
----- `GuiObject|GUIs` were extremely important in getting your ads out. They
----  made sure players knew they were seeing an ad and that gameplay would
----  begin once it was over. Particularly something that said, “and now a
----  word from our sponsor,” or “gameplay sponsored by…”
+---- `GuiObject|GUIs` were extremely important in getting your ads out. They made
+---  sure players knew they were seeing an ad and that gameplay would begin once
+---  it was over. Particularly something that said, “and now a word from our
+---  sponsor,” or “gameplay sponsored by…”
 ---- You had to make sure players inside your game didn't take damage or get
 ---  knocked out while they were watching an ad (this could be as simple as
 ---  giving them a forcefield while the ad plays).
----- It was important to always show ads when it didn't interfere with
----  gameplay (like between rounds, before the game starts, or after a player
----  gets knocked out).
+---- It was important to always show ads when it didn't interfere with gameplay
+---  (like between rounds, before the game starts, or after a player gets knocked
+---  out).
 ---
 ---## Benefits
 ---
----Implementing video ad impressions in mobile gameplay sessions offers a
----variety of positive things for Roblox developers.
+---Implementing video ad impressions in mobile gameplay sessions offers a variety
+---of positive things for Roblox developers.
 ---
----The more hits your ad got, the more ROBUX you earned (at a rate of one
----ROBUX per 20 impressions). So if you were trying to utilize the heavy
----traffic you received in your game, it was recommended to using the API to
----call the commercial before your game started. For those who already had a
----hit game, this this could have functioned as supplemental income.
+---The more hits your ad got, the more ROBUX you earned (at a rate of one ROBUX
+---per 20 impressions). So if you were trying to utilize the heavy traffic you
+---received in your game, it was recommended to using the API to call the
+---commercial before your game started. For those who already had a hit game,
+---this this could have functioned as supplemental income.
 ---
----Thinking of the bigger picture. You could tie the API call to, say, a
----button inside your game, which would only play the ad when pressed. Many
----Roblox players wanted to earn exclusive items for your game, but maybe
----couldn't afford them. Perhaps you could tie one of those items into the ad
----— couldn't afford the Green Balloon? Here was another option: watch a 30
----second ad. The player got the item, you got the impression, and the cycle
----continued that way. Maybe your game was round-based. Why not play an ad
----between rounds? That was easily 20 impressions just while waiting for the
----next level to load. And more ad impressions meant more ROBUX in your
----pocket.
+---Thinking of the bigger picture. You could tie the API call to, say, a button
+---inside your game, which would only play the ad when pressed. Many Roblox
+---players wanted to earn exclusive items for your game, but maybe couldn't
+---afford them. Perhaps you could tie one of those items into the ad — couldn't
+---afford the Green Balloon? Here was another option: watch a 30 second ad. The
+---player got the item, you got the impression, and the cycle continued that way.
+---Maybe your game was round-based. Why not play an ad between rounds? That was
+---easily 20 impressions just while waiting for the next level to load. And more
+---ad impressions meant more ROBUX in your pocket.
 ---
 local AdService;
 ---@return void
@@ -156,9 +187,14 @@ local AdService;
 ---anything, as the `AdService` has been decommissioned.
 ---
 AdService.ShowVideoAd = function(self) end;
+---@class RBXScriptSignal.VideoAdClosed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.VideoAdClosed, callback: fun(adShown: bool)): RBXScriptConnection
+---No longer fires because the `AdService` has been decommissioned.
+---
+AdService.VideoAdClosed = nil;
 ---@class AdvancedDragger : Instance
----An unfinished advanced variant of the `Dragger` class. Internally, this
----object is an identical implementation of the Dragger class.
+---An unfinished advanced variant of the `Dragger` class. Internally, this object
+---is an identical implementation of the Dragger class.
 ---
 local AdvancedDragger;
 ---@class AlignOrientation : Constraint, Instance
@@ -174,73 +210,69 @@ local AdvancedDragger;
 ---@field public RigidityEnabled bool
 ---@field public SecondaryAxis Vector3
 ---An AlignOrientation attempts to constrain its
----`Constraint/Attachment0|Attachment0`'s orientation to the goal
----orientation, which is determined by `Constraint/Attachment1|Attachment1`
----or `AlignOrientation/CFrame|CFrame` depending on the
+---`Constraint/Attachment0|Attachment0`'s orientation to the goal orientation,
+---which is determined by `Constraint/Attachment1|Attachment1` or
+---`AlignOrientation/CFrame|CFrame` depending on the
 ---`AlignOrientation/Mode|Mode`.
 ---
 ---![AlignOrientation Demo][1]
 ---
 ---By default, this constraint only applies torque on
----`Constraint/Attachment0|Attachment0`'s parent, although it can be
----configured to apply torque on both attachments. This torque can be limited
----to a max amount via `AlignOrientation/MaxTorque`.
+---`Constraint/Attachment0|Attachment0`'s parent, although it can be configured
+---to apply torque on both attachments. This torque can be limited to a max
+---amount via `AlignOrientation/MaxTorque`.
 ---
 ---Any torque created by AlignOrientation will be applied about the center of
----mass of the parent of the attachments (or the center of mass of parts
----rigidly connected to the parents). Also note that if this constraint
----attaches one part (**A**) to another part (**B**) that is anchored or
----connected to an anchored part (**Z**), part **A** will not be locally
----simulated when interacting with a player.
+---mass of the parent of the attachments (or the center of mass of parts rigidly
+---connected to the parents). Also note that if this constraint attaches one part
+---(**A**) to another part (**B**) that is anchored or connected to an anchored
+---part (**Z**), part **A** will not be locally simulated when interacting with a
+---player.
 ---
 ---## Primary axis
 ---
 ---The behavior of an AlignOrientation is determined by its
----`AlignOrientation/PrimaryAxisOnly` property. By default this value is
----false and an AlignOrientation will work so that the orientation of its
----Attachment0 exactly matches the orientation of its goal. It will apply
----torque about all 3 axes to achieve this goal.
+---`AlignOrientation/PrimaryAxisOnly` property. By default this value is false
+---and an AlignOrientation will work so that the orientation of its Attachment0
+---exactly matches the orientation of its goal. It will apply torque about all 3
+---axes to achieve this goal.
 ---
----If PrimaryAxisOnly is set to true, then the AlignOrientation will only
----apply torque if the primary axis of its Attachment0 becomes unaligned with
----the goal. This means that any rotation about the Attachment0's primary
----axis will not create a torque.
+---If PrimaryAxisOnly is set to true, then the AlignOrientation will only apply
+---torque if the primary axis of its Attachment0 becomes unaligned with the goal.
+---This means that any rotation about the Attachment0's primary axis will not
+---create a torque.
 ---
 ---## Torque magnitude
 ---
----The torque used to constrain an AlignOrientation can either be configured
----or set to the maximum that constraints allow. Whether the torque is
----configurable is determined by the `AlignOrientation/RigidityEnabled`
----property.
+---The torque used to constrain an AlignOrientation can either be configured or
+---set to the maximum that constraints allow. Whether the torque is configurable
+---is determined by the `AlignOrientation/RigidityEnabled` property.
 ---
----When RigidityEnabled is true, the physics solver reacts as quickly as
----possible to complete the alignment. This is the same scale of force used
----to align other constraints, such as prismatics when their attachments are
----misaligned.
+---When RigidityEnabled is true, the physics solver reacts as quickly as possible
+---to complete the alignment. This is the same scale of force used to align other
+---constraints, such as prismatics when their attachments are misaligned.
 ---
 ---When RigidityEnabled is false, then the force will be determined by the
----MaxTorque, MaxAngularVelocity, and Responsiveness. MaxForce and
----MaxVelocity are caps to the torque and angular velocity respectively. The
----actual scale of the torque is determined by the Responsiveness. The
----mechanism for responsiveness is a little complicated, but put simply the
----higher the responsiveness, the quicker the constraint will try to reach
----its goal.
+---MaxTorque, MaxAngularVelocity, and Responsiveness. MaxForce and MaxVelocity
+---are caps to the torque and angular velocity respectively. The actual scale of
+---the torque is determined by the Responsiveness. The mechanism for
+---responsiveness is a little complicated, but put simply the higher the
+---responsiveness, the quicker the constraint will try to reach its goal.
 ---
 ---## Reaction Torque
 ---
----AlignOrientations by default only apply a torque on Attachment0's parent
----Part. The parent Part of Attachment1 remains unaffected. However, a torque
----can also be applied to Attachment1 by enabling the
+---AlignOrientations by default only apply a torque on Attachment0's parent Part.
+---The parent Part of Attachment1 remains unaffected. However, a torque can also
+---be applied to Attachment1 by enabling the
 ---`AlignOrientation/ReactionTorqueEnabled`. This will cause a torque to be
----applied to both Attachment0 and Attachment1 in equal and opposite
----directions.
+---applied to both Attachment0 and Attachment1 in equal and opposite directions.
 ---
 ---See also:
 ---
 ---- [Body Movers Example.rbxl][2], a sample place showcasing body movers in
 ---  various configurations.
----- [Attachments and Constraints][3], an article outlining how to create and
----  use attachments and constraints
+---- [Attachments and Constraints][3], an article outlining how to create and use
+---  attachments and constraints
 ---
 ---[1]: /assets/blt69a26db492586631/AlignOrientationDemo.gif
 ---[2]:
@@ -248,6 +280,106 @@ local AdvancedDragger;
 ---[3]: https://developer.roblox.com/articles/Constraints
 ---
 local AlignOrientation;
+---The `AlignOrientation/AlignType|AlignType` specifies the desired
+---relationship between the primary axes of the
+---`AlignOrientation/Attachment0|Attachment0` and the goal. The constraint
+---will try to maintain this relationship by applying forces within specified
+---limits.
+---
+---This property is visible in Studio and meaningful only when
+---`AlignOrientation/PrimaryAxisOnly` is set _true_.
+---
+---#### Enums
+---
+---It can be set to any of the possible `Enum/AlignType` values.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Name</th>
+---			<th>Value</th>
+---			<th>Description</th>
+---		</tr>
+---	</thead>
+---		<tr>
+---			<td>
+---				<b>Parallel</b>
+---			</td>
+---			<td>0</td>
+---			<td>Two parallel axes</td>
+---		</tr>
+---		<tr>
+---			<td>
+---				<b>Perpendicular</b>
+---			</td>
+---			<td>1</td>
+---			<td>Two perpendicular axes</td>
+---		</tr>
+---</table>
+---
+AlignOrientation.AlignType = nil;
+---The orientation of the `CFrame` determines the goal orientation of the
+---`AlignOrientation` when its `AlignOrientation/Mode|Mode` is
+---`Enum/OrientationAlignmentMode|OneAttachment`. The translation component
+---of the `CFrame` is ignored.
+---
+AlignOrientation.CFrame = nil;
+---The maximum angular velocity the constraint can use to reach its goal.
+---
+AlignOrientation.MaxAngularVelocity = nil;
+---The maximum torque the constraint can use to reach its goal.
+---
+AlignOrientation.MaxTorque = nil;
+---The Mode specifies the way its constraint determines its goal orientation.
+---
+---#### OneAttachment
+---
+---The constraint attempts to match the orientation of
+---`Constraint/Attachment0|Attachment0` to the orientation of
+---`AlignOrientation/CFrame|CFrame`. `Constraint/Attachment1|Attachment1` is
+---not used.
+---
+---#### TwoAttachment
+---
+---The constraint attempts to match the orientation of
+---`Constraint/Attachment0|Attachment0` to the orientation of
+---`Constraint/Attachment1|Attachment1`. `AlignOrientation/CFrame|CFrame`,
+---`AlignOrientation/PrimaryAxis|PrimaryAxis`, and
+---`AlignOrientation/SecondaryAxis|SecondaryAxis` are not used.
+---
+AlignOrientation.Mode = nil;
+---The `AlignOrientation/PrimaryAxis|PrimaryAxis` is the direction of the
+---goal's X-Axis, represented as a unit `Vector3`. This is only used when the
+---`AlignOrientation`'s `AlignOrientation/Mode|Mode` is
+---`Enum/OrientationAlignmentMode|OneAttachment`.
+---
+AlignOrientation.PrimaryAxis = nil;
+---If true, the `AlignOrientation` applies torque if the primary axis of its
+---`Constraint/Attachment0|Attachment0` becomes unaligned with the goal. This
+---means that any rotation about the Attachment0's primary axis will not
+---create a torque.
+---
+AlignOrientation.PrimaryAxisOnly = nil;
+---When true the constraint will apply torque on both Attachments to achieve
+---the goal.
+---
+AlignOrientation.ReactionTorqueEnabled = nil;
+---Controls how quickly the constraint will reach its goal. Higher values
+---will cause the attachment to align quicker. Value can be between 5
+---and 200.
+---
+AlignOrientation.Responsiveness = nil;
+---When true, the solver reacts as quickly as possible to complete the
+---alignment. When false, the torque is dependent on `MaxTorque`,
+---`MaxAngularVelocity`, and `Responsiveness`.
+---
+AlignOrientation.RigidityEnabled = nil;
+---The `AlignOrientation/SecondaryAxis|SecondaryAxis` is the direction of the
+---goal's Y-Axis, represented as a unit `Vector3`. This is only used when the
+---`AlignOrientation`'s `AlignOrientation/Mode|Mode` is
+---`Enum/OrientationAlignmentMode|OneAttachment`.
+---
+AlignOrientation.SecondaryAxis = nil;
 ---@class AlignPosition : Constraint, Instance
 ---@field public ApplyAtCenterOfMass bool
 ---@field public MaxForce float
@@ -258,67 +390,63 @@ local AlignOrientation;
 ---@field public Responsiveness float
 ---@field public RigidityEnabled bool
 ---An AlignPosition attempts to constrain its
----`Constraint/Attachment0|Attachment0`'s position to the goal position,
----which is determined by `Constraint/Attachment1|Attachment1` or
----`AlignPosition/Position|Position` depending on the
----`AlignPosition/Mode|Mode`.
+---`Constraint/Attachment0|Attachment0`'s position to the goal position, which is
+---determined by `Constraint/Attachment1|Attachment1` or
+---`AlignPosition/Position|Position` depending on the `AlignPosition/Mode|Mode`.
 ---
 ---![AlignPosition Demo][1]
 ---
----If this constraint attaches one part (**A**) to another part (**B**) that
----is anchored or connected to an anchored part (**Z**), part **A** will not
----be locally simulated when interacting with a player.
+---If this constraint attaches one part (**A**) to another part (**B**) that is
+---anchored or connected to an anchored part (**Z**), part **A** will not be
+---locally simulated when interacting with a player.
 ---
 ---## Reaction force
 ---
----AlignPositions by default only apply a force on Attachment0's parent Part.
----The parent Part of `Constraint/Attachment1|Attachment1` remains
----unaffected. However, a force can also be applied to Attachment1 by
----enabling the `AlignPosition/ReactionForceEnabled`. This will cause a force
----to be applied to both Attachment0 and Attachment1 in the direction of each
----other.
+---AlignPositions by default only apply a force on Attachment0's parent Part. The
+---parent Part of `Constraint/Attachment1|Attachment1` remains unaffected.
+---However, a force can also be applied to Attachment1 by enabling the
+---`AlignPosition/ReactionForceEnabled`. This will cause a force to be applied to
+---both Attachment0 and Attachment1 in the direction of each other.
 ---
 ---## Force location
 ---
----By default the force created by an AlignPosition is applied to the parent
----Part of Attachment0 at the Attachment's location. The direction of the
----force is always towards the goal. This means that if the center of mass of
----the Part is not aligned with the direction of the force, a torque will be
----applied to the part as well as a force.
+---By default the force created by an AlignPosition is applied to the parent Part
+---of Attachment0 at the Attachment's location. The direction of the force is
+---always towards the goal. This means that if the center of mass of the Part is
+---not aligned with the direction of the force, a torque will be applied to the
+---part as well as a force.
 ---
 ---AlignPositions' behaviors can be changed with the
----`AlignPosition/ApplyAtCenterOfMass` property. When enabled, the
----AlignPosition will check if other Parts are rigidly connected to the
----parent Part of Attachment0. If there are, then the force will be applied
----at the center of mass of those connected parts. If not, then the force
----will be applied at the center of mass of the parent part itself.
+---`AlignPosition/ApplyAtCenterOfMass` property. When enabled, the AlignPosition
+---will check if other Parts are rigidly connected to the parent Part of
+---Attachment0. If there are, then the force will be applied at the center of
+---mass of those connected parts. If not, then the force will be applied at the
+---center of mass of the parent part itself.
 ---
 ---## Force magnitude
 ---
----The force used to constrain an AlignPosition can either be configured or
----set to the maximum that constraints allow. Whether the force is
----configurable is determined by the `AlignPosition/RigidityEnabled`
----property.
+---The force used to constrain an AlignPosition can either be configured or set
+---to the maximum that constraints allow. Whether the force is configurable is
+---determined by the `AlignPosition/RigidityEnabled` property.
 ---
----When RigidityEnabled is true, the physics solver reacts as quickly as
----possible to complete the alignment. This is the same scale of force used
----to connect other constraints, such as hinges when their attachments are
----separated.
+---When RigidityEnabled is true, the physics solver reacts as quickly as possible
+---to complete the alignment. This is the same scale of force used to connect
+---other constraints, such as hinges when their attachments are separated.
 ---
 ---When RigidityEnabled is false, then the force will be determined by the
 ---`AlignPosition/MaxForce`, `AlignPosition/MaxVelocity`, and
----`AlignPosition/Responsiveness`. MaxForce and MaxVelocity are caps to the
----force and velocities respectively. The actual scale of the force is
----determined by the Responsiveness. The mechanism for responsiveness is a
----little complicated, but put simply the higher the responsiveness, the
----quicker the constraint will try to reach its goal.
+---`AlignPosition/Responsiveness`. MaxForce and MaxVelocity are caps to the force
+---and velocities respectively. The actual scale of the force is determined by
+---the Responsiveness. The mechanism for responsiveness is a little complicated,
+---but put simply the higher the responsiveness, the quicker the constraint will
+---try to reach its goal.
 ---
 ---See also:
 ---
 ---- [Body Movers Example.rbxl][2], a sample place showcasing body movers in
 ---  various configurations.
----- [Attachments and Constraints][3], an article outlining how to create and
----  use attachments and constraints
+---- [Attachments and Constraints][3], an article outlining how to create and use
+---  attachments and constraints
 ---
 ---[1]: /assets/bltf994f657b0e97add/AlignPositionDemo.gif
 ---[2]:
@@ -326,6 +454,55 @@ local AlignOrientation;
 ---[3]: https://developer.roblox.com/articles/Constraints
 ---
 local AlignPosition;
+---When true, applies force at center of mass of Attachment0's parent Part.
+---When false, applied at Attachment0.
+---
+AlignPosition.ApplyAtCenterOfMass = nil;
+---Maximum force the constraint can apply to achieve its goal. Only used if
+---RigidityEnabled is false.
+---
+AlignPosition.MaxForce = nil;
+---Maximum speed the Attachment can move when converging. Only used if
+---RigidityEnabled is false.
+---
+AlignPosition.MaxVelocity = nil;
+---The Mode specifies the way its constraint determines its goal.
+---
+---#### OneAttachment
+---
+---The constraint attempts to move `Constraint/Attachment0|Attachment0` to
+---`AlignPosition/Position|Position`. `Constraint/Attachment1|Attachment1` is
+---not used.
+---
+---#### TwoAttachment
+---
+---The constraint attempts to move `Constraint/Attachment0|Attachment0` to
+---the position of `Constraint/Attachment1|Attachment1`.
+---`AlignPosition/Position|Position` is not used.
+---
+AlignPosition.Mode = nil;
+---When the constraint's `AlignPosition/Mode|Mode` is set to
+---`Enum/PositionAlignmentMode|OneAttachment`, it uses the
+---`AlignPosition/Position|Position` as a goal to move the
+---`Constraint/Attachment0|Attachment0` to.
+---
+AlignPosition.Position = nil;
+---If true the constraint applies force on both Attachments to achieve the
+---goal.
+---
+AlignPosition.ReactionForceEnabled = nil;
+---Controls how quickly the constraint reaches its goal. Higher values will
+---cause the attachment(s) to align more rapidly. Value can be between 5
+---and 200.
+---
+AlignPosition.Responsiveness = nil;
+---If true, the solver reacts as quickly as possible to complete the
+---alignment. If false, the torque is dependent on
+---`AlignPosition/MaxForce|MaxForce`,
+---`AlignPosition/MaxVelocity|MaxVelocity`, and
+---`AlignPosition/Responsiveness|Responsiveness`.
+---
+AlignPosition.RigidityEnabled = nil;
 ---@class AnalysticsSettings : GenericSettings, ServiceProvider, Instance
 ---AnalysticsSettings is an internal settings provider that stores the
 ---`GoogleAnalyticsConfiguration` object.
@@ -333,125 +510,30 @@ local AlignPosition;
 local AnalysticsSettings;
 ---@class AnalyticsService : Instance
 ---@field public ApiKey string
----**Note** This service should only be used by developers who are enrolled
----in the <Link href="https://developer.rblx.playfab.com/en-US/sign-up"
+---**Note** This service should only be used by developers who are enrolled in
+---the <Link href="https://developer.rblx.playfab.com/en-US/sign-up"
 ---target="_new">PlayFab</Link> program.
 ---
----The AnalyticsService provides developers with out-of-the-box analytics so
----they can improve their games.
+---The AnalyticsService provides developers with out-of-the-box analytics so they
+---can improve their games.
 ---
 ---Developers can report events and see visual analysis results on PlayFab
----webpage. For more information on how to enroll in the PlayFab Program,
----take a look at <Link href="
+---webpage. For more information on how to enroll in the PlayFab Program, take a
+---look at <Link href="
 ---https://devforum.roblox.com/t/join-our-playfab-program-leverage-all-the-data/653420"
 ---target="_new">this</Link> DevForum post.
 ---
 local AnalyticsService;
----@param player Instance
----@param eventCategory string
----@param customData Variant
----@return void
----This function triggers a custom event with a custom event name data.
+---The **ApiKey** property contains the game's PlayFab API key. It must be
+---set and valid in order to use `AnalyticsService/FireEvent|FireEvent`. It
+---can be set by pasting and editing the following line of code into the
+---Command bar:
 ---
----#### Limits of events
+---```lua
+---game:GetService("AnalyticsService").ApiKey = "API_KEY"
+---```
 ---
----Each game server is allowed a certain number of standard events API calls
----based on the number of players present (more players means more events
----will be needed). The events that exceed the limit will be dropped and log
----an error to the developer console. - Per minute limit: 120 + numPlayers \*
----20, all events shared this limit. - Cooldown: refresh every 10 seconds
----
----#### Limits of parameters
----
----Limit the size of parameters. The event that exceeds the limit will be
----dropped and log an error to the developer console.
----
----<table>
----    <thead>
----        <tr>
----            <th>Parameters</th>
----            <th>Maximum Number of Characters</th>
----        </tr>
----    </thead>
----    <tbody>
----        <tr>
----            <td>customData Variant</td>
----            <td>500 after serialized</td>
----        </tr>
----        <tr>
----            <td>other string types</td>
----            <td>50</td>
----        </tr>
----    </tbody>
----</table>
----
----See also:
----
----- `AnalyticsService/FirePlayerProgressionEvent`, triggers an event used to
----  track player progression through the game
----- `AnalyticsService/FireInGameEconomyEvent`, triggers an event used to
----  track player actions pertaining to the in-game economy
----- `AnalyticsService/FireLogEvent`, triggers an event used to track errors
----  and warnings experienced by players
----
-AnalyticsService.FireCustomEvent = function(self, player, eventCategory, customData) end;
----@param player Instance
----@param itemName string
----@param economyAction AnalyticsEconomyAction
----@param itemCategory string
----@param amount int
----@param currency string
----@param location Variant
----@param customData Variant
----@return void
----This function triggers an event used to track player actions pertaining to
----the in-game economy.
----
----For example, it should be called to track when players acquire or spend
----virtual items within the economy like currency.
----
----#### Limits of events
----
----Each game server is allowed a certain number of standard events API calls
----based on the number of players present (more players means more events
----will be needed). The events that exceed the limit will be dropped and log
----an error to the developer console. - Per minute limit: 120 + numPlayers \*
----20, all events shared this limit. - Cooldown: refresh every 10 seconds
----
----#### Limits of parameters
----
----Limit the size of parameters. The event that exceeds the limit will be
----dropped and log an error to the developer console.
----
----<table>
----    <thead>
----        <tr>
----            <th>Parameters</th>
----            <th>Maximum Number of Characters</th>
----        </tr>
----    </thead>
----    <tbody>
----        <tr>
----            <td>customData Variant</td>
----            <td>500 after serialized</td>
----        </tr>
----        <tr>
----            <td>other string types</td>
----            <td>50</td>
----        </tr>
----    </tbody>
----</table>
----
----See also:
----
----- `AnalyticsService/FirePlayerProgressionEvent`, triggers an event used to
----  track player progression through the game
----- `AnalyticsService/FireLogEvent`, triggers an event used to track errors
----  and warnings experienced by players
----- `AnalyticsService/FireCustomEvent`, triggers an event used to emit a
----  custom event
----
-AnalyticsService.FireInGameEconomyEvent = function(self, player, itemName, economyAction, itemCategory, amount, currency, location, customData) end;
+AnalyticsService.ApiKey = nil;
 ---@param player Instance
 ---@param logLevel AnalyticsLogLevel
 ---@param message string
@@ -515,35 +597,6 @@ AnalyticsService.FireInGameEconomyEvent = function(self, player, itemName, econo
 ---  custom event
 ---
 AnalyticsService.FireLogEvent = function(self, player, logLevel, message, debugInfo, customData) end;
----@param category string
----@param value Variant
----@return void
----**FireEvent** reports a custom event to PlayFab. The event is reported
----using a **category** and **value**, where the category is a string and the
----value can be a string or table. In order to use PlayFab, you must have a
----valid `AnalyticsService/ApiKey|ApiKey` set.
----
----#### Possible Errors
----
----- **"AnalyticsService can only be executed by game server."** – Tracking
----  can only be done on the server through a `Script` or `ModuleScript`
----  required by a script. See `RunService/IsServer`.
----- **"The ApiKey is invalid."** – The `AnalyticsService/ApiKey|ApiKey` has
----  been set, but it's invalid. Check that it is set to the correct value.
----- **"AnalyticsService can only accept valid UTF-8 characters."** – Thrown
----  when the value can't be serialized as UTF-8 characters. This can happen
----  if you pass a value which has unicode characters, like emojis.
----- **"AnalyticsService failed in parse event value. Error: ..."** – Thrown
----  when there is an issue when serializing the provided value into a
----  string.
----- **"AnalyticsService: , " and \r\n are not allowed in category."** – The
----  comma `,`, the double quote `"`, and newline characters `\r\n` cannot be
----  used in the **category** parameter.
----- **"AnalyticsService: The event value you fired is too long."** – Thrown
----  if the **value** parameter was too long after serialization. The length
----  limit is 1 KB, or 1024 bytes.
----
-AnalyticsService.FireEvent = function(self, category, value) end;
 ---@param player Instance
 ---@param category string
 ---@param progressionStatus AnalyticsProgressionStatus
@@ -609,6 +662,140 @@ AnalyticsService.FireEvent = function(self, category, value) end;
 ---  custom event
 ---
 AnalyticsService.FirePlayerProgressionEvent = function(self, player, category, progressionStatus, location, statistics, customData) end;
+---@param player Instance
+---@param eventCategory string
+---@param customData Variant
+---@return void
+---This function triggers a custom event with a custom event name data.
+---
+---#### Limits of events
+---
+---Each game server is allowed a certain number of standard events API calls
+---based on the number of players present (more players means more events
+---will be needed). The events that exceed the limit will be dropped and log
+---an error to the developer console. - Per minute limit: 120 + numPlayers \*
+---20, all events shared this limit. - Cooldown: refresh every 10 seconds
+---
+---#### Limits of parameters
+---
+---Limit the size of parameters. The event that exceeds the limit will be
+---dropped and log an error to the developer console.
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Parameters</th>
+---            <th>Maximum Number of Characters</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td>customData Variant</td>
+---            <td>500 after serialized</td>
+---        </tr>
+---        <tr>
+---            <td>other string types</td>
+---            <td>50</td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---See also:
+---
+---- `AnalyticsService/FirePlayerProgressionEvent`, triggers an event used to
+---  track player progression through the game
+---- `AnalyticsService/FireInGameEconomyEvent`, triggers an event used to
+---  track player actions pertaining to the in-game economy
+---- `AnalyticsService/FireLogEvent`, triggers an event used to track errors
+---  and warnings experienced by players
+---
+AnalyticsService.FireCustomEvent = function(self, player, eventCategory, customData) end;
+---@param category string
+---@param value Variant
+---@return void
+---**FireEvent** reports a custom event to PlayFab. The event is reported
+---using a **category** and **value**, where the category is a string and the
+---value can be a string or table. In order to use PlayFab, you must have a
+---valid `AnalyticsService/ApiKey|ApiKey` set.
+---
+---#### Possible Errors
+---
+---- **"AnalyticsService can only be executed by game server."** – Tracking
+---  can only be done on the server through a `Script` or `ModuleScript`
+---  required by a script. See `RunService/IsServer`.
+---- **"The ApiKey is invalid."** – The `AnalyticsService/ApiKey|ApiKey` has
+---  been set, but it's invalid. Check that it is set to the correct value.
+---- **"AnalyticsService can only accept valid UTF-8 characters."** – Thrown
+---  when the value can't be serialized as UTF-8 characters. This can happen
+---  if you pass a value which has unicode characters, like emojis.
+---- **"AnalyticsService failed in parse event value. Error: ..."** – Thrown
+---  when there is an issue when serializing the provided value into a
+---  string.
+---- **"AnalyticsService: , " and \r\n are not allowed in category."** – The
+---  comma `,`, the double quote `"`, and newline characters `\r\n` cannot be
+---  used in the **category** parameter.
+---- **"AnalyticsService: The event value you fired is too long."** – Thrown
+---  if the **value** parameter was too long after serialization. The length
+---  limit is 1 KB, or 1024 bytes.
+---
+AnalyticsService.FireEvent = function(self, category, value) end;
+---@param player Instance
+---@param itemName string
+---@param economyAction AnalyticsEconomyAction
+---@param itemCategory string
+---@param amount int
+---@param currency string
+---@param location Variant
+---@param customData Variant
+---@return void
+---This function triggers an event used to track player actions pertaining to
+---the in-game economy.
+---
+---For example, it should be called to track when players acquire or spend
+---virtual items within the economy like currency.
+---
+---#### Limits of events
+---
+---Each game server is allowed a certain number of standard events API calls
+---based on the number of players present (more players means more events
+---will be needed). The events that exceed the limit will be dropped and log
+---an error to the developer console. - Per minute limit: 120 + numPlayers \*
+---20, all events shared this limit. - Cooldown: refresh every 10 seconds
+---
+---#### Limits of parameters
+---
+---Limit the size of parameters. The event that exceeds the limit will be
+---dropped and log an error to the developer console.
+---
+---<table>
+---    <thead>
+---        <tr>
+---            <th>Parameters</th>
+---            <th>Maximum Number of Characters</th>
+---        </tr>
+---    </thead>
+---    <tbody>
+---        <tr>
+---            <td>customData Variant</td>
+---            <td>500 after serialized</td>
+---        </tr>
+---        <tr>
+---            <td>other string types</td>
+---            <td>50</td>
+---        </tr>
+---    </tbody>
+---</table>
+---
+---See also:
+---
+---- `AnalyticsService/FirePlayerProgressionEvent`, triggers an event used to
+---  track player progression through the game
+---- `AnalyticsService/FireLogEvent`, triggers an event used to track errors
+---  and warnings experienced by players
+---- `AnalyticsService/FireCustomEvent`, triggers an event used to emit a
+---  custom event
+---
+AnalyticsService.FireInGameEconomyEvent = function(self, player, itemName, economyAction, itemCategory, amount, currency, location, customData) end;
 ---@class AngularVelocity : Constraint, Instance
 ---@field public AngularVelocity Vector3
 ---@field public MaxTorque float
@@ -616,16 +803,48 @@ AnalyticsService.FirePlayerProgressionEvent = function(self, player, category, p
 ---@field public RelativeTo ActuatorRelativeTo
 ---**AngularVelocity** is an object that applies a torque (up to
 ---`AngularVelocity/MaxTorque|MaxTorque`) on a `BasePart` such that the part
----maintains a constant `AngularVelocity/AngularVelocity|AngularVelocity`.
----The goal angular velocity defined using world- or attachment-space
----coordinates by setting `AngularVelocity/RelativeTo|RelativeTo`.
+---maintains a constant `AngularVelocity/AngularVelocity|AngularVelocity`. The
+---goal angular velocity defined using world- or attachment-space coordinates by
+---setting `AngularVelocity/RelativeTo|RelativeTo`.
 ---
 ---This object maintains all functionality of `BodyAngularVelocity`, a legacy
----body mover. To instead apply a constant torque, use a `Torque` object
----instead. To instead apply a torque such that a constant orientation is
----maintained, use a `AlignOrientation` instead.
+---body mover. To instead apply a constant torque, use a `Torque` object instead.
+---To instead apply a torque such that a constant orientation is maintained, use
+---a `AlignOrientation` instead.
 ---
 local AngularVelocity;
+---A `DataType/Vector3` that gives the desired or target angular velocity.
+---This vector is set in the `DataType/CFrame` expressed by the
+---`AngularVelocity/RelativeTo` property. Defaults to **(0, 0, 0)**.
+---
+AngularVelocity.AngularVelocity = nil;
+---Magnitude of the maximum torque the constraint can apply. Defaults to
+---**0**.
+---
+AngularVelocity.MaxTorque = nil;
+---This property, when enabled, causes the constraint to apply equal and
+---opposite reaction forces. This is important if the two attached parts can
+---collide, since without reaction forces collisions can create energy that
+---would otherwise be disregarded.
+---
+---When enabled, the reaction forces cause the constraint to act like an
+---angular motor between the two attachments.
+---
+---It is only meaningful and visible in studio when
+---`AngularVelocity/RelativeTo` is set to `Attachment1`.
+---
+AngularVelocity.ReactionTorqueEnabled = nil;
+---The `DataType/CFrame` in which the `AngularVelocity` force is specified.
+---If set to **`Enum/ActuatorRelativeToWorld|World`**, the angular velocity
+---vector is used as is. If set to **Attachment1**, the angular velocity is
+---transformed by the CFrame of the assigned attachment.
+---
+---`AngularVelocity/RelativeTo|RelativeTo` can also be set to
+---**Attachment0**, but it makes no physical sense and will lead to
+---unpredictable behaviors. There will be a warning in Studio but the API
+---will not prevent setting this value.
+---
+AngularVelocity.RelativeTo = nil;
 ---@class Animation : Instance
 ---@field public AnimationId Content
 ---An object that references an animation asset (`AnimationId`) which can be
@@ -638,28 +857,26 @@ local AngularVelocity;
 ---a`LocalScript`) or on the server (via a `Script`).
 ---
 ---If an `Animator` is a descendant of a Humanoid or AnimationController in a
----Player's `Player/Character|Character` then animations started on that
----Player's client will be replicated to the server and other clients.
+---Player's `Player/Character|Character` then animations started on that Player's
+---client will be replicated to the server and other clients.
 ---
----If the Animator is not a descendant of a player character, its animations
----must be loaded and started on the server to replicate.
+---If the Animator is not a descendant of a player character, its animations must
+---be loaded and started on the server to replicate.
 ---
----The Animator object must be initially created on the server and replicated
----to clients for animation replication to work at all. If an Animator is
----created locally, then AnimationTracks loaded with that Animator will not
----replicate.
+---The Animator object must be initially created on the server and replicated to
+---clients for animation replication to work at all. If an Animator is created
+---locally, then AnimationTracks loaded with that Animator will not replicate.
 ---
 ---Both `Humanoid/LoadAnimation` and `AnimationController/LoadAnimation` will
----create an Animator if one does not already exist. When calling
----LoadAnimation from LocalScripts you need to be careful to wait for the
----Animator to replicate from the server before calling LoadAnimation if you
----want character animations to replicate. You can do this with
----WaitForChild("Animator").
+---create an Animator if one does not already exist. When calling LoadAnimation
+---from LocalScripts you need to be careful to wait for the Animator to replicate
+---from the server before calling LoadAnimation if you want character animations
+---to replicate. You can do this with WaitForChild("Animator").
 ---
 ---See also:
 ---
----- [Using the Animation Editor][1], explore this powerful built-in plugin
----  for creating custom animations
+---- [Using the Animation Editor][1], explore this powerful built-in plugin for
+---  creating custom animations
 ---- [Using Animations in Games][2], learn how to add pre-built and custom
 ---  animations to your game
 ---
@@ -667,69 +884,80 @@ local AngularVelocity;
 ---[2]: /building-and-visuals/animation/using-animations
 ---
 local Animation;
+---This property is the content ID of the animation an `Animation` object is
+---referencing. Once an animation has been created and uploaded to Roblox the
+---content ID can be found in the uploaded animation's URL.
+---
+---This URL is presented immediately after an animation has been uploaded to
+---Roblox, in the Animation Editor export window. It can also be found in the
+---Develop tab on the Roblox site, under 'Animations'.
+---
+---It's important to remember the URL is not the same as the content ID. It
+---will work when pasted directly into the AnimationId property of an
+---`Animation` in Roblox studio, as Studio will automatically correct it,
+---however if it is being set from a `Script` then the correct content ID
+---will need to be used, using the number from the URL. For example:
+---
+---```lua
+---"https://www.roblox.com/catalog/507771019" -- Web URL (will not work)
+---"http://www.roblox.com/asset/?id=507771019" -- Content ID (will work)
+---"rbxassetid://507771019" -- Content ID (alternative version, will work)
+---```
+---
+---Note, the animation will need to be loaded onto an `AnimationTrack` in
+---order to play it.
+---
+Animation.AnimationId = nil;
 ---@class AnimationClip : Instance
 ---@field public Loop bool
 ---@field public Priority AnimationPriority
----The non-creatable `AnimationClip` instance type represents abstract
----animation data that can be fed to the Roblox animation system.
----KeyframeSequence and CurveAnimation are two current instance types that
----inherit from AnimationClip.
+---The non-creatable `AnimationClip` instance type represents abstract animation
+---data that can be fed to the Roblox animation system. KeyframeSequence and
+---CurveAnimation are two current instance types that inherit from AnimationClip.
 ---
----There are different ways to represent animation data. To simplify the use
----of Roblox's animation system, all such representations are their own
----instance types but inherit from the AnimationClip instance. AnimationClip
----instance published to Roblox (via the Animation Clip Editor) can be loaded
----into the Roblox animation System using an `Animation` instance by
----providing the asset ID of the published AnimationClip. Use the
----AnimationClipProvider to be able to retrieve any type of animation data
----using an asset ID.
+---There are different ways to represent animation data. To simplify the use of
+---Roblox's animation system, all such representations are their own instance
+---types but inherit from the AnimationClip instance. AnimationClip instance
+---published to Roblox (via the Animation Clip Editor) can be loaded into the
+---Roblox animation System using an `Animation` instance by providing the asset
+---ID of the published AnimationClip. Use the AnimationClipProvider to be able to
+---retrieve any type of animation data using an asset ID.
 ---
 local AnimationClip;
+---Determines whether the animation stored in this AnimationClip is intended
+---to loop. When set to true the animation will continuously repeat each time
+---the animation finishes. `AnimationTrack` instances internally load an
+---AnimationClip when an `Animation` is requested (by AnimationID), and the
+---`AnimationTrack` `Looped` property will default to the original
+---`AnimationClip` value. Note this value can be overwritten.
+---
+AnimationClip.Loop = nil;
+---Determines the default priority of the animation stored in this
+---AnimationClip. Depending on what this is set to, playing multiple
+---animations at once will look to this property to figure out which
+---`Keyframe` `Poses` should be played over one another. `AnimationTrack`
+---instances internally load an AnimationClip when an `Animation` is
+---requested (by AnimationID), and the `AnimationTrack` `Priority` property
+---will default to the original `AnimationClip` value. Note this value can be
+---overwritten.
+---
+AnimationClip.Priority = nil;
 ---@class AnimationClipProvider : Instance
 ---Povides functions to load and preview
 ---`AnimationClip|AnimationClips. It includes a number of functions that are useful when working with an `Animation`.
 ---
----The `AnimationClipProvider` replaces the deprecated
----`KeyframeSequenceProvider` that was used to download `KeyframeSequences`
----by content ID.
+---The `AnimationClipProvider` replaces the deprecated `KeyframeSequenceProvider`
+---that was used to download `KeyframeSequences` by content ID.
 ---
 ---The AnimationClipProvider has a number of uses.
 ---
----- Download the `AnimationClip` associated with an animation content ID
----  from the Roblox website, regardless of the underlying type of
----  `AnimationClip` (`KeyframeSequence` or `CurveAnimation`).
+---- Download the `AnimationClip` associated with an animation content ID from
+---  the Roblox website, regardless of the underlying type of `AnimationClip`
+---  (`KeyframeSequence` or `CurveAnimation`).
 ---- Generate a temporary id to locally preview an animation.
 ---- Fetch the content IDs of animations owned by a particular user.
 ---
 local AnimationClipProvider;
----@param assetId Content
----@return AnimationClip
----Returns a `AnimationClip` from a given asset URL.
----
-AnimationClipProvider.GetAnimationClip = function(self, assetId) end;
----@return Dictionary
----Returns a Lua table with memory usage for all animations stored in the
----cache. The memory reported is a summation of all of the memory used in any
----of the animation caches stored by the AnimationClipProvider.
----
-AnimationClipProvider.GetMemStats = function(self) end;
----@param userId int64
----@return Instance
----This function returns an `InventoryPages` object which can be used to
----iterate over animations owned by a specific user.
----
----This function has a number of potential uses, such as allowing users to
----browse and import animations into a custom animation plugin.
----
-AnimationClipProvider.GetAnimations = function(self, userId) end;
----@param assetId Content
----@return AnimationClip
----Fetches an `AnimationClip` based on the specified assetId. The assetId
----must correspond to an animation asset in Roblox. The function will yield
----until the `AnimationClip` is loaded from the website and should be wrapped
----in a `pcall`.
----
-AnimationClipProvider.GetAnimationClipAsync = function(self, assetId) end;
 ---@param animationClip AnimationClip
 ---@return Content
 ---Generates a temporary asset ID from a `AnimationClip` that can be used for
@@ -747,6 +975,13 @@ AnimationClipProvider.GetAnimationClipAsync = function(self, assetId) end;
 ---used online should upload the `AnimationClip` to Roblox.
 ---
 AnimationClipProvider.RegisterActiveAnimationClip = function(self, animationClip) end;
+---@param assetId int64
+---@param useCache bool
+---@return AnimationClip
+---Returns a `AnimationClip` from the supplied assetId. Can optionally cache
+---to reduce unnecessary loading freezes.
+---
+AnimationClipProvider.GetAnimationClipById = function(self, assetId, useCache) end;
 ---@param animationClip AnimationClip
 ---@return Content
 ---Generates a temporary asset ID from a `AnimationClip` that can be used for
@@ -764,20 +999,41 @@ AnimationClipProvider.RegisterActiveAnimationClip = function(self, animationClip
 ---used online should upload the `AnimationClip` to Roblox.
 ---
 AnimationClipProvider.RegisterAnimationClip = function(self, animationClip) end;
----@param assetId int64
----@param useCache bool
+---@param assetId Content
 ---@return AnimationClip
----Returns a `AnimationClip` from the supplied assetId. Can optionally cache
----to reduce unnecessary loading freezes.
+---Fetches an `AnimationClip` based on the specified assetId. The assetId
+---must correspond to an animation asset in Roblox. The function will yield
+---until the `AnimationClip` is loaded from the website and should be wrapped
+---in a `pcall`.
 ---
-AnimationClipProvider.GetAnimationClipById = function(self, assetId, useCache) end;
+AnimationClipProvider.GetAnimationClipAsync = function(self, assetId) end;
+---@return Dictionary
+---Returns a Lua table with memory usage for all animations stored in the
+---cache. The memory reported is a summation of all of the memory used in any
+---of the animation caches stored by the AnimationClipProvider.
+---
+AnimationClipProvider.GetMemStats = function(self) end;
+---@param assetId Content
+---@return AnimationClip
+---Returns a `AnimationClip` from a given asset URL.
+---
+AnimationClipProvider.GetAnimationClip = function(self, assetId) end;
+---@param userId int64
+---@return Instance
+---This function returns an `InventoryPages` object which can be used to
+---iterate over animations owned by a specific user.
+---
+---This function has a number of potential uses, such as allowing users to
+---browse and import animations into a custom animation plugin.
+---
+AnimationClipProvider.GetAnimations = function(self, userId) end;
 ---@class AnimationController : Instance
----@field public AnimationPlayed fun(animationTrack: AnimationTrack): RbxScriptSignal
----An object which allows animations to be loaded and applied to a character
----or model in place of a `Humanoid` when a Humanoid is not needed. Creates
----an `Animator` and loads animations to update `Motor6D|Motor6Ds` of said
----character to react in the way that is described within the animation asset
----referenced by an `Animation` object.
+---@field public AnimationPlayed RBXScriptSignal.AnimationPlayed
+---An object which allows animations to be loaded and applied to a character or
+---model in place of a `Humanoid` when a Humanoid is not needed. Creates an
+---`Animator` and loads animations to update `Motor6D|Motor6Ds` of said character
+---to react in the way that is described within the animation asset referenced by
+---an `Animation` object.
 ---
 ---## Should I load an Animation on the client or server?
 ---
@@ -786,28 +1042,26 @@ AnimationClipProvider.GetAnimationClipById = function(self, assetId, useCache) e
 ---a`LocalScript`) or on the server (via a `Script`).
 ---
 ---If an Animator is a descendant of a Humanoid or AnimationController in a
----Player's `Player/Character|Character` then animations started on that
----Player's client will be replicated to the server and other clients.
+---Player's `Player/Character|Character` then animations started on that Player's
+---client will be replicated to the server and other clients.
 ---
----If the Animator is not a descendant of a player character, its animations
----must be loaded and started on the server to replicate.
+---If the Animator is not a descendant of a player character, its animations must
+---be loaded and started on the server to replicate.
 ---
----The Animator object must be initially created on the server and replicated
----to clients for animation replication to work at all. If an Animator is
----created locally, then AnimationTracks loaded with that Animator will not
----replicate.
+---The Animator object must be initially created on the server and replicated to
+---clients for animation replication to work at all. If an Animator is created
+---locally, then AnimationTracks loaded with that Animator will not replicate.
 ---
 ---Both `Humanoid/LoadAnimation` and `AnimationController/LoadAnimation` will
----create an Animator if one does not already exist. When calling
----LoadAnimation from LocalScripts you need to be careful to wait for the
----Animator to replicate from the server before calling LoadAnimation if you
----want character animations to replicate. You can do this with
----WaitForChild("Animator").
+---create an Animator if one does not already exist. When calling LoadAnimation
+---from LocalScripts you need to be careful to wait for the Animator to replicate
+---from the server before calling LoadAnimation if you want character animations
+---to replicate. You can do this with WaitForChild("Animator").
 ---
 ---See also:
 ---
----- [Using the Animation Editor][1], explore this powerful built-in plugin
----  for creating custom animations
+---- [Using the Animation Editor][1], explore this powerful built-in plugin for
+---  creating custom animations
 ---- [Using Animations in Games][2], learn how to add pre-built and custom
 ---  animations to your game
 ---
@@ -883,15 +1137,28 @@ AnimationController.GetPlayingAnimationTracks = function(self) end;
 ---[2]: /building-and-visuals/animation/using-animations
 ---
 AnimationController.LoadAnimation = function(self, animation) end;
+---@class RBXScriptSignal.AnimationPlayed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AnimationPlayed, callback: fun(animationTrack: AnimationTrack)): RBXScriptConnection
+---This event fires whenever the `AnimationController` begins playing an
+---animation. It returns the `AnimationTrack` playing.
+---
+---The `AnimationTrack` can be used to access the animation's playback
+---functions and events. It will only fire for animations playing on the
+---specific `AnimationController`.
+---
+---See `Humanoid/AnimationPlayed` for the `Humanoid` variant of this
+---function.
+---
+AnimationController.AnimationPlayed = nil;
 ---@class AnimationFromVideoCreatorService : Instance
 local AnimationFromVideoCreatorService;
----@param filePath string
----@return string
-AnimationFromVideoCreatorService.CreateJob = function(self, filePath) end;
 ---@param videoFilePath string
 ---@param progressCallback Function
 ---@return string
 AnimationFromVideoCreatorService.FullProcess = function(self, videoFilePath, progressCallback) end;
+---@param filePath string
+---@return string
+AnimationFromVideoCreatorService.CreateJob = function(self, filePath) end;
 ---@param jobId string
 ---@return string
 AnimationFromVideoCreatorService.GetJobStatus = function(self, jobId) end;
@@ -907,10 +1174,10 @@ AnimationFromVideoCreatorStudioService.CreateAnimationByUploadingVideo = functio
 ---@return string
 AnimationFromVideoCreatorStudioService.ImportVideoWithPrompt = function(self) end;
 ---@class AnimationRigData : Instance
----An AnimationRigData instance commonly appears in the Data Model as a child
----of an AnimationClip. It is used to store information regarding the source
----rig an animation was authored for. It is currently only used for
----AnimationClips authored on R15 rigs.
+---An AnimationRigData instance commonly appears in the Data Model as a child of
+---an AnimationClip. It is used to store information regarding the source rig an
+---animation was authored for. It is currently only used for AnimationClips
+---authored on R15 rigs.
 ---
 local AnimationRigData;
 ---@param humanoid Instance
@@ -929,14 +1196,267 @@ AnimationRigData.LoadFromHumanoid = function(self, humanoid) end;
 ---@field public TimePosition float
 ---@field public WeightCurrent float
 ---@field public WeightTarget float
----@field public DidLoop fun(): RbxScriptSignal
----@field public KeyframeReached fun(keyframeName: string): RbxScriptSignal
----@field public Stopped fun(): RbxScriptSignal
+---@field public DidLoop RBXScriptSignal.DidLoop
+---@field public KeyframeReached RBXScriptSignal.KeyframeReached
+---@field public Stopped RBXScriptSignal.Stopped
 ---Controls the playback of an animation on a `Humanoid` or
----`AnimationController`. This object cannot be created, instead it is
----returned by the `Humanoid/LoadAnimation` method.
+---`AnimationController`. This object cannot be created, instead it is returned
+---by the `Humanoid/LoadAnimation` method.
 ---
 local AnimationTrack;
+---The `Animation` object that was used to create this `AnimationTrack`. To
+---create an `AnimationTrack` the developer must load an `Animation` object
+---onto a `Humanoid` or `AnimationController` using the
+---`Humanoid/LoadAnimation` method.
+---
+---The Animation property is used to identify the underlying `Animation` of
+---an `AnimationTrack`.
+---
+AnimationTrack.Animation = nil;
+---A read only property that returns true when the `AnimationTrack` is
+---playing.
+---
+---This property can be used by developers to check if an animation is
+---already playing before playing it (as that would cause it to restart). If
+---a developer wishes to obtain all playing `AnimationTrack`s on a `Humanoid`
+---or `AnimationController` they should use
+---`Humanoid/GetPlayingAnimationTracks`
+---
+AnimationTrack.IsPlaying = nil;
+---A read only property that returns the length (in seconds) of an
+---`AnimationTrack`. This will return 0 until the animation has fully loaded
+---and thus may not be immediately available.
+---
+---When the `AnimationTrack/Speed` of an `AnimationTrack` is equal to 1, the
+---animation will take `AnimationTrack/Length` (in seconds) to complete.
+---
+AnimationTrack.Length = nil;
+---This property sets whether the animation will repeat after finishing. If
+---it is changed while playing the result will take effect after the
+---animation finishes.
+---
+---The Looped property for `AnimationTrack` defaults to how it was set in the
+---animation editor. However this property can be changed, allowing control
+---over the `AnimationTrack` while the game is running. Looped also correctly
+---handles animations played in reverse (negative `AnimationTrack/Speed`).
+---After the first keyframe is reached, it will restart at the last keyframe.
+---
+---This property allows the developer to have a looping and non looping
+---variant of the same animation, without needing to upload two versions to
+---Roblox.
+---
+AnimationTrack.Looped = nil;
+---This property sets the priority of an `AnimationTrack`. Depending on what
+---this is set to, playing multiple animations at once will look to this
+---property to figure out which `Keyframe` `Pose`s should be played over one
+---another.
+---
+---The Priority property for `AnimationTrack` defaults to how it was set and
+---published from Studio's Animation Editor. It uses the AnimationPriority
+---Enum, which has 7 priority levels.
+---
+---1. Core (lowest priority)
+---2. Idle
+---3. Movement
+---4. Action
+---5. Action2
+---6. Action3
+---7. Action4 (highest priority)
+---
+---Correctly set animation priorities, either through the editor or through
+---this property allow multiple animations to be played without them
+---clashing. Where two playing animations direct the target to move the same
+---limb in different ways, the `AnimationTrack` with the highest priority
+---will show. If both animations have the same priority, the weights of the
+---tracks will be used to combine the animations.
+---
+---This property also allows the developer to play the same animation at
+---different priorities, without needing to upload additional versions to
+---Roblox.
+---
+AnimationTrack.Priority = nil;
+---The Speed of an `AnimationTrack` is a read only property that gives the
+---current playback speed of the `AnimationTrack`. This has a default value
+---of 1. When speed is equal to 1, the amount of time an animation takes to
+---complete is equal to `AnimationTrack/Length` (in seconds).
+---
+---If the speed is adjusted, then the actual time it will take a track to
+---play can be computed by dividing the length by the speed. Speed is a
+---unitless quantity.
+---
+---Speed can be used to link the length of an animation to different game
+---events (for example recharging an ability) without having to upload
+---different variants of the same animation.
+---
+---This property is read only, and you can change it using
+---`AnimationTrack/AdjustSpeed`.
+---
+AnimationTrack.Speed = nil;
+---Returns the position in time in seconds that an `AnimationTrack` is
+---through playing its source animation. Can be set to make the track jump to
+---a specific moment in the animation.
+---
+---TimePosition can be set to go to a specific point in the animation, but
+---the `AnimationTrack` must be playing to do so. It can also be used in
+---combination with `AnimationTrack/AdjustSpeed` to freeze the animation at a
+---desired point (by setting speed to 0).
+---
+AnimationTrack.TimePosition = nil;
+---When weight is set in an `AnimationTrack` it does not change
+---instantaneously but moves from WeightCurrent to
+---`AnimationTrack/WeightTarget`. The time it takes to do this is determined
+---by the fadeTime parameter given when the animation is played, or the
+---weight is adjusted.
+---
+---WeightCurrent can be checked against `AnimationTrack/WeightTarget` to see
+---if the desired weight has been reached. Note that these values should not
+---be checked for equality with the == operator, as both of these values are
+---floats. To see if WeightCurrent has reached the target weight, it is
+---recommended to see if the distance between those values is sufficiently
+---small (see code sample below).
+---
+---The animation weighting system is used to determine how `AnimationTrack`s
+---playing at the same priority are blended together. The default weight is
+---one, and no movement will be visible on an `AnimationTrack` with a weight
+---of zero. The pose that is shown at any point in time is determined by the
+---weighted average of all the `Pose`s and the WeightCurrent of each
+---`AnimationTrack`. See below for an example of animation blending in
+---practice.
+---
+---![Animation Weight Blending][1]
+---
+---[1]: /assets/blt755bd460ebb6cd91/Animation_Weight_-_Copy.png
+---
+---In most cases blending animations is not required and using
+---`AnimationTrack/Priority` is more suitable.
+---
+AnimationTrack.WeightCurrent = nil;
+---AnimationTrack.WeightTarget is a read-only property that gives the current
+---weight of the `AnimationTrack`. It has a default value of 1 and is set
+---when `AnimationTrack/Play`, `AnimationTrack/Stop` or
+---`AnimationTrack/AdjustWeight` is called. When weight is set in an
+---`AnimationTrack` it does not change instantaneously but moves from
+---WeightCurrent to `AnimationTrack/WeightTarget`. The time it takes to do
+---this is determined by the fadeTime parameter given when the animation is
+---played, or the weight is adjusted.
+---
+---WeightCurrent can be checked against `AnimationTrack/WeightTarget` to see
+---if the desired weight has been reached. Note that these values should not
+---be checked for equality with the == operator, as both of these values are
+---floats. To see if WeightCurrent has reached the target weight, it is
+---recommended to see if the distance between those values is sufficiently
+---small (see code sample below).
+---
+---The animation weighting system is used to determine how `AnimationTrack`s
+---playing at the same priority are blended together. The default weight is
+---one, and no movement will be visible on an `AnimationTrack` with a weight
+---of zero. The pose that is shown at any point in time is determined by the
+---weighted average of all the `Pose`s and the WeightCurrent of each
+---`AnimationTrack`. See below for an example of animation blending in
+---practice.
+---
+---![Animation Weight Blending][1]
+---
+---[1]: /assets/blt755bd460ebb6cd91/Animation_Weight_-_Copy.png
+---
+---In most cases blending animations is not required and using
+---`AnimationTrack/Priority` is more suitable.
+---
+AnimationTrack.WeightTarget = nil;
+---@param fadeTime float
+---@return void
+---Stops the `AnimationTrack`. Once called playback of the `AnimationTrack`
+---will stop and the weight of the animation will move towards zero over a
+---length of time specified by the optional fadeTime parameter.
+---
+---For example, if Stop is called with a fadeTime of 2 seconds it will take
+---two seconds for the weight of the `AnimationTrack` to reach zero and its
+---effects completely end. Please note this will be the case regardless of
+---the initial weight of the animation.
+---
+---It is not recommended to use a fadeTime of 0 seconds to try to override
+---this effect and end the animation immediately as presently, this causes
+---the `AnimationTrack` poses to freeze.
+---
+AnimationTrack.Stop = function(self, fadeTime) end;
+---@param fadeTime float
+---@param weight float
+---@param speed float
+---@return void
+---When `AnimationTrack/Play` is called the track's animation will begin
+---playing and the weight of the animation will increase from 0 to the
+---specified weight (defaults to 1) over the specified fadeTime (defaults to
+---0.1).
+---
+---The speed the `AnimationTrack` will play at is determined by the speed
+---parameter (defaults to 1). When the speed is equal to 1 the number of
+---seconds the track will take to complete is equal to the track's
+---`AnimationTrack/Length` property. For example, a speed of 2 will cause the
+---track to play twice as fast.
+---
+---The weight and speed of the animation can also be changed after the
+---animation has begun playing by using the `AnimationTrack/AdjustWeight` and
+---`AnimationTrack/AdjustSpeed` methods.
+---
+---If the developer wants to start the animation at a specific point using
+---`AnimationTrack/TimePosition`, it is important the animation is played
+---before this is done.
+---
+AnimationTrack.Play = function(self, fadeTime, weight, speed) end;
+---@param speed float
+---@return void
+---This function changes the `AnimationTrack/Speed` of an animation. A
+---positive value for speed plays the animation forward, a negative one plays
+---it backwards, and 0 pauses it.
+---
+---An AnimationTrack's initial speed is set as a parameter in
+---`AnimationTrack/Play`. However a track's Speed can be changed during
+---playback, using AdjustSpeed. When speed is equal to 1, the amount of time
+---an animation takes to complete is equal to `AnimationTrack/Length` (in
+---seconds).
+---
+---When is adjusted, then the actual time it will take a track to play can be
+---computed by dividing the length by the speed. Speed is a unitless
+---quantity.
+---
+---Speed can be used to link the length of an animation to different gameplay
+---events (for example recharging an ability) without having to upload
+---different variants of the same animation.
+---
+AnimationTrack.AdjustSpeed = function(self, speed) end;
+---@param name string
+---@return RBXScriptSignal
+---This function returns an `DataType/RBXScriptSignal|event` similar to the
+---`AnimationTrack/KeyframeReached` event, except it only fires when a
+---specified `KeyframeMarker` has been hit in an `Animation|animation`. The
+---difference allows for greater control of when the event will fire.
+---
+---To learn more about using this function, see **Animation Events** in the
+---[Animation Editor](/building-and-visuals/animation/animation-editor)
+---article.
+---
+---#### More About Keyframes
+---
+---`Keyframe` names can be set in the Roblox
+---[Animation Editor](/building-and-visuals/animation/animation-editor) when
+---creating or editing an animation. They cannot, however, be set by a
+---`Script` on an existing animation prior to playing it.
+---
+---`Keyframe` names do not need to be unique. For example, if an `Animation`
+---has three keyframes named "EmitParticles," the connected event returned by
+---this function will fire each time one of these keyframes is reached.
+---
+---See also:
+---
+---- `AnimationTrack`, controls the playback of an animation on a `Humanoid`
+---  or `AnimationController`
+---- `Keyframe`, holds the `Pose|Poses` applied to joints in a `Model` at a
+---  given point of time in an animation
+---- `Keyframe/AddMarker`
+---- `Keyframe/RemoveMarker`
+---- `Keyframe/GetMarkers`
+---
+AnimationTrack.GetMarkerReachedSignal = function(self, name) end;
 ---@param weight float
 ---@param fadeTime float
 ---@return void
@@ -989,102 +1509,46 @@ AnimationTrack.AdjustWeight = function(self, weight, fadeTime) end;
 ---`AnimationTrack/Length` is greater than zero.
 ---
 AnimationTrack.GetTimeOfKeyframe = function(self, keyframeName) end;
----@param speed float
----@return void
----This function changes the `AnimationTrack/Speed` of an animation. A
----positive value for speed plays the animation forward, a negative one plays
----it backwards, and 0 pauses it.
+---@class RBXScriptSignal.DidLoop : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.DidLoop, callback: fun()): RBXScriptConnection
+---This event fires whenever a looped `AnimationTrack` completes a loop, on
+---the next update.
 ---
----An AnimationTrack's initial speed is set as a parameter in
----`AnimationTrack/Play`. However a track's Speed can be changed during
----playback, using AdjustSpeed. When speed is equal to 1, the amount of time
----an animation takes to complete is equal to `AnimationTrack/Length` (in
----seconds).
+---Currently it may also fire at the exact end of a non looped animation
+---track but this behavior should not be relied upon.
 ---
----When is adjusted, then the actual time it will take a track to play can be
----computed by dividing the length by the speed. Speed is a unitless
----quantity.
+AnimationTrack.DidLoop = nil;
+---@class RBXScriptSignal.KeyframeReached : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.KeyframeReached, callback: fun(keyframeName: string)): RBXScriptConnection
+---Fires every time playback of an `AnimationTrack` reaches a `Keyframe` that
+---does not have the default name - "Keyframe."
 ---
----Speed can be used to link the length of an animation to different gameplay
----events (for example recharging an ability) without having to upload
----different variants of the same animation.
+---This event allows a developer to run code at predefined points in an
+---animation (set by `Keyframe` names). This allows the default functionality
+---of Roblox animations to be expanded upon by adding `Sound`s or
+---`ParticleEffect`s at different points in an animation.
 ---
-AnimationTrack.AdjustSpeed = function(self, speed) end;
----@param fadeTime float
----@param weight float
----@param speed float
----@return void
----When `AnimationTrack/Play` is called the track's animation will begin
----playing and the weight of the animation will increase from 0 to the
----specified weight (defaults to 1) over the specified fadeTime (defaults to
----0.1).
+---`Keyframe` names do not need to be unique. For example, if an Animation
+---has three keyframes named "Particles" the KeyframeReached event will fire
+---each time one of these keyframes is reached.
 ---
----The speed the `AnimationTrack` will play at is determined by the speed
----parameter (defaults to 1). When the speed is equal to 1 the number of
----seconds the track will take to complete is equal to the track's
----`AnimationTrack/Length` property. For example, a speed of 2 will cause the
----track to play twice as fast.
+---`Keyframe` names can be set in the Roblox Animation Editor when creating
+---or editing an animation. They cannot however be set by a `Script` on an
+---existing animation prior to playing it.
 ---
----The weight and speed of the animation can also be changed after the
----animation has begun playing by using the `AnimationTrack/AdjustWeight` and
----`AnimationTrack/AdjustSpeed` methods.
+AnimationTrack.KeyframeReached = nil;
+---@class RBXScriptSignal.Stopped : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Stopped, callback: fun()): RBXScriptConnection
+---Fires whenever the `AnimationTrack` finishes playing.
 ---
----If the developer wants to start the animation at a specific point using
----`AnimationTrack/TimePosition`, it is important the animation is played
----before this is done.
+---This event has a number of uses. It can be used to wait until an
+---`AnimationTrack` has stopped before continuing (for example, if chaining a
+---series of animations to play after each other). It can also be used to
+---clean up any `Instance`s created during the animation playback.
 ---
-AnimationTrack.Play = function(self, fadeTime, weight, speed) end;
----@param fadeTime float
----@return void
----Stops the `AnimationTrack`. Once called playback of the `AnimationTrack`
----will stop and the weight of the animation will move towards zero over a
----length of time specified by the optional fadeTime parameter.
----
----For example, if Stop is called with a fadeTime of 2 seconds it will take
----two seconds for the weight of the `AnimationTrack` to reach zero and its
----effects completely end. Please note this will be the case regardless of
----the initial weight of the animation.
----
----It is not recommended to use a fadeTime of 0 seconds to try to override
----this effect and end the animation immediately as presently, this causes
----the `AnimationTrack` poses to freeze.
----
-AnimationTrack.Stop = function(self, fadeTime) end;
----@param name string
----@return RBXScriptSignal
----This function returns an `DataType/RBXScriptSignal|event` similar to the
----`AnimationTrack/KeyframeReached` event, except it only fires when a
----specified `KeyframeMarker` has been hit in an `Animation|animation`. The
----difference allows for greater control of when the event will fire.
----
----To learn more about using this function, see **Animation Events** in the
----[Animation Editor](/building-and-visuals/animation/animation-editor)
----article.
----
----#### More About Keyframes
----
----`Keyframe` names can be set in the Roblox
----[Animation Editor](/building-and-visuals/animation/animation-editor) when
----creating or editing an animation. They cannot, however, be set by a
----`Script` on an existing animation prior to playing it.
----
----`Keyframe` names do not need to be unique. For example, if an `Animation`
----has three keyframes named "EmitParticles," the connected event returned by
----this function will fire each time one of these keyframes is reached.
----
----See also:
----
----- `AnimationTrack`, controls the playback of an animation on a `Humanoid`
----  or `AnimationController`
----- `Keyframe`, holds the `Pose|Poses` applied to joints in a `Model` at a
----  given point of time in an animation
----- `Keyframe/AddMarker`
----- `Keyframe/RemoveMarker`
----- `Keyframe/GetMarkers`
----
-AnimationTrack.GetMarkerReachedSignal = function(self, name) end;
+AnimationTrack.Stopped = nil;
 ---@class Animator : Instance
----@field public AnimationPlayed fun(animationTrack: AnimationTrack): RbxScriptSignal
+---@field public AnimationPlayed RBXScriptSignal.AnimationPlayed
 ---The main class responsible for the playback and replication of
 ---`Animation|Animations`. All replication of playing
 ---`AnimationTrack|AnimationTracks` is handled through the Animator instance.
@@ -1093,38 +1557,36 @@ AnimationTrack.GetMarkerReachedSignal = function(self, name) end;
 ---`AnimationController/LoadAnimation` is called under a `Humanoid` or
 ---`AnimationController` for the first time.
 ---
----For animation replication to function it is important for the Animator to
----be first created on the server.
+---For animation replication to function it is important for the Animator to be
+---first created on the server.
 ---
 ---## Whether to load an Animation on the client or server
 ---
----In order for AnimationTracks to replicate correctly, it's important to
----know when they should be loaded on the client (via a`LocalScript`) or on
----the server (via a `Script`).
+---In order for AnimationTracks to replicate correctly, it's important to know
+---when they should be loaded on the client (via a`LocalScript`) or on the server
+---(via a `Script`).
 ---
 ---If an `Animator` is a descendant of a Humanoid or AnimationController in a
----Player's `Player/Character|Character` then animations started on that
----Player's client will be replicated to the server and other clients.
+---Player's `Player/Character|Character` then animations started on that Player's
+---client will be replicated to the server and other clients.
 ---
----If the Animator is not a descendant of a player character, its animations
----must be loaded and started on the server to replicate.
+---If the Animator is not a descendant of a player character, its animations must
+---be loaded and started on the server to replicate.
 ---
----The Animator object must be initially created on the server and replicated
----to clients for animation replication to work at all. If an Animator is
----created locally, then AnimationTracks loaded with that Animator will not
----replicate.
+---The Animator object must be initially created on the server and replicated to
+---clients for animation replication to work at all. If an Animator is created
+---locally, then AnimationTracks loaded with that Animator will not replicate.
 ---
 ---Both Humanoid:LoadAnimation() and AnimationController:LoadAnimation() will
----create an Animator if one does not already exist. When calling
----LoadAnimation from LocalScripts you need to be careful to wait for the
----Animator to replicate from the server before calling LoadAnimation if you
----want character animations to replicate. You can do this with
----WaitForChild("Animator").
+---create an Animator if one does not already exist. When calling LoadAnimation
+---from LocalScripts you need to be careful to wait for the Animator to replicate
+---from the server before calling LoadAnimation if you want character animations
+---to replicate. You can do this with WaitForChild("Animator").
 ---
 ---See also:
 ---
----- [Using the Animation Editor][1], explore this powerful built-in plugin
----  for creating custom animations
+---- [Using the Animation Editor][1], explore this powerful built-in plugin for
+---  creating custom animations
 ---- [Using Animations in Games][2], learn how to add pre-built and custom
 ---  animations to your game
 ---
@@ -1132,27 +1594,6 @@ AnimationTrack.GetMarkerReachedSignal = function(self, name) end;
 ---[2]: /building-and-visuals/animation/using-animations
 ---
 local Animator;
----@param motors Variant
----@return void
----Given the current set of `AnimationTrack|AnimationTracks` playing, and
----their current times and play speeds, compute relative velocities between
----the parts and apply them to Motor6D.Part1 (the part which `Animator`
----considers the "child" part). These relative velocity calculations and
----assignments happen in the order provided.
----
----This method doesn't apply velocities for a given joint if both of the
----joint's parts are currently part of the same assembly, for example, if
----they are still connected directly or indirectly by Motors or Welds.
----
----This method doesn't disable or remove the joints for you. You must disable
----or otherwise remove the rigid joints from the assembly before calling this
----method.
----
----The given `Motor6Ds` are not required to be descendants of the the
----`DataModel`. Removing the joints from the `DataModel` before calling this
----method is supported.
----
-Animator.ApplyJointVelocities = function(self, motors) end;
 ---@param deltaTime float
 ---@return void
 ---Increments the `AnimationTrack/TimePosition` of all playing
@@ -1178,6 +1619,31 @@ Animator.ApplyJointVelocities = function(self, motors) end;
 ---Roblox Animation Editor plugin uses.
 ---
 Animator.StepAnimations = function(self, deltaTime) end;
+---@return Array
+---Returns the list of currently playing `AnimationTracks|AnimationTracks`.
+---
+Animator.GetPlayingAnimationTracks = function(self) end;
+---@param motors Variant
+---@return void
+---Given the current set of `AnimationTrack|AnimationTracks` playing, and
+---their current times and play speeds, compute relative velocities between
+---the parts and apply them to Motor6D.Part1 (the part which `Animator`
+---considers the "child" part). These relative velocity calculations and
+---assignments happen in the order provided.
+---
+---This method doesn't apply velocities for a given joint if both of the
+---joint's parts are currently part of the same assembly, for example, if
+---they are still connected directly or indirectly by Motors or Welds.
+---
+---This method doesn't disable or remove the joints for you. You must disable
+---or otherwise remove the rigid joints from the assembly before calling this
+---method.
+---
+---The given `Motor6Ds` are not required to be descendants of the the
+---`DataModel`. Removing the joints from the `DataModel` before calling this
+---method is supported.
+---
+Animator.ApplyJointVelocities = function(self, motors) end;
 ---@param animation Animation
 ---@return AnimationTrack
 ---**LoadAnimation** will load the given `Animation` onto an `Animator`,
@@ -1229,14 +1695,17 @@ Animator.StepAnimations = function(self, deltaTime) end;
 ---[2]: /building-and-visuals/animation/using-animations
 ---
 Animator.LoadAnimation = function(self, animation) end;
----@return Array
----Returns the list of currently playing `AnimationTracks|AnimationTracks`.
+---@class RBXScriptSignal.AnimationPlayed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AnimationPlayed, callback: fun(animationTrack: AnimationTrack)): RBXScriptConnection
 ---
-Animator.GetPlayingAnimationTracks = function(self) end;
+Animator.AnimationPlayed = nil;
 ---@class AppStorageService : LocalStorageService, Instance
 local AppStorageService;
 ---@class AppUpdateService : Instance
 local AppUpdateService;
+---@param handler Function
+---@return void
+AppUpdateService.CheckForUpdate = function(self, handler) end;
 ---@return bool
 AppUpdateService.PerformManagedUpdate = function(self) end;
 ---@param surveyUrl string
@@ -1244,117 +1713,87 @@ AppUpdateService.PerformManagedUpdate = function(self) end;
 AppUpdateService.DisableDUARAndOpenSurvey = function(self, surveyUrl) end;
 ---@return void
 AppUpdateService.DisableDUAR = function(self) end;
----@param handler Function
----@return void
-AppUpdateService.CheckForUpdate = function(self, handler) end;
 ---@class ArcHandles : HandlesBase, PartAdornment, GuiBase3d, GuiBase, Instance
 ---@field public Axes Axes
----@field public MouseButton1Down fun(axis: Axis): RbxScriptSignal
----@field public MouseButton1Up fun(axis: Axis): RbxScriptSignal
----@field public MouseDrag fun(axis: Axis, relativeAngle: float, deltaRadius: float): RbxScriptSignal
----@field public MouseEnter fun(axis: Axis): RbxScriptSignal
----@field public MouseLeave fun(axis: Axis): RbxScriptSignal
----For handles to be interactive, they must be parented to a player's
----`PlayerGui` or the `CoreGui`. The `ArcHandles` object places 3D ArcHandles
----around any object that its `PartAdornment/Adornee` is set to. The Adornee
----property must be set to a 3D object for the handles to appear. The
----`GuiBase3d/Color3|Color` can be changed.
+---@field public MouseButton1Down RBXScriptSignal.MouseButton1Down
+---@field public MouseButton1Up RBXScriptSignal.MouseButton1Up
+---@field public MouseDrag RBXScriptSignal.MouseDrag
+---@field public MouseEnter RBXScriptSignal.MouseEnter
+---@field public MouseLeave RBXScriptSignal.MouseLeave
+---For handles to be interactive, they must be parented to a player's `PlayerGui`
+---or the `CoreGui`. The `ArcHandles` object places 3D ArcHandles around any
+---object that its `PartAdornment/Adornee` is set to. The Adornee property must
+---be set to a 3D object for the handles to appear. The `GuiBase3d/Color3|Color`
+---can be changed.
 ---
 ---<img src="/assets/bltbba19782caf0574c/ArchHandlesExample.png" 
 ---     alt="ArcHandles Example" width="50%" height="50%" />
 ---
 local ArcHandles;
+---Sets the current Axes ArcHandles will show.
+---
+ArcHandles.Axes = nil;
+---@class RBXScriptSignal.MouseButton1Down : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseButton1Down, callback: fun(axis: Axis)): RBXScriptConnection
+---Fired when the left mouse button goes down on one of the GUI handles.
+---
+ArcHandles.MouseButton1Down = nil;
+---@class RBXScriptSignal.MouseButton1Up : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseButton1Up, callback: fun(axis: Axis)): RBXScriptConnection
+---Fired when the left mouse button is released on one of the GUI handles.
+---
+ArcHandles.MouseButton1Up = nil;
+---@class RBXScriptSignal.MouseDrag : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseDrag, callback: fun(axis: Axis, relativeAngle: float, deltaRadius: float)): RBXScriptConnection
+---Fired when the mouse moves while the MouseButton1Down event has fired, but
+---the left mouse button has not been released yet.
+---
+ArcHandles.MouseDrag = nil;
+---@class RBXScriptSignal.MouseEnter : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseEnter, callback: fun(axis: Axis)): RBXScriptConnection
+---Fired when a mouse "enters" the GUI handle.
+---
+ArcHandles.MouseEnter = nil;
+---@class RBXScriptSignal.MouseLeave : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseLeave, callback: fun(axis: Axis)): RBXScriptConnection
+---Fired when the mouse leaves the GUI handle.
+---
+ArcHandles.MouseLeave = nil;
 ---@class AssetCounterService : Instance
 local AssetCounterService;
 ---@class AssetDeliveryProxy : Instance
 local AssetDeliveryProxy;
 ---@class AssetImportService : Instance
----@field public ProgressUpdate fun(progressRatio: float): RbxScriptSignal
----@field public SettingsChanged fun(property: string): RbxScriptSignal
----@field public UploadFinished fun(succeeded: bool, errorMap: Dictionary): RbxScriptSignal
+---@field public ProgressUpdate RBXScriptSignal.ProgressUpdate
+---@field public UploadFinished RBXScriptSignal.UploadFinished
 local AssetImportService;
----@return bool
-AssetImportService.IsAvatar = function(self) end;
 ---@return Dictionary
 AssetImportService.GetCurrentImportMap = function(self) end;
 ---@return void
 AssetImportService.Upload = function(self) end;
 ---@return Tuple
 AssetImportService.ImportMeshWithPrompt = function(self) end;
+---@return bool
+AssetImportService.IsAvatar = function(self) end;
+---@return void
+AssetImportService.Cancel = function(self) end;
 ---@param fileName string
 ---@return Tuple
 AssetImportService.ImportMesh = function(self, fileName) end;
+---@class RBXScriptSignal.ProgressUpdate : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ProgressUpdate, callback: fun(progressRatio: float)): RBXScriptConnection
+---
+AssetImportService.ProgressUpdate = nil;
+---@class RBXScriptSignal.UploadFinished : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.UploadFinished, callback: fun(succeeded: bool, errorMap: Dictionary)): RBXScriptConnection
+---
+AssetImportService.UploadFinished = nil;
 ---@class AssetManagerService : Instance
----@field public AssetImportedSignal fun(assetType: AssetType, assetId: string, assetName: int64): RbxScriptSignal
----@field public ImportSessionFinished fun(): RbxScriptSignal
----@field public ImportSessionStarted fun(): RbxScriptSignal
----@field public MayBeLinkedSourceModified fun(aliasName: string): RbxScriptSignal
+---@field public AssetImportedSignal RBXScriptSignal.AssetImportedSignal
+---@field public ImportSessionFinished RBXScriptSignal.ImportSessionFinished
+---@field public ImportSessionStarted RBXScriptSignal.ImportSessionStarted
+---@field public MayBeLinkedSourceModified RBXScriptSignal.MayBeLinkedSourceModified
 local AssetManagerService;
----@param aliasName string
----@return bool
-AssetManagerService.HasUnpublishedChangesForLinkedSource = function(self, aliasName) end;
----@param aliasName string
----@return void
-AssetManagerService.RevertLinkedSourceToLastPublishedVersion = function(self, aliasName) end;
----@param assetId int64
----@param assetName string
----@return void
-AssetManagerService.InsertAudio = function(self, assetId, assetName) end;
----@param modelId int64
----@return void
-AssetManagerService.InsertModel = function(self, modelId) end;
----@param packageId int64
----@return void
-AssetManagerService.ShowPackageDetails = function(self, packageId) end;
----@param placeId int64
----@param newName string
----@return void
-AssetManagerService.RenamePlace = function(self, placeId, newName) end;
----@param packageId int64
----@return void
-AssetManagerService.UpdateAllPackages = function(self, packageId) end;
----@param modelId int64
----@param newName string
----@return void
-AssetManagerService.RenameModel = function(self, modelId, newName) end;
----@param assetId int64
----@return void
-AssetManagerService.InsertImage = function(self, assetId) end;
----@param packageId int64
----@return void
-AssetManagerService.InsertPackage = function(self, packageId) end;
----@param aliasName string
----@return int64
-AssetManagerService.GetMeshIdFromAliasName = function(self, aliasName) end;
----@param aliasName string
----@return void
-AssetManagerService.InsertLinkedSourceAsLocalScript = function(self, aliasName) end;
----@return int64
-AssetManagerService.AddNewPlace = function(self) end;
----@param assetType int
----@param assetId int64
----@param oldAliasName string
----@param newAliasName string
----@return void
-AssetManagerService.RenameAlias = function(self, assetType, assetId, oldAliasName, newAliasName) end;
----@param aliasName string
----@return void
-AssetManagerService.InsertLinkedSourceAsModuleScript = function(self, aliasName) end;
----@param assetType int
----@param assetId int64
----@param aliasName string
----@return void
-AssetManagerService.CreateAlias = function(self, assetType, assetId, aliasName) end;
----@param assetId int64
----@param assetName string
----@return void
-AssetManagerService.InsertVideo = function(self, assetId, assetName) end;
----@param assetId int64
----@return int64
-AssetManagerService.GetMeshIdFromAssetId = function(self, assetId) end;
----@param placeId int64
----@return void
-AssetManagerService.RemovePlace = function(self, placeId) end;
 ---@param aliasName string
 ---@return void
 AssetManagerService.OpenLinkedSource = function(self, aliasName) end;
@@ -1362,68 +1801,122 @@ AssetManagerService.OpenLinkedSource = function(self, aliasName) end;
 ---@param insertWithLocation bool
 ---@return void
 AssetManagerService.InsertMesh = function(self, aliasName, insertWithLocation) end;
----@param packageId int64
----@return void
-AssetManagerService.ViewPackageOnWebsite = function(self, packageId) end;
 ---@param placeId int64
+---@param newName string
 ---@return void
-AssetManagerService.OpenPlace = function(self, placeId) end;
----@param aliasName string
----@return void
-AssetManagerService.DeleteAlias = function(self, aliasName) end;
+AssetManagerService.RenamePlace = function(self, placeId, newName) end;
 ---@param aliasName string
 ---@return int64
 AssetManagerService.GetTextureIdFromAliasName = function(self, aliasName) end;
----@param assetId int64
----@param aliasName string
+---@param modelId int64
+---@param newName string
 ---@return void
-AssetManagerService.PublishLinkedSource = function(self, assetId, aliasName) end;
----@param aliasName string
----@return void
-AssetManagerService.InsertLinkedSourceAsScript = function(self, aliasName) end;
----@param aliasNames Array
----@return void
-AssetManagerService.InsertMeshesWithLocation = function(self, aliasNames) end;
+AssetManagerService.RenameModel = function(self, modelId, newName) end;
 ---@param assetId int64
 ---@return int64
 AssetManagerService.GetTextureIdFromAssetId = function(self, assetId) end;
 ---@param aliasName string
 ---@return void
+AssetManagerService.DeleteAlias = function(self, aliasName) end;
+---@param aliasNames Array
+---@return void
+AssetManagerService.InsertMeshesWithLocation = function(self, aliasNames) end;
+---@param aliasName string
+---@return bool
+AssetManagerService.HasUnpublishedChangesForLinkedSource = function(self, aliasName) end;
+---@param assetId int64
+---@param aliasName string
+---@return void
+AssetManagerService.PublishLinkedSource = function(self, assetId, aliasName) end;
+---@return int64
+AssetManagerService.AddNewPlace = function(self) end;
+---@param placeId int64
+---@return void
+AssetManagerService.RemovePlace = function(self, placeId) end;
+---@param assetId int64
+---@param assetName string
+---@return void
+AssetManagerService.InsertAudio = function(self, assetId, assetName) end;
+---@param aliasName string
+---@return void
 AssetManagerService.RefreshLinkedSource = function(self, aliasName) end;
+---@param modelId int64
+---@return void
+AssetManagerService.InsertModel = function(self, modelId) end;
+---@param assetType int
+---@param assetId int64
+---@param aliasName string
+---@return void
+AssetManagerService.CreateAlias = function(self, assetType, assetId, aliasName) end;
+---@param aliasName string
+---@return void
+AssetManagerService.RevertLinkedSourceToLastPublishedVersion = function(self, aliasName) end;
+---@param assetType int
+---@param assetId int64
+---@param oldAliasName string
+---@param newAliasName string
+---@return void
+AssetManagerService.RenameAlias = function(self, assetType, assetId, oldAliasName, newAliasName) end;
+---@param aliasName string
+---@return int64
+AssetManagerService.GetMeshIdFromAliasName = function(self, aliasName) end;
+---@param packageId int64
+---@return void
+AssetManagerService.ShowPackageDetails = function(self, packageId) end;
+---@param assetId int64
+---@return void
+AssetManagerService.InsertImage = function(self, assetId) end;
+---@param packageId int64
+---@return void
+AssetManagerService.InsertPackage = function(self, packageId) end;
+---@param packageId int64
+---@return void
+AssetManagerService.UpdateAllPackages = function(self, packageId) end;
+---@param aliasName string
+---@return void
+AssetManagerService.InsertLinkedSourceAsLocalScript = function(self, aliasName) end;
+---@param placeId int64
+---@return void
+AssetManagerService.OpenPlace = function(self, placeId) end;
+---@param packageId int64
+---@return void
+AssetManagerService.ViewPackageOnWebsite = function(self, packageId) end;
+---@param aliasName string
+---@return void
+AssetManagerService.InsertLinkedSourceAsModuleScript = function(self, aliasName) end;
+---@param assetId int64
+---@return int64
+AssetManagerService.GetMeshIdFromAssetId = function(self, assetId) end;
+---@param assetId int64
+---@param assetName string
+---@return void
+AssetManagerService.InsertVideo = function(self, assetId, assetName) end;
+---@param aliasName string
+---@return void
+AssetManagerService.InsertLinkedSourceAsScript = function(self, aliasName) end;
+---@class RBXScriptSignal.AssetImportedSignal : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AssetImportedSignal, callback: fun(assetType: AssetType, assetId: string, assetName: int64)): RBXScriptConnection
+---
+AssetManagerService.AssetImportedSignal = nil;
+---@class RBXScriptSignal.ImportSessionFinished : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ImportSessionFinished, callback: fun()): RBXScriptConnection
+---
+AssetManagerService.ImportSessionFinished = nil;
+---@class RBXScriptSignal.ImportSessionStarted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ImportSessionStarted, callback: fun()): RBXScriptConnection
+---
+AssetManagerService.ImportSessionStarted = nil;
+---@class RBXScriptSignal.MayBeLinkedSourceModified : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MayBeLinkedSourceModified, callback: fun(aliasName: string)): RBXScriptConnection
+---
+AssetManagerService.MayBeLinkedSourceModified = nil;
 ---@class AssetService : Instance
 ---The AssetService is a non-replicated service that handles asset related
----queries to the Roblox web API. Eventually, this will house all asset
----related queries for Roblox objects stored in the web. One should mind the
----limitations this API has.
+---queries to the Roblox web API. Eventually, this will house all asset related
+---queries for Roblox objects stored in the web. One should mind the limitations
+---this API has.
 ---
 local AssetService;
----@param placeName string
----@param templatePlaceID int64
----@param description string
----@return int64
----Clones a place with placeId equal to given templatePlaceId. It is placed
----into the inventory of the place's creator with the given name and
----description. This method will also return the placeId of the new place,
----which can be used with TeleportService. This method cannot be used to
----clone places that you do not own.
----
-AssetService.CreatePlaceAsync = function(self, placeName, templatePlaceID, description) end;
----@return Instance
----Returns a `StandardPages` object which contains the name and placeId of
----places within the current 'Game' (otherwise known as a 'Universe').
----
-AssetService.GetGamePlacesAsync = function(self) end;
----@param packageAssetId int64
----@return Array
----Returns an array of assetIds that are contained in a specified package.
----
-AssetService.GetAssetIdsForPackage = function(self, packageAssetId) end;
----@return void
----Saves the state of the current place. This will only work for places that
----have been created with `AssetService/CreatePlaceAsync` or
----`AssetService/CreatePlaceInPlayerInventoryAsync`.
----
-AssetService.SavePlaceAsync = function(self) end;
 ---@param bundleId int64
 ---@return Dictionary
 ---If the bundle Id does not exist, it throws HTTP 400 (HTTP/1.1 400 Bad
@@ -1506,9 +1999,17 @@ AssetService.SavePlaceAsync = function(self) end;
 ---</table>
 ---
 AssetService.GetBundleDetailsAsync = function(self, bundleId) end;
----@param bundleId int64
----@return Dictionary
-AssetService.GetBundleDetailsSync = function(self, bundleId) end;
+---@param placeName string
+---@param templatePlaceID int64
+---@param description string
+---@return int64
+---Clones a place with placeId equal to given templatePlaceId. It is placed
+---into the inventory of the place's creator with the given name and
+---description. This method will also return the placeId of the new place,
+---which can be used with TeleportService. This method cannot be used to
+---clone places that you do not own.
+---
+AssetService.CreatePlaceAsync = function(self, placeName, templatePlaceID, description) end;
 ---@param creationID int64
 ---@return int64
 ---The GetCreatorAssetID function returns the `Player/UserId` of the account
@@ -1520,6 +2021,19 @@ AssetService.GetBundleDetailsSync = function(self, bundleId) end;
 ---should avoid using it for now.
 ---
 AssetService.GetCreatorAssetID = function(self, creationID) end;
+---@param packageAssetId int64
+---@return Array
+---Returns an array of assetIds that are contained in a specified package.
+---
+AssetService.GetAssetIdsForPackage = function(self, packageAssetId) end;
+---@param bundleId int64
+---@return Dictionary
+AssetService.GetBundleDetailsSync = function(self, bundleId) end;
+---@return Instance
+---Returns a `StandardPages` object which contains the name and placeId of
+---places within the current 'Game' (otherwise known as a 'Universe').
+---
+AssetService.GetGamePlacesAsync = function(self) end;
 ---@param assetId int64
 ---@param thumbnailSize Vector2
 ---@param assetType int
@@ -1538,6 +2052,12 @@ AssetService.GetAssetThumbnailAsync = function(self, assetId, thumbnailSize, ass
 ---their place's configuration.
 ---
 AssetService.CreatePlaceInPlayerInventoryAsync = function(self, player, placeName, templatePlaceID, description) end;
+---@return void
+---Saves the state of the current place. This will only work for places that
+---have been created with `AssetService/CreatePlaceAsync` or
+---`AssetService/CreatePlaceInPlayerInventoryAsync`.
+---
+AssetService.SavePlaceAsync = function(self) end;
 ---@class Atmosphere : Instance
 ---@field public Color Color3
 ---@field public Decay Color3
@@ -1547,12 +2067,12 @@ AssetService.CreatePlaceInPlayerInventoryAsync = function(self, player, placeNam
 ---@field public Offset float
 ---Fog properties are hidden when Lighting contains an Atmosphere object.
 ---
----The **Atmosphere** object pushes Roblox closer toward realistic
----environments where sunlight scatters in different ways depending on
----density and other air particle properties. It simulates real-world "aerial
----perspective" and lets you control light transmission from the background
----sky through distant objects. Furthermore, it controls haze and glare
----conditions, letting you tune a perfect sunset, foggy afternoon, and more.
+---The **Atmosphere** object pushes Roblox closer toward realistic environments
+---where sunlight scatters in different ways depending on density and other air
+---particle properties. It simulates real-world "aerial perspective" and lets you
+---control light transmission from the background sky through distant objects.
+---Furthermore, it controls haze and glare conditions, letting you tune a perfect
+---sunset, foggy afternoon, and more.
 ---
 ---See also:
 ---
@@ -1561,10 +2081,53 @@ AssetService.CreatePlaceInPlayerInventoryAsync = function(self, player, placeNam
 ---- [Skybox](/building-and-visuals/lighting-and-effects/skybox) for how to
 ---  change the default skybox for games and customize the lighting.
 ---- [Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects)
----  for how post-processing effects can quickly improve a game's visuals
----  with a variety of customizable filters.
+---  for how post-processing effects can quickly improve a game's visuals with a
+---  variety of customizable filters.
 ---
 local Atmosphere;
+---A `datatype/Color3` value which changes the `Atmosphere` hue for subtle
+---environmental moods. This is best combined with increased
+---`Atmosphere.Haze` to expand the visible effect.
+---
+Atmosphere.Color = nil;
+---Defines the hue of the `Atmosphere` away from the sun, gradually falling
+---off from `Atmosphere.Color` towards this value. Must be used with
+---`Atmosphere.Haze` and `Atmosphere.Glare` levels higher than 0 to see any
+---effect.
+---
+Atmosphere.Decay = nil;
+---Defines the amount of particles in the air. The higher the density, the
+---more particles and the more in-game objects/terrain will be obscured by
+---them. Note that density does not **directly** affect the skybox &mdash; it
+---merely affects in-game objects/terrain and visibility of the skybox
+---through them.
+---
+Atmosphere.Density = nil;
+---Specifies the glow/glare of the `Atmosphere` around the sun. More glare
+---results in an increased effect of sunlight cast onto the sky and world.
+---Must be used with a `Atmosphere.Haze` level higher than 0 to see any
+---effect.
+---
+Atmosphere.Glare = nil;
+---Defines the haziness of the `Atmosphere` with a visible effect both above
+---the horizon and into the distance. This can be combined with
+---`Atmosphere.Color` to create environmental moods, like a grey tint for a
+---polluted alien planet.
+---
+Atmosphere.Haze = nil;
+---Controls how light transmits between the camera and the sky background.
+---Increase this value to create a horizon silhouette against the sky or
+---reduce it to blend distant objects into the sky for an endless and
+---seamless open world.
+---
+---Offset should be balanced against `Atmosphere.Density` and carefully
+---tested in your place. A low offset may cause "ghosting" where the skybox
+---can be seen through objects/terrain. This can be corrected by increasing
+---the offset, which more clearly silhouettes distant objects/terrain against
+---the sky, but too much offset may reveal level-of-detail "popping" for far
+---distant terrain and meshes.
+---
+Atmosphere.Offset = nil;
 ---@class Attachment : Instance
 ---@field public Axis Vector3
 ---@field public CFrame CFrame
@@ -1579,89 +2142,131 @@ local Atmosphere;
 ---@field public WorldPosition Vector3
 ---@field public WorldRotation Vector3
 ---@field public WorldSecondaryAxis Vector3
----`Attachment` defines a point and orientation relative to a parent
----`BasePart`. The offset is stored in the `Attachment/CFrame|CFrame`
----property. The offset can also be set through other properties, such as
+---`Attachment` defines a point and orientation relative to a parent `BasePart`.
+---The offset is stored in the `Attachment/CFrame|CFrame` property. The offset
+---can also be set through other properties, such as
 ---`Attachment/WorldCFrame|WorldCFrame`.
 ---
 ---Attachments are used by several kinds of `Constraint` and are also valid
----parents for many objects that are otherwise parented directly to a
----`BasePart`, such as:
+---parents for many objects that are otherwise parented directly to a `BasePart`,
+---such as:
 ---
----- Particle-emitting objects like `ParticleEmitter`, `Fire`, etc, emit from
----  the attachment
+---- Particle-emitting objects like `ParticleEmitter`, `Fire`, etc, emit from the
+---  attachment
 ---- Light-emitting objects like `PointLight` and `SpotLight` shine from the
 ---  attachment
 ---- `Sound` will use the attachment as the focal point of the sound
 ---
 local Attachment;
+---The `Attachment/Axis|Axis` is the direction of the `Attachment`'s X-Axis,
+---represented as a unit `DataType/Vector3`.
+---
+Attachment.Axis = nil;
+---The `CFrame` offset of the Attachment. Changes to this property will
+---reflect onto the `Attachment/Position` &amp; `Attachment/Rotation`
+---properties of this object.
+---
+---Similarly, a change to either of those properties will reflect onto this
+---property.
+---
+Attachment.CFrame = nil;
+---The orientation of the Attachment relative to the orientation of its
+---parent, in degrees. Rotations are in Z, X, Y order.
+---
+Attachment.Orientation = nil;
+---The positional offset of the Attachment, relative to the position and
+---orientation of its parent.
+---
+Attachment.Position = nil;
+---The rotation of the Attachment relative to the rotation of its parent, in
+---degrees. Rotations are in Z, Y, X order.
+---
+Attachment.Rotation = nil;
+---The direction of the `Attachment`'s Y-Axis, represented as a unit
+---`DataType/Vector3`.
+---
+Attachment.SecondaryAxis = nil;
+---Toggles the visibility of the Attachment in-experience.
+---
+Attachment.Visible = nil;
+---The direction of the `Attachment|Attachment's` `Attachment/Axis|X-Axis`
+---relative to the world, as a unit `DataType/Vector3` with a length of 1.
+---
+Attachment.WorldAxis = nil;
+---WorldCFrame describes the exact `DataType/CFrame` of this attachment in
+---the game world, independent of its `BasePart` parent.
+---
+---The value of this property is equivalent to multiplying the CFrame of the
+---`Attachment|attachment's` parent by its own CFrame:
+---
+---```lua
+---local worldCFrame = attachment.CFrame
+---if attachment.Parent then
+---    worldCFrame = attachment.Parent.CFrame * worldCFrame
+---end
+---```
+---
+Attachment.WorldCFrame = nil;
+---The orientation (in degrees) of the `Attachment|attachment` relative to
+---the world, rather than the parent of the Attachment.
+---
+---Rotations are in Z, X, Y order.
+---
+Attachment.WorldOrientation = nil;
+---The position of the `Attachment|attachment` relative to the world, rather
+---than the parent of the Attachment.
+---
+Attachment.WorldPosition = nil;
+---The rotation (in degrees) of the attachment relative to the world, rather
+---than the parent of the `Attachment`.
+---
+Attachment.WorldRotation = nil;
+---The direction of the `Attachment/SecondaryAxis|Y-Axis` of the
+---`Attachment`, relative to the world, as a unit `DataType/Vector3` with a
+---length of 1.
+---
+Attachment.WorldSecondaryAxis = nil;
+---@return Vector3
+---Returns the value of the Attachment's `Attachment/Axis`.
+---
+Attachment.GetAxis = function(self) end;
 ---@param axis Vector3
 ---@return void
 ---Sets the value of the Attachment's `Attachment/SecondaryAxis`.
 ---
 Attachment.SetSecondaryAxis = function(self, axis) end;
+---@return Vector3
+---Returns the value of the Attachment's `Attachment/SecondaryAxis`.
+---
+Attachment.GetSecondaryAxis = function(self) end;
 ---@param axis Vector3
 ---@return void
 ---Sets the value of the Attachment's `Attachment/Axis`.
 ---
 Attachment.SetAxis = function(self, axis) end;
----@return Vector3
----Returns the value of the Attachment's `Attachment/Axis`.
----
-Attachment.GetAxis = function(self) end;
----@return Vector3
----Returns the value of the Attachment's `Attachment/SecondaryAxis`.
----
-Attachment.GetSecondaryAxis = function(self) end;
 ---@class AvatarEditorService : Instance
----@field public OpenAllowInventoryReadAccess fun(): RbxScriptSignal
----@field public OpenPromptCreateOufit fun(humanoidDescription: HumanoidDescription, rigType: HumanoidRigType): RbxScriptSignal
----@field public OpenPromptDeleteOutfit fun(outfitId: int64): RbxScriptSignal
----@field public OpenPromptRenameOutfit fun(outfitId: int64): RbxScriptSignal
----@field public OpenPromptSaveAvatar fun(humanoidDescription: HumanoidDescription, rigType: HumanoidRigType): RbxScriptSignal
----@field public OpenPromptSetFavorite fun(itemId: int64, itemType: AvatarItemType, shouldFavorite: bool): RbxScriptSignal
----@field public OpenPromptUpdateOutfit fun(outfitId: int64, humanoidDescription: HumanoidDescription, rigType: HumanoidRigType): RbxScriptSignal
----@field public PromptAllowInventoryReadAccessCompleted fun(result: AvatarPromptResult): RbxScriptSignal
----@field public PromptCreateOutfitCompleted fun(result: AvatarPromptResult, failureType: Variant): RbxScriptSignal
----@field public PromptDeleteOutfitCompleted fun(result: AvatarPromptResult): RbxScriptSignal
----@field public PromptRenameOutfitCompleted fun(result: AvatarPromptResult): RbxScriptSignal
----@field public PromptSaveAvatarCompleted fun(result: AvatarPromptResult, humanoidDescription: HumanoidDescription): RbxScriptSignal
----@field public PromptSetFavoriteCompleted fun(result: AvatarPromptResult): RbxScriptSignal
----@field public PromptUpdateOutfitCompleted fun(result: AvatarPromptResult): RbxScriptSignal
+---@field public OpenAllowInventoryReadAccess RBXScriptSignal.OpenAllowInventoryReadAccess
+---@field public OpenPromptCreateOufit RBXScriptSignal.OpenPromptCreateOufit
+---@field public OpenPromptDeleteOutfit RBXScriptSignal.OpenPromptDeleteOutfit
+---@field public OpenPromptRenameOutfit RBXScriptSignal.OpenPromptRenameOutfit
+---@field public OpenPromptSaveAvatar RBXScriptSignal.OpenPromptSaveAvatar
+---@field public OpenPromptSetFavorite RBXScriptSignal.OpenPromptSetFavorite
+---@field public OpenPromptUpdateOutfit RBXScriptSignal.OpenPromptUpdateOutfit
+---@field public PromptAllowInventoryReadAccessCompleted RBXScriptSignal.PromptAllowInventoryReadAccessCompleted
+---@field public PromptCreateOutfitCompleted RBXScriptSignal.PromptCreateOutfitCompleted
+---@field public PromptDeleteOutfitCompleted RBXScriptSignal.PromptDeleteOutfitCompleted
+---@field public PromptRenameOutfitCompleted RBXScriptSignal.PromptRenameOutfitCompleted
+---@field public PromptSaveAvatarCompleted RBXScriptSignal.PromptSaveAvatarCompleted
+---@field public PromptSetFavoriteCompleted RBXScriptSignal.PromptSetFavoriteCompleted
+---@field public PromptUpdateOutfitCompleted RBXScriptSignal.PromptUpdateOutfitCompleted
 ---AvatarEditorService is a service to support developer Avatar Editors. It
----provides methods to modify the player's platform avatar, request
----information about a user's inventory, and request information about the
----catalog.
+---provides methods to modify the player's platform avatar, request information
+---about a user's inventory, and request information about the catalog.
 ---
 ---For more information regarding the Avatar Editor, see
 ---[Avatar Editor Service](/avatar/characters/avatar-editor-service).
 ---
 local AvatarEditorService;
----@param outfitId int64
----@return void
----Prompts the `Players/LocalPlayer` to delete the given outfit. Does not
----yield. The result can be retrieved by listening to the
----`AvatarEditorService/PromptDeleteOutfitCompleted` event.
----
-AvatarEditorService.PromptDeleteOutfit = function(self, outfitId) end;
----@param itemId int64
----@param itemType AvatarItemType
----@param shouldFavorite bool
----@return bool
-AvatarEditorService.NoPromptSetFavorite = function(self, itemId, itemType, shouldFavorite) end;
----@param humanoidDescription HumanoidDescription
----@return HumanoidDescription
-AvatarEditorService.ConformToAvatarRules = function(self, humanoidDescription) end;
----@param humanoidDescription HumanoidDescription
----@param rigType HumanoidRigType
----@return void
----This function prompts the `Players/LocalPlayer` to update their avatar
----based on the given `HumanoidDescription` and `Enum/RigType` (R6 or R15).
----Does not yield and can get the result by listening to the
----PromptSaveAvatarCompleted event. This is similar to how other prompts such
----as PromptPurchase work.
----
-AvatarEditorService.PromptSaveAvatar = function(self, humanoidDescription, rigType) end;
 ---@return Dictionary
 ---This function returns the platform Avatar rules for things like scaling,
 ---default shirts and pants, number of wearable assets, ect.
@@ -1711,6 +2316,8 @@ AvatarEditorService.PromptSaveAvatar = function(self, humanoidDescription, rigTy
 ---```
 ---
 AvatarEditorService.GetAvatarRules = function(self) end;
+---@return void
+AvatarEditorService.PerformDeleteOutfit = function(self) end;
 ---@param itemIds Array
 ---@param itemType AvatarItemType
 ---@return Array
@@ -1719,22 +2326,13 @@ AvatarEditorService.GetAvatarRules = function(self) end;
 ---of a list.
 ---
 AvatarEditorService.GetBatchItemDetails = function(self, itemIds, itemType) end;
----@param outfitId int64
----@param humanoidDescription HumanoidDescription
----@param rigType HumanoidRigType
----@return bool
-AvatarEditorService.NoPromptUpdateOutfit = function(self, outfitId, humanoidDescription, rigType) end;
----@param outfitId int64
----@param updatedOutfit HumanoidDescription
----@param rigType HumanoidRigType
----@return void
----Prompts the `Players/LocalPlayer` to update the given outfit with the
----given HumanoidDescription.
----
-AvatarEditorService.PromptUpdateOutfit = function(self, outfitId, updatedOutfit, rigType) end;
 ---@param name string
 ---@return void
-AvatarEditorService.PerformCreateOutfit = function(self, name) end;
+AvatarEditorService.PerformRenameOutfit = function(self, name) end;
+---@param addedAssets Array
+---@param removedAssets Array
+---@return void
+AvatarEditorService.PerformSaveAvatarNew = function(self, addedAssets, removedAssets) end;
 ---@param itemId int64
 ---@param itemType AvatarItemType
 ---@return bool
@@ -1747,9 +2345,6 @@ AvatarEditorService.GetFavorite = function(self, itemId, itemType) end;
 ---@param name string
 ---@return bool
 AvatarEditorService.NoPromptCreateOutfit = function(self, humanoidDescription, rigType, name) end;
----@param inventoryReadAccessGranted bool
----@return void
-AvatarEditorService.SetAllowInventoryReadAccess = function(self, inventoryReadAccessGranted) end;
 ---@param assetTypes Array
 ---@return InventoryPages
 ---Returns an `InventoryPages` object with information about owned items in
@@ -1770,13 +2365,17 @@ AvatarEditorService.SetAllowInventoryReadAccess = function(self, inventoryReadAc
 ---```
 ---
 AvatarEditorService.GetInventory = function(self, assetTypes) end;
+---@param humanoidDescription HumanoidDescription
+---@param addedAssets Array
+---@param removedAssets Array
 ---@return void
-AvatarEditorService.PerformDeleteOutfit = function(self) end;
+AvatarEditorService.PerformSaveAvatarWithDescription = function(self, humanoidDescription, addedAssets, removedAssets) end;
 ---@return void
 AvatarEditorService.SignalCreateOutfitFailed = function(self) end;
----@param name string
 ---@return void
-AvatarEditorService.PerformRenameOutfit = function(self, name) end;
+AvatarEditorService.PerformSetFavorite = function(self) end;
+---@return void
+AvatarEditorService.SignalCreateOutfitPermissionDenied = function(self) end;
 ---@param itemId int64
 ---@param itemType AvatarItemType
 ---@return Dictionary
@@ -1833,12 +2432,11 @@ AvatarEditorService.PerformRenameOutfit = function(self, name) end;
 ---```
 ---
 AvatarEditorService.GetItemDetails = function(self, itemId, itemType) end;
+---@param humanoidDescription HumanoidDescription
 ---@return void
-AvatarEditorService.SignalCreateOutfitPermissionDenied = function(self) end;
----@param addedAssets Array
----@param removedAssets Array
+AvatarEditorService.PerformUpdateOutfit = function(self, humanoidDescription) end;
 ---@return void
-AvatarEditorService.PerformSaveAvatarNew = function(self, addedAssets, removedAssets) end;
+AvatarEditorService.SignalDeleteOutfitFailed = function(self) end;
 ---@param outfitSource OutfitSource
 ---@return OutfitPages
 ---This function returns outfit data for the `Players/LocalPlayer`. This
@@ -1887,19 +2485,70 @@ AvatarEditorService.PerformSaveAvatarNew = function(self, addedAssets, removedAs
 ---</table>
 ---
 AvatarEditorService.GetOutfits = function(self, outfitSource) end;
----@return void
-AvatarEditorService.SignalDeleteOutfitFailed = function(self) end;
+---@param outfitId int64
+---@param name string
+---@return bool
+AvatarEditorService.NoPromptRenameOutfit = function(self, outfitId, name) end;
 ---@return void
 AvatarEditorService.SignalDeleteOutfitPermissionDenied = function(self) end;
 ---@return void
-AvatarEditorService.SignalRenameOutfitFailed = function(self) end;
----@param humanoidDescription HumanoidDescription
----@param addedAssets Array
----@param removedAssets Array
+---Prompts the `Players/LocalPlayer` to allow the developer to read what
+---items the user has in their inventory and other avatar editor related
+---information. The prompt needs to be confirmed by the user for the
+---developer to use `AvatarEditorService/GetInventory`,
+---`AvatarEditorService/GetOutfits` and `AvatarEditorService/GetFavorite`.
+---Permission does not persist between sessions.
+---
+AvatarEditorService.PromptAllowInventoryReadAccess = function(self) end;
 ---@return void
-AvatarEditorService.PerformSaveAvatarWithDescription = function(self, humanoidDescription, addedAssets, removedAssets) end;
+AvatarEditorService.SignalRenameOutfitFailed = function(self) end;
+---@param outfit HumanoidDescription
+---@param rigType HumanoidRigType
+---@return void
+---Prompts the `Players/LocalPlayer` to save the given `HumanoidDescription`
+---as an outfit. Does not yield. The result can be retrieved by listening to
+---the `AvatarEditorService/PromptCreateOutfitCompleted` event.
+---
+AvatarEditorService.PromptCreateOutfit = function(self, outfit, rigType) end;
 ---@return void
 AvatarEditorService.SignalRenameOutfitPermissionDenied = function(self) end;
+---@return void
+AvatarEditorService.SignalSaveAvatarFailed = function(self) end;
+---@param outfitId int64
+---@return void
+---Prompts the `Players/LocalPlayer` to delete the given outfit. Does not
+---yield. The result can be retrieved by listening to the
+---`AvatarEditorService/PromptDeleteOutfitCompleted` event.
+---
+AvatarEditorService.PromptDeleteOutfit = function(self, outfitId) end;
+---@return void
+AvatarEditorService.SignalSaveAvatarPermissionDenied = function(self) end;
+---@param itemId int64
+---@param itemType AvatarItemType
+---@param shouldFavorite bool
+---@return bool
+AvatarEditorService.NoPromptSetFavorite = function(self, itemId, itemType, shouldFavorite) end;
+---@param outfitId int64
+---@return void
+---Prompts the `Players/LocalPlayer` to delete the given outfit. Does not
+---yield. The result can be retrieved by listening to the
+---`AvatarEditorService/PromptRenameOutfitCompleted` event.
+---
+AvatarEditorService.PromptRenameOutfit = function(self, outfitId) end;
+---@return void
+AvatarEditorService.SignalSetFavoriteFailed = function(self) end;
+---@param humanoidDescription HumanoidDescription
+---@param rigType HumanoidRigType
+---@return void
+---This function prompts the `Players/LocalPlayer` to update their avatar
+---based on the given `HumanoidDescription` and `Enum/RigType` (R6 or R15).
+---Does not yield and can get the result by listening to the
+---PromptSaveAvatarCompleted event. This is similar to how other prompts such
+---as PromptPurchase work.
+---
+AvatarEditorService.PromptSaveAvatar = function(self, humanoidDescription, rigType) end;
+---@return void
+AvatarEditorService.SignalSetFavoritePermissionDenied = function(self) end;
 ---@param searchParameters CatalogSearchParams
 ---@return CatalogPages
 ---This function returns a `CatalogPages` object containing the result of the
@@ -1952,21 +2601,61 @@ AvatarEditorService.SignalRenameOutfitPermissionDenied = function(self) end;
 ---```
 ---
 AvatarEditorService.SearchCatalog = function(self, searchParameters) end;
----@param humanoidDescription HumanoidDescription
----@return HumanoidDescription
----Returns a new `HumanoidDescription` with the Shirt and Pants properties
----updated if necessary. Returns nil if default clothing was not needed.
+---@param bundleId int64
+---@return Array
+---This function returns a list of recommended bundles for a given bundle id.
 ---
----Default clothing is necessary if the HumanoidDescription does not
----currently have Shirt and Pants equipped and the body colors are too
----similar.
+---Data is in the format:
 ---
-AvatarEditorService.CheckApplyDefaultClothing = function(self, humanoidDescription) end;
----@return void
-AvatarEditorService.SignalSaveAvatarFailed = function(self) end;
+---```lua
+---[
+---    {
+---      "Id": 0,
+---      "Name": "string",
+---      "Description": "string",
+---      "BundleType": "string",
+---      "Items": [
+---        {
+---          "Owned": true,
+---          "Id": 0,
+---          "Name": "string",
+---          "Type": "string"
+---        }
+---      ],
+---      "Creator": {
+---        "Id": 0,
+---        "Name": "string",
+---        "Type": "string"
+---      },
+---      "Product": {
+---        "Id": 0,
+---        "Type": "string",
+---        "IsPublicDomain": true,
+---        "IsForSale": true,
+---        "PriceInRobux": 0,
+---        "PremiumPricing": {
+---          "PremiumDiscountPercentage": 0,
+---          "PremiumPriceInRobux": 0
+---        }
+---      }
+---    }
+---]
+---```
+---
+AvatarEditorService.GetRecommendedBundles = function(self, bundleId) end;
 ---@param outfitId int64
+---@param humanoidDescription HumanoidDescription
+---@param rigType HumanoidRigType
 ---@return bool
-AvatarEditorService.NoPromptDeleteOutfit = function(self, outfitId) end;
+AvatarEditorService.NoPromptUpdateOutfit = function(self, outfitId, humanoidDescription, rigType) end;
+---@param itemId int64
+---@param itemType AvatarItemType
+---@param shouldFavorite bool
+---@return void
+---This function prompts the `Players/LocalPlayer` to favorite or unfavorite
+---the given asset or bundle.
+---
+AvatarEditorService.PromptSetFavorite = function(self, itemId, itemType, shouldFavorite) end;
 ---@param assetType AvatarAssetType
 ---@param contextAssetId int64
 ---@return Array
@@ -2020,146 +2709,169 @@ AvatarEditorService.NoPromptDeleteOutfit = function(self, outfitId) end;
 ---
 AvatarEditorService.GetRecommendedAssets = function(self, assetType, contextAssetId) end;
 ---@return void
-AvatarEditorService.SignalSaveAvatarPermissionDenied = function(self) end;
----@param bundleId int64
----@return Array
----This function returns a list of recommended bundles for a given bundle id.
+AvatarEditorService.SignalUpdateOutfitPermissionDenied = function(self) end;
+---@param outfitId int64
+---@param updatedOutfit HumanoidDescription
+---@param rigType HumanoidRigType
+---@return void
+---Prompts the `Players/LocalPlayer` to update the given outfit with the
+---given HumanoidDescription.
 ---
----Data is in the format:
+AvatarEditorService.PromptUpdateOutfit = function(self, outfitId, updatedOutfit, rigType) end;
+---@param name string
+---@return void
+AvatarEditorService.PerformCreateOutfit = function(self, name) end;
+---@param humanoidDescription HumanoidDescription
+---@return HumanoidDescription
+---Returns a new `HumanoidDescription` with the Shirt and Pants properties
+---updated if necessary. Returns nil if default clothing was not needed.
 ---
----```lua
----[
----    {
----      "Id": 0,
----      "Name": "string",
----      "Description": "string",
----      "BundleType": "string",
----      "Items": [
----        {
----          "Owned": true,
----          "Id": 0,
----          "Name": "string",
----          "Type": "string"
----        }
----      ],
----      "Creator": {
----        "Id": 0,
----        "Name": "string",
----        "Type": "string"
----      },
----      "Product": {
----        "Id": 0,
----        "Type": "string",
----        "IsPublicDomain": true,
----        "IsForSale": true,
----        "PriceInRobux": 0,
----        "PremiumPricing": {
----          "PremiumDiscountPercentage": 0,
----          "PremiumPriceInRobux": 0
----        }
----      }
----    }
----]
----```
+---Default clothing is necessary if the HumanoidDescription does not
+---currently have Shirt and Pants equipped and the body colors are too
+---similar.
 ---
-AvatarEditorService.GetRecommendedBundles = function(self, bundleId) end;
+AvatarEditorService.CheckApplyDefaultClothing = function(self, humanoidDescription) end;
+---@param outfitId int64
+---@return bool
+AvatarEditorService.NoPromptDeleteOutfit = function(self, outfitId) end;
+---@return void
+AvatarEditorService.SignalUpdateOutfitFailed = function(self) end;
 ---@param humanoidDescription HumanoidDescription
 ---@param name string
 ---@return void
 AvatarEditorService.PerformCreateOutfitWithDescription = function(self, humanoidDescription, name) end;
+---@param humanoidDescription HumanoidDescription
+---@return HumanoidDescription
+AvatarEditorService.ConformToAvatarRules = function(self, humanoidDescription) end;
+---@param inventoryReadAccessGranted bool
 ---@return void
-AvatarEditorService.SignalSetFavoriteFailed = function(self) end;
----@param outfitId int64
----@param name string
----@return bool
-AvatarEditorService.NoPromptRenameOutfit = function(self, outfitId, name) end;
----@return void
----Prompts the `Players/LocalPlayer` to allow the developer to read what
----items the user has in their inventory and other avatar editor related
----information. The prompt needs to be confirmed by the user for the
----developer to use `AvatarEditorService/GetInventory`,
----`AvatarEditorService/GetOutfits` and `AvatarEditorService/GetFavorite`.
----Permission does not persist between sessions.
----
-AvatarEditorService.PromptAllowInventoryReadAccess = function(self) end;
----@return void
-AvatarEditorService.SignalSetFavoritePermissionDenied = function(self) end;
----@return void
-AvatarEditorService.SignalUpdateOutfitFailed = function(self) end;
----@param outfit HumanoidDescription
----@param rigType HumanoidRigType
----@return void
----Prompts the `Players/LocalPlayer` to save the given `HumanoidDescription`
----as an outfit. Does not yield. The result can be retrieved by listening to
----the `AvatarEditorService/PromptCreateOutfitCompleted` event.
----
-AvatarEditorService.PromptCreateOutfit = function(self, outfit, rigType) end;
+AvatarEditorService.SetAllowInventoryReadAccess = function(self, inventoryReadAccessGranted) end;
 ---@param humanoidDescription HumanoidDescription
 ---@param rigType HumanoidRigType
 ---@param saveDict Dictionary
 ---@param gearAssetId int64
 ---@return bool
 AvatarEditorService.NoPromptSaveAvatar = function(self, humanoidDescription, rigType, saveDict, gearAssetId) end;
----@param outfitId int64
----@return void
----Prompts the `Players/LocalPlayer` to delete the given outfit. Does not
----yield. The result can be retrieved by listening to the
----`AvatarEditorService/PromptRenameOutfitCompleted` event.
+---@class RBXScriptSignal.OpenAllowInventoryReadAccess : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenAllowInventoryReadAccess, callback: fun()): RBXScriptConnection
 ---
-AvatarEditorService.PromptRenameOutfit = function(self, outfitId) end;
----@param itemId int64
----@param itemType AvatarItemType
----@param shouldFavorite bool
----@return void
----This function prompts the `Players/LocalPlayer` to favorite or unfavorite
----the given asset or bundle.
+AvatarEditorService.OpenAllowInventoryReadAccess = nil;
+---@class RBXScriptSignal.OpenPromptCreateOufit : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptCreateOufit, callback: fun(humanoidDescription: HumanoidDescription, rigType: HumanoidRigType)): RBXScriptConnection
 ---
-AvatarEditorService.PromptSetFavorite = function(self, itemId, itemType, shouldFavorite) end;
----@return void
-AvatarEditorService.SignalUpdateOutfitPermissionDenied = function(self) end;
----@param humanoidDescription HumanoidDescription
----@return void
-AvatarEditorService.PerformUpdateOutfit = function(self, humanoidDescription) end;
----@return void
-AvatarEditorService.PerformSetFavorite = function(self) end;
+AvatarEditorService.OpenPromptCreateOufit = nil;
+---@class RBXScriptSignal.OpenPromptDeleteOutfit : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptDeleteOutfit, callback: fun(outfitId: int64)): RBXScriptConnection
+---
+AvatarEditorService.OpenPromptDeleteOutfit = nil;
+---@class RBXScriptSignal.OpenPromptRenameOutfit : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptRenameOutfit, callback: fun(outfitId: int64)): RBXScriptConnection
+---
+AvatarEditorService.OpenPromptRenameOutfit = nil;
+---@class RBXScriptSignal.OpenPromptSaveAvatar : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptSaveAvatar, callback: fun(humanoidDescription: HumanoidDescription, rigType: HumanoidRigType)): RBXScriptConnection
+---
+AvatarEditorService.OpenPromptSaveAvatar = nil;
+---@class RBXScriptSignal.OpenPromptSetFavorite : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptSetFavorite, callback: fun(itemId: int64, itemType: AvatarItemType, shouldFavorite: bool)): RBXScriptConnection
+---
+AvatarEditorService.OpenPromptSetFavorite = nil;
+---@class RBXScriptSignal.OpenPromptUpdateOutfit : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OpenPromptUpdateOutfit, callback: fun(outfitId: int64, humanoidDescription: HumanoidDescription, rigType: HumanoidRigType)): RBXScriptConnection
+---
+AvatarEditorService.OpenPromptUpdateOutfit = nil;
+---@class RBXScriptSignal.PromptAllowInventoryReadAccessCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptAllowInventoryReadAccessCompleted, callback: fun(result: AvatarPromptResult)): RBXScriptConnection
+---This event fires when the
+---`AvatarEditorService/PromptAllowInventoryReadAccess` prompt is responded
+---to by the user. It can only return the Success or PermissionDenied
+---`Enum/AvatarPromptResult|enum` statuses as it does not perform any web
+---requests which could fail.
+---
+AvatarEditorService.PromptAllowInventoryReadAccessCompleted = nil;
+---@class RBXScriptSignal.PromptCreateOutfitCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptCreateOutfitCompleted, callback: fun(result: AvatarPromptResult, failureType: Variant)): RBXScriptConnection
+---This event fires when the PromptSaveOutfit operation is completed. It
+---gives a status `Enum/AvatarPromptResult|enum` indicating whether the
+---prompt succeeded, failed or permission was not granted by the user.
+---
+AvatarEditorService.PromptCreateOutfitCompleted = nil;
+---@class RBXScriptSignal.PromptDeleteOutfitCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptDeleteOutfitCompleted, callback: fun(result: AvatarPromptResult)): RBXScriptConnection
+---Fires when the PromptDeleteOutfit operation is completed. It gives a
+---status `Enum/AvatarPromptResult|enum` indicating whether the prompt
+---succeeded, failed or permission was not granted by the user.
+---
+AvatarEditorService.PromptDeleteOutfitCompleted = nil;
+---@class RBXScriptSignal.PromptRenameOutfitCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptRenameOutfitCompleted, callback: fun(result: AvatarPromptResult)): RBXScriptConnection
+---Fires when the PromptRenameOutfit operation is completed. It gives a
+---status `Enum/AvatarPromptResult|enum` indicating whether the prompt
+---succeeded, failed or permission was not granted by the user.
+---
+AvatarEditorService.PromptRenameOutfitCompleted = nil;
+---@class RBXScriptSignal.PromptSaveAvatarCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptSaveAvatarCompleted, callback: fun(result: AvatarPromptResult, humanoidDescription: HumanoidDescription)): RBXScriptConnection
+---This event fires when the `AvatarEditorService/PromptSaveAvatar` operation
+---is completed. It gives a status `Enum/AvatarPromptResult|enum` indicating
+---whether the prompt succeeded, failed or permission was not granted by the
+---user.
+---
+AvatarEditorService.PromptSaveAvatarCompleted = nil;
+---@class RBXScriptSignal.PromptSetFavoriteCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptSetFavoriteCompleted, callback: fun(result: AvatarPromptResult)): RBXScriptConnection
+---Fires when the `AvatarEditorService/PromptSetFavorite` operation is
+---completed. It gives a status `Enum/AvatarPromptResult|enum` indicating
+---whether the prompt succeeded, failed or permission was not granted by the
+---user.
+---
+AvatarEditorService.PromptSetFavoriteCompleted = nil;
+---@class RBXScriptSignal.PromptUpdateOutfitCompleted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.PromptUpdateOutfitCompleted, callback: fun(result: AvatarPromptResult)): RBXScriptConnection
+---Fires when the `AvatarEditorService/PromptUpdateOutfit` operation is
+---completed. It gives a status `Enum/AvatarPromptResult|enum` indicating
+---whether the prompt succeeded, failed or permission was not granted by the
+---user.
+---
+AvatarEditorService.PromptUpdateOutfitCompleted = nil;
 ---@class AvatarImportService : Instance
 local AvatarImportService;
----@param selectedRig Instance
----@param userChooseModelThenImportCB Function
+---@param isR15 bool
 ---@return Instance
-AvatarImportService.ImportFBXAnimationUserMayChooseModel = function(self, selectedRig, userChooseModelThenImportCB) end;
+AvatarImportService.ImportFbxRigWithoutSceneLoad = function(self, isR15) end;
 ---@param fbxFilePath string
 ---@param selectedRig Instance
 ---@param userChooseModelThenImportCB Function
 ---@return Instance
 AvatarImportService.ImportFBXAnimationFromFilePathUserMayChooseModel = function(self, fbxFilePath, selectedRig, userChooseModelThenImportCB) end;
+---@param selectedRig Instance
+---@param userChooseModelThenImportCB Function
+---@return Instance
+AvatarImportService.ImportFBXAnimationUserMayChooseModel = function(self, selectedRig, userChooseModelThenImportCB) end;
 ---@param promptR15Callback Function
 ---@return Instance
 AvatarImportService.LoadRigAndDetectType = function(self, promptR15Callback) end;
 ---@param useFBXModel bool
 ---@return Instance
 AvatarImportService.ImportLoadedFBXAnimation = function(self, useFBXModel) end;
----@param isR15 bool
----@return Instance
-AvatarImportService.ImportFbxRigWithoutSceneLoad = function(self, isR15) end;
 ---@class Backpack : Instance
----A container object that holds a `Player`'s inventory. Any `Tool` in a
----player's Backpack will be displayed in their inventory at the bottom of
----their screen. Selecting `Tool`s from the inventory will equip the `Tool`,
----moving it from the Backpack to the player's character.
+---A container object that holds a `Player`'s inventory. Any `Tool` in a player's
+---Backpack will be displayed in their inventory at the bottom of their screen.
+---Selecting `Tool`s from the inventory will equip the `Tool`, moving it from the
+---Backpack to the player's character.
 ---
----The Backpack can also store `Script|Scripts` and
----`LocalScript|LocalScripts`, which run when placed in a player's Backpack.
+---The Backpack can also store `Script|Scripts` and `LocalScript|LocalScripts`,
+---which run when placed in a player's Backpack.
 ---
----When a player's character spawns, the contents of the `StarterPack` and
----their `StarterGear` are copied into their Backpack. Once a character dies,
----the Backpack is removed and a new one will be created -- populating it
----with the contents of `StarterPack` and `StarterGear`.
+---When a player's character spawns, the contents of the `StarterPack` and their
+---`StarterGear` are copied into their Backpack. Once a character dies, the
+---Backpack is removed and a new one will be created -- populating it with the
+---contents of `StarterPack` and `StarterGear`.
 ---
 ---Roblox provides an interface for a player to access their backpack and
 ---inventory by default at the bottom of the screen. If a developer wishes to
----disable the default Roblox backpack GUI and replace it with their own,
----they may do so using `StarterGui/SetCoreGuiEnabled`.
+---disable the default Roblox backpack GUI and replace it with their own, they
+---may do so using `StarterGui/SetCoreGuiEnabled`.
 ---
 ---The Backpack can be accessed from both the client and the server.
 ---
@@ -2174,18 +2886,26 @@ AvatarImportService.ImportFbxRigWithoutSceneLoad = function(self, isR15) end;
 local Backpack;
 ---@class BackpackItem : Instance
 ---@field public TextureId Content
----BackpackItem is an abstract class for backpack items such as HopperBins
----and Tools.
+---BackpackItem is an abstract class for backpack items such as HopperBins and
+---Tools.
 ---
 local BackpackItem;
+---The texture icon that is displayed for a tool in the `Player`'s backpack.
+---
+---This property should be set to the content ID of an image uploaded to the
+---Roblox website.
+---
+---If this property is left blank, the `Backpack` GUI will display the name
+---of the tool instead.
+---
+BackpackItem.TextureId = nil;
 ---@class BadgeService : Instance
----@field public BadgeAwarded fun(message: string, userId: int64, badgeId: int64): RbxScriptSignal
----@field public OnBadgeAwarded fun(userId: int64, creatorId: int64, badgeId: int64): RbxScriptSignal
----The **BadgeService** class provides information and functionality related
----to [badges](/production/publishing/badges). Badges are used across the
----platform to recognize a player's achievements and activity. Upon awarding
----a badge to a player, it is added to their inventory and displayed on their
----profile page.
+---@field public BadgeAwarded RBXScriptSignal.BadgeAwarded
+---@field public OnBadgeAwarded RBXScriptSignal.OnBadgeAwarded
+---The **BadgeService** class provides information and functionality related to
+---[badges](/production/publishing/badges). Badges are used across the platform
+---to recognize a player's achievements and activity. Upon awarding a badge to a
+---player, it is added to their inventory and displayed on their profile page.
 ---
 local BadgeService;
 ---@param userId int64
@@ -2211,6 +2931,34 @@ local BadgeService;
 ---  (remember: players can delete their own badges).
 ---
 BadgeService.UserHasBadge = function(self, userId, badgeId) end;
+---@param userId int64
+---@param badgeId int64
+---@return bool
+---**AwardBadge** grants a `Player` a badge given the player's
+---`Player/UserId|UserId` and the badge ID. In order to successfully award a
+---badge, the following criteria must be met:
+---
+---- The player must be presently connected to the game.
+---- The player must not already have the badge (note that a player may
+---  delete an awarded badge from their profile and be awarded the badge
+---  again).
+---- The badge must be awarded from a server-side `Script` or a
+---  `ModuleScript` eventually required by a `Script`, not from a
+---  `LocalScript`.
+---- The badge must be awarded in a place that is part of the game associated
+---  with the badge.
+---- The owner of the place must also own the badge (for example, the owner
+---  must not have deleted the badge).
+---- The badge must be enabled; check this using the `IsEnabled` property of
+---  the badge fetched through
+---  `BadgeService/GetBadgeInfoAsync|BadgeService:GetBadgeInfoAsync()`.
+---
+---See also:
+---
+---- `BadgeService/GetBadgeInfoAsync|BadgeService:GetBadgeInfoAsync()`
+---- `BadgeService/UserHasBadgeAsync|BadgeService:UserHasBadgeAsync()`
+---
+BadgeService.AwardBadge = function(self, userId, badgeId) end;
 ---@param badgeId int64
 ---@return bool
 ---This function returns whether the badge with the given id is marked
@@ -2260,48 +3008,6 @@ BadgeService.IsDisabled = function(self, badgeId) end;
 ---- `BadgeService/AwardBadge|BadgeService:AwardBadge()`
 ---
 BadgeService.UserHasBadgeAsync = function(self, userId, badgeId) end;
----@param userId int64
----@param badgeId int64
----@return bool
----**AwardBadge** grants a `Player` a badge given the player's
----`Player/UserId|UserId` and the badge ID. In order to successfully award a
----badge, the following criteria must be met:
----
----- The player must be presently connected to the game.
----- The player must not already have the badge (note that a player may
----  delete an awarded badge from their profile and be awarded the badge
----  again).
----- The badge must be awarded from a server-side `Script` or a
----  `ModuleScript` eventually required by a `Script`, not from a
----  `LocalScript`.
----- The badge must be awarded in a place that is part of the game associated
----  with the badge.
----- The owner of the place must also own the badge (for example, the owner
----  must not have deleted the badge).
----- The badge must be enabled; check this using the `IsEnabled` property of
----  the badge fetched through
----  `BadgeService/GetBadgeInfoAsync|BadgeService:GetBadgeInfoAsync()`.
----
----See also:
----
----- `BadgeService/GetBadgeInfoAsync|BadgeService:GetBadgeInfoAsync()`
----- `BadgeService/UserHasBadgeAsync|BadgeService:UserHasBadgeAsync()`
----
-BadgeService.AwardBadge = function(self, userId, badgeId) end;
----@param badgeId int64
----@return bool
----This function determines if a given badge is associated with the current
----game. It returns true if the badge is associated with the current game.
----
----Badges can only be awarded from a place that is part of the game
----associated with the badge. This means, for example, a developer cannot
----award a badge associated with another developer's game.
----
----Even if this returns true, a badge may still not be award-able. For
----example, it may be disabled. For more information on the criteria for
----awarding badges see `BadgeService/AwardBadge|AwardBadge`.
----
-BadgeService.IsLegal = function(self, badgeId) end;
 ---@param badgeId int64
 ---@return Dictionary
 ---This function fteches information about a badge given its ID. It takes a
@@ -2347,6 +3053,28 @@ BadgeService.IsLegal = function(self, badgeId) end;
 ---- `BadgeService/UserHasBadgeAsync|BadgeService:UserHasBadgeAsync()`
 ---
 BadgeService.GetBadgeInfoAsync = function(self, badgeId) end;
+---@param badgeId int64
+---@return bool
+---This function determines if a given badge is associated with the current
+---game. It returns true if the badge is associated with the current game.
+---
+---Badges can only be awarded from a place that is part of the game
+---associated with the badge. This means, for example, a developer cannot
+---award a badge associated with another developer's game.
+---
+---Even if this returns true, a badge may still not be award-able. For
+---example, it may be disabled. For more information on the criteria for
+---awarding badges see `BadgeService/AwardBadge|AwardBadge`.
+---
+BadgeService.IsLegal = function(self, badgeId) end;
+---@class RBXScriptSignal.BadgeAwarded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BadgeAwarded, callback: fun(message: string, userId: int64, badgeId: int64)): RBXScriptConnection
+---
+BadgeService.BadgeAwarded = nil;
+---@class RBXScriptSignal.OnBadgeAwarded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OnBadgeAwarded, callback: fun(userId: int64, creatorId: int64, badgeId: int64)): RBXScriptConnection
+---
+BadgeService.OnBadgeAwarded = nil;
 ---@class BallSocketConstraint : Constraint, Instance
 ---@field public LimitsEnabled bool
 ---@field public MaxFrictionTorque float
@@ -2357,16 +3085,68 @@ BadgeService.GetBadgeInfoAsync = function(self, badgeId) end;
 ---@field public TwistUpperAngle float
 ---@field public UpperAngle float
 ---A **BallSocketConstraint** constrains its `Attachment|Attachments` so that
----they occupy the same position. By default it allows both attachments to
----freely rotate about all of their axes, but if
----`BallSocketConstraint/LimitsEnabled` is `true`, the attachments can only
----rotate in a limited cone.
+---they occupy the same position. By default it allows both attachments to freely
+---rotate about all of their axes, but if `BallSocketConstraint/LimitsEnabled` is
+---`true`, the attachments can only rotate in a limited cone.
 ---
----Note that if this constraint attaches one part (**A**) to another part
----(**B**) that is anchored or connected to an anchored part (**Z**), part
----**A** will not be locally simulated when interacting with a player.
+---Note that if this constraint attaches one part (**A**) to another part (**B**)
+---that is anchored or connected to an anchored part (**Z**), part **A** will not
+---be locally simulated when interacting with a player.
 ---
 local BallSocketConstraint;
+---Sets whether the `BallSocketConstraint` has a limit on rotation based on
+---`BallSocketConstraint/UpperAngle`. When a `BallSocketConstraint` has
+---LimitsEnabled set to true, it enforces that its `Constraint/Attachment1`
+---isn't rotated more than a set angle from its `Constraint/Attachment0`.
+---
+---The angle that is used is the angle between the x-axes of the
+---`Attachment|Attachments`:
+---
+---![BallSocketConstraint Limits][1]
+---
+---[1]: /assets/blta75930bd28cfe34b/BallSocketConstraintLimits.png
+---
+BallSocketConstraint.LimitsEnabled = nil;
+---Sets the maximum frictional torque applied to keep its
+---`Attachment|Attachments` aligned.
+---
+---`MaxFrictionTorque` specifies the stiffness of the `BallSocketConstraint`,
+---i.e. how much it resists rotation around its `Attachment|Attachments`.
+---Constrained to be greater than or equal to 0.
+---
+BallSocketConstraint.MaxFrictionTorque = nil;
+---The visualized radius of the `BallSocketConstraint`.
+---
+BallSocketConstraint.Radius = nil;
+---How elastic `Attachment|Attachments` connected by a `BallSocketConstraint`
+---will be when they reach the end of the range specified by
+---`BallSocketConstraint/UpperAngle` when
+---`BallSocketConstraint/LimitsEnabled` is true. Constrained between 0 and 1.
+---
+BallSocketConstraint.Restitution = nil;
+---Sets whether the `BallSocketConstraint` sets a limit on twist rotation
+---based on `BallSocketConstraint/TwistUpperAngle` and
+---`BallSocketConstraint/TwistLowerAngle`. The twist angle is defined as the
+---angle between the y-axis of `Constraint/Attachment1` and the y-axis of
+---`Constraint/Attachment0`.
+---
+---When a `BallSocketConstraint` has `TwistLimitsEnabled` set to true, it
+---enforces that its `Constraint/Attachment1` isn't twisted more than a set
+---angle from its `Constraint/Attachment0`.
+---
+BallSocketConstraint.TwistLimitsEnabled = nil;
+---Sets the lower twist rotation limit of the `BallSocketConstraint`, as long
+---as `BallSocketConstraint/TwistLimitsEnabled` is `true`.
+---
+BallSocketConstraint.TwistLowerAngle = nil;
+---Sets the upper twist rotation limit of the `BallSocketConstraint`, as long
+---as `BallSocketConstraint/TwistLimitsEnabled` is `true`.
+---
+BallSocketConstraint.TwistUpperAngle = nil;
+---Sets the upper rotation limit of the `BallSocketConstraint`, as long as
+---`BallSocketConstraint/LimitsEnabled` is `true`.
+---
+BallSocketConstraint.UpperAngle = nil;
 ---@class BasePart : PVInstance, Instance
 ---@field public Anchored bool
 ---@field public AssemblyAngularVelocity Vector3
@@ -2431,53 +3211,975 @@ local BallSocketConstraint;
 ---@field public Transparency float
 ---@field public Velocity Vector3
 ---@field public brickColor BrickColor
----@field public LocalSimulationTouched fun(part: BasePart): RbxScriptSignal
----@field public OutfitChanged fun(): RbxScriptSignal
----@field public StoppedTouching fun(otherPart: BasePart): RbxScriptSignal
----@field public TouchEnded fun(otherPart: BasePart): RbxScriptSignal
----@field public Touched fun(otherPart: BasePart): RbxScriptSignal
----BasePart is an abstract base class for in-world objects that render and
----are physically simulated while in the `Workspace`. There are several
+---@field public LocalSimulationTouched RBXScriptSignal.LocalSimulationTouched
+---@field public OutfitChanged RBXScriptSignal.OutfitChanged
+---@field public StoppedTouching RBXScriptSignal.StoppedTouching
+---@field public TouchEnded RBXScriptSignal.TouchEnded
+---@field public Touched RBXScriptSignal.Touched
+---BasePart is an abstract base class for in-world objects that render and are
+---physically simulated while in the `Workspace`. There are several
 ---implementations of BasePart, the most common is `Part`, a simple 6-face
 ---rectangular prism. Others include `SpawnLocation`, `WedgePart` and the
 ---singleton `Terrain` object within the `Workspace`. Most of the time, when
----documentation refers to a part, most BasePart implementations will work
----and not just `Part`.
+---documentation refers to a part, most BasePart implementations will work and
+---not just `Part`.
 ---
 ---There are many different objects that interact with BasePart:
 ---
----- They may be grouped within a `Model`, which allows several BasePart to
----  be moved at the same time using
+---- They may be grouped within a `Model`, which allows several BasePart to be
+---  moved at the same time using
 ---  `Model/SetPrimaryPartCFrame|SetPrimaryPartCFrame`.
----- A `Decal` applies a stretched image texture to the faces of a part,
----  though the exact mapping depends on the type of part.
----- A `Texture` applies a tiled image texture to the faces of a part much
----  like a `Decal`.
+---- A `Decal` applies a stretched image texture to the faces of a part, though
+---  the exact mapping depends on the type of part.
+---- A `Texture` applies a tiled image texture to the faces of a part much like a
+---  `Decal`.
 ---- A `SurfaceGui` renders `GuiObject|GuiObjects` on the face of a part.
 ---- An `Attachment` can be added to specify a CFrames relative to a parent
 ---  BasePart. These are often used by physics `Constraint` objects, such as
 ---  `RopeConstraint` and `HingeConstraint`.
----- `ParticleEmitter` emit particles uniformly in the volume of the BasePart
----  to which they are parented.
----- Light objects like `PointLight` emit light from the center of a
----  BasePart.
+---- `ParticleEmitter` emit particles uniformly in the volume of the BasePart to
+---  which they are parented.
+---- Light objects like `PointLight` emit light from the center of a BasePart.
 ---- When `Sound/Play|played`, a `Sound` parented to a BasePart will be
 ---  physically located at the part's position.
 ---- `BodyMover` objects like `BodyVelocity` exert forces on the BasePart to
 ---  which they are parented.
----- As a sibling of a `Humanoid`, they can be used as limbs of a character
----  and also animated when joined using `Motor6D`. If not a sibling of a
----  `Humanoid`, BasePart can still be animated using an
----  `AnimationController`.
+---- As a sibling of a `Humanoid`, they can be used as limbs of a character and
+---  also animated when joined using `Motor6D`. If not a sibling of a `Humanoid`,
+---  BasePart can still be animated using an `AnimationController`.
 ---- In Studio, you can use most implementations of BaseParts with solid
 ---  modelling.
----- If parented to a `Tool` and given the name "Handle", a BasePart can be
----  held by characters.
+---- If parented to a `Tool` and given the name "Handle", a BasePart can be held
+---  by characters.
 ---- You can make BasePart interactive by adding a `ClickDetector`
 ---- You can use a mesh like a `BlockMesh` or `SpecialMesh` to change how a
 ---  BasePart looks without change how it physically behaves.
 ---
 local BasePart;
+---The Anchored property determines whether the part will be **immovable** by
+---physics. When enabled, a part will never change position due to gravity,
+---other parts collisions, overlapping other parts, or any other
+---physics-related causes. A part that is not anchored is called
+---**unanchored**. As a result, two anchored parts will never fire the
+---`BasePart/Touched` event on each other. An anchored part may still be
+---moved by changing its `BasePart/CFrame` or `BasePart/Position`, and it
+---still may have a nonzero `BasePart/Velocity` and `BasePart/RotVelocity`.
+---Finally, if an unanchored part is joined with an anchored part through an
+---object like a `Weld`, it too will act anchored. If such a joint breaks the
+---part may be affected by physics again.
+---
+---It's a good idea to anchor parts that are part of your game's environment
+---(and therefore shouldn't move). In fact, if you don't have a good reason
+---to keep a part unanchored, you should anchor it. Unanchored parts can
+---cause performance issues if there are many. In Roblox Studio, you can
+---anchor/unanchor an entire model using the Anchor tool. Be sure to keep
+---static environment models anchored, like in-world buttons, signs, and
+---trees.
+---
+---Network ownership cannot be set on anchored parts. If a part's anchored
+---status changes on the server, the network ownership of that part will be
+---affected.
+---
+BasePart.Anchored = nil;
+---The angular velocity vector of this `BasePart|part`'s assembly. It's the
+---rate of change of orientation in radians per second.
+---
+---Angular velocity is the same at every point of the assembly.
+---
+---Setting the velocity directly may lead to unrealistic motion. Using
+---`Torque` or `AngularVelocity` constraint is preferred, or use
+---`BasePart/ApplyImpulse` if you want instantaneous change in velocity.
+---
+BasePart.AssemblyAngularVelocity = nil;
+---A position calculated via the `BasePart/Mass|mass` and
+---`BasePart/Position|position` of all the parts in the assembly.
+---
+---If the assembly has an anchored part, that part's
+---`BasePart/AssemblyCenterOfMass|center of mass` will be the assemblies
+---center of mass, and the assembly will have infinite mass.
+---
+---Knowing the center of mass can help the assembly maintain stability. A
+---force applied to the center of mass will not cause
+---`BasePart/AssemblyAngularVelocity|angular acceleration`, only
+---`BasePart/AssemblyLinearVelocity|linear`. An assembly with a low center of
+---mass will have a better time staying upright.
+---
+BasePart.AssemblyCenterOfMass = nil;
+---The linear velocity vector of this `BasePart|part`'s assembly. It's the
+---rate of change in position of the assembly's
+---`BasePart/AssemblyCenterOfMass|center of mass` in studs per second.
+---
+---If you want to know the velocity at a point other than the assembly's
+---center of mass, use `BasePart/GetVelocityAtPosition`.
+---
+---Setting the velocity directly may lead to unrealistic motion. Using a
+---`VectorForce` constraint is preferred, or use `BasePart/ApplyImpulse` if
+---you want instantaneous change in velocity.
+---
+BasePart.AssemblyLinearVelocity = nil;
+---The sum of the mass of all the `BasePart|parts` in this part's assembly.
+---Parts that are `BasePart/Massless|Massless` and are not the assembly's
+---root part will not contribute to the AssemblyMass.
+---
+---If the assembly has an anchored part, the assembly's mass is considered
+---infinite. Constraints and other physical interactions between unanchored
+---assemblies with a large difference in mass may cause instabilities.
+---
+BasePart.AssemblyMass = nil;
+---This property indicates the `BasePart` automatically chosen to represent
+---the `Assembly|assembly`'s root part. It is the same part that's returned
+---when developers call `BasePart/GetRootPart|GetRootPart()`.
+---
+---The root part can be changed by changing the
+---`BasePart/RootPriority|RootPriority` of the parts in the assembly.
+---
+---See also:
+---
+---- For more information on root parts, take a look at the [Understanding
+---  Root Parts][1] article.
+---
+---[1]: ../../understanding-root-parts
+---
+BasePart.AssemblyRootPart = nil;
+---The BackParamA property is relevant when a part's `BasePart/BackSurface`
+---is set to Motor or SteppingMotor and `BasePart/BackSurfaceInput` is set to
+---Sin. It determines the **amplitude** of the motor's rotational velocity,
+---using the following formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---There are no other usages for this property.
+---
+BasePart.BackParamA = nil;
+---The BackParamB property is relevant when a part's `BasePart/BackSurface`
+---is set to Motor or SteppingMotor and `BasePart/BackSurfaceInput` is set to
+---Constant or Sin. For Constant, it determines the constant rotational
+---velocity of the motor. For Sin, it determines the **frequency** of the
+---motor's rotational velocity, using the following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.BackParamB = nil;
+---The BackSurface property determines the type of surface used for the +Z
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/BackSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes - Hinge, Motor
+---and SteppingMotor - will render a 3D adornment instead. If this property
+---is selected in the Properties window, it will be highlighted in the game
+---world similar to that of a `SurfaceSelection`.
+---
+BasePart.BackSurface = nil;
+---The BackSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/BackSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/BackParamA` and `BasePart/BackParamB` are used. For brevity,
+---these properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether.
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.BackSurfaceInput = nil;
+---The BottomParamA property is relevant when a part's
+---`BasePart/BottomSurface` is set to Motor or SteppingMotor and
+---`BasePart/BottomSurfaceInput` is set to Sin. It determines the
+---**amplitude** of the motor's rotational velocity, using the following
+---formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---There are no other usages for this property.
+---
+BasePart.BottomParamA = nil;
+---The BottomParamB property is relevant when a part's
+---`BasePart/BottomSurface` is set to Motor or SteppingMotor and
+---`BasePart/BottomSurfaceInput` is set to Constant or Sin. For Constant, it
+---determines the constant rotational velocity of the motor. For Sin, it
+---determines the **frequency** of the motor's rotational velocity, using the
+---following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.BottomParamB = nil;
+---The BottomSurface property determines the type of surface used for the -Y
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/BottomSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes - Hinge, Motor
+---and SteppingMotor - will render a 3D adornment instead. If this property
+---is selected in the Properties window, it will be highlighted in the game
+---world similar to that of a `SurfaceSelection`.
+---
+BasePart.BottomSurface = nil;
+---The BottomSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/BottomSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/BottomParamA` and `BasePart/BottomParamB` are used. For brevity,
+---these properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether.
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.BottomSurfaceInput = nil;
+---The BrickColor property determines the color of a part. If the part has a
+---`BasePart/Material`, this also determines the color used when rendering
+---the material texture. For more control over the color, the
+---`BasePart/Color` property can be used (it is a Color3 variant of this
+---property). If Color set, this property will use the closest BrickColor.
+---
+---Other visual properties of a part are determined by
+---`BasePart/Transparency` and `BasePart/Reflectance`.
+---
+BasePart.BrickColor = nil;
+---The CFrame property determines both the position and orientation of a part
+---relative to the world. The part is rendered such that the CFrame is the
+---center of the rendered 3D model (with one exception outlined below). For
+---keeping track of positions relative to a part's CFrame, an `Attachment` is
+---useful. Most visual flair objects (such as particles and lights) will
+---render at a part's CFrame.
+---
+---When setting CFrame, other joined parts are also moved relative to the
+---part whose CFrame was set. This could be used for teleporting a player's
+---character, however it is recommended to use `Model/SetPrimaryPartCFrame`
+---instead if you want to move an entire model. Unlike `BasePart/Position`,
+---setting CFrame will always move the part to the exact given CFrame; in
+---other words: **no overlap checking is done when setting CFrame.** If two
+---collidable parts happen to overlap and one is not `BasePart/Anchored`, the
+---physics solver will attempt to resolve the overlap.
+---
+---In online sessions, a part may be rendered differently than its CFrame may
+---suggest (e.g., for tweening the different CFrames received from the
+---server). Use `BasePart/GetRenderCFrame` to get the apparent CFrame.
+---
+BasePart.CFrame = nil;
+---The CanCollide property determines whether a part will physically interact
+---with other parts. When disabled, other parts can pass through the brick
+---uninterrupted. Parts used for **decoration** usually have CanCollide
+---disabled, as they need not be considered by the physics engine.
+---
+---If a part is not `BasePart/Anchored` and has CanCollide disabled, it may
+---fall out of the world to be eventually destroyed by
+---`Workspace/FallenPartsDestroyHeight`. Therefore, it is usually desirable
+---to anchor such parts or join them to another part that is anchored so that
+---they don't fall out of the level. You can also use an object like
+---`BodyPosition` or `BodyForce` to prevent falling out of the level
+---entirely.
+---
+---Even when CanCollide is disabled, parts may still fire the
+---`BasePart/Touched` event (as well the other parts touching them). In
+---addition, a part allow other parts to pass through even if CanCollide is
+---enabled if their collision groups are not set to collide with each other.
+---Part collision groups are managed by `PhysicsService`.
+---
+BasePart.CanCollide = nil;
+---**CanQuery** determines whether the part is considered during spatial
+---query operations, namely
+---`WorldRoot/GetPartBoundsInBox|GetPartBoundsInBox`,
+---`WorldRoot/GetPartBoundsInRadius|GetPartBoundsInRadius` and
+---`WorldRoot/GetPartsInPart|GetPartsInPart`. These functions will never
+---include parts whose CanQuery is false.
+---
+---Beyond this property, it is also possible to blacklist parts which are
+---descendants of a given list of parts using an `datatype/OverlapParams`
+---object when calling the spatial query functions.
+---
+BasePart.CanQuery = nil;
+---This property determines if the part will trigger
+---`BasePart/Touched|Touched`/`BasePart/TouchEnded|TouchEnded` events on
+---other `BasePart|BaseParts` with `TouchTransmitter|TouchTransmitters`. By
+---default, the value is set to `true`.
+---
+---A BasePart's Touched or TouchEnded event will only fire if otherPart has
+---CanTouch set to `true`.
+---
+---When `false`, a touch event cannot be setup for the part. Attempting to do
+---so will throw an error. If the property is set to `false` after a touch
+---event is connected, the event will be disconnected and TouchTransmitter
+---removed.
+---
+---The two images below demonstrate how the property behaves using a
+---non-colliding part with a script telling it to turn green when touched.
+---First, on the left, we drop parts that are CanTouch. On the right, we drop
+---parts that are not CanTouch.
+---
+---<img src="/assets/blt9724b5f5805063af/CanTouchTrue.gif" />
+---
+---<img src="/assets/blt19029b16ced82902/CanTouchFalse.gif" />
+---
+---#### Collision Groups
+---
+---This collision logic can be enabled and disabled for
+---`Collision Filtering|Collision Groups` using the
+---`Workspace/TouchesUseCollisionGroups` property. In this case, when
+---TouchesUseCollisionGroups is `true` parts in different groups set to not
+---collide will ignore collisions and touch events - thereby ignoring this
+---property
+---
+---#### Performance
+---
+---There is a small performance gain on parts that have both CanTouch and
+---`BasePart/CanCollide|CanCollide` set to `false`, as these parts will never
+---need to compute any kind of part to part collisions. However, they can
+---still be hit by `WorldRoot/Raycast|Raycasts` and
+---`DataType/Region3|Region3` queries.
+---
+BasePart.CanTouch = nil;
+---Determines whether or not a part casts a shadow.
+---
+---Note that this feature is not designed for performance enhancement. It
+---should only be disabled on parts where you want to hide the shadows the
+---part casts. Disabling this property for a given part may cause visual
+---artifacts on the shadows cast upon that part.
+---
+---The following image shows a red part with CastShadow disabled and a blue
+---part with CastShadow enabled. Note the tapering artifact on the shadow
+---cast on the red part.
+---
+---![An artifacted shadow on a red part and a normal shadow on a blue
+---part.](/assets/blt7fdf4da313fbba35/CastShadowArtifact.jpg)
+---
+BasePart.CastShadow = nil;
+---The CenterOfMass property describes the position in which a
+---`BasePart|part`'s [center of mass][1] is located. Should a force be
+---applied to the part toward this point, the part would not rotate as a
+---result of this force. **CenterOfMass is currently not enabled.**
+---
+---[1]: https://en.wikipedia.org/wiki/Center_of_mass
+---
+BasePart.CenterOfMass = nil;
+---The CollisionGroupId property describes the ID number of the part's
+---collision group. Parts start off in the Default group whose ID is 0.
+---Although this property can be directly changed, it is recommended to
+---instead manipulate the collision group of a part using the **name** of the
+---group with the `PhysicsService/SetPartCollisionGroup` function. You can
+---find the ID of a collision group by using
+---`PhysicsService/GetCollisionGroupId`.
+---
+---This value cannot be negative, and cannot exceed
+---`PhysicsService/GetMaxCollisionGroups`. Invalid IDs are clamped.
+---
+BasePart.CollisionGroupId = nil;
+---The Color property determines the color of a part. If the part has a
+---`BasePart/Material`, this also determines the color used when rendering
+---the material texture. If this property is set, `BasePart/BrickColor` will
+---use the closest BrickColor to the Color3 value.
+---
+---Other visual properties of a part are determined by
+---`BasePart/Transparency` and `BasePart/Reflectance`.
+---
+BasePart.Color = nil;
+---CustomPhysicalProperties lets you customize various physical aspects of a
+---`BasePart|part`, such as its's density, friction, and elasticity.
+---
+---If enabled, this property let's you configure these physical properties.
+---If disabled, these physical properties are determined by the
+---`BasePart/Material` of the part. The page for `Enum/Material` contains
+---list of the various part materials.
+---
+BasePart.CustomPhysicalProperties = nil;
+---The Elasticity of a part is now determined by either its `Material` or its
+---`CustomPhysicalProperties`.
+---
+BasePart.Elasticity = nil;
+---Used to control the Friction of the part, but now it no longer does
+---anything. The Friction of a part is now determined by either its
+---`BasePart/Material|Material` or its
+---`BasePart/CustomPhysicalProperties|CustomPhysicalProperties`.
+---
+BasePart.Friction = nil;
+---The FrontParamA property is relevant when a part's `BasePart/FrontSurface`
+---is set to Motor or SteppingMotor and `BasePart/FrontSurfaceInput` is set
+---to Sin. It determines the **amplitude** of the motor's rotational
+---velocity, using the following formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.FrontParamA = nil;
+---The FrontParamB property is relevant when a part's `BasePart/FrontSurface`
+---is set to Motor or SteppingMotor and `BasePart/FrontSurfaceInput` is set
+---to Constant or Sin. For Constant, it determines the constant rotational
+---velocity of the motor. For Sin, it determines the **frequency** of the
+---motor's rotational velocity, using the following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.FrontParamB = nil;
+---The FrontSurface property determines the type of surface used for the -Z
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/FrontSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes including Hinge,
+---Motor, and SteppingMotor render a 3D adornment instead. If this property
+---is selected in the Properties window, it will be highlighted in the game
+---world similar to that of a `SurfaceSelection`.
+---
+BasePart.FrontSurface = nil;
+---The FrontSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/FrontSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/FrontParamA` and `BasePart/FrontParamB` are used. For brevity,
+---these properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether.
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.FrontSurfaceInput = nil;
+---The LeftParamA property is relevant when a part's `BasePart/LeftSurface`
+---is set to Motor or SteppingMotor and `BasePart/LeftSurfaceInput` is set to
+---Sin. It determines the **amplitude** of the motor's rotational velocity,
+---using the following formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.LeftParamA = nil;
+---The LeftParamB property is relevant when a part's `BasePart/LeftSurface`
+---is set to Motor or SteppingMotor and `BasePart/LeftSurfaceInput` is set to
+---Constant or Sin. For Constant, it determines the constant rotational
+---velocity of the motor. For Sin, it determines the **frequency** of the
+---motor's rotational velocity, using the following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.LeftParamB = nil;
+---The LeftSurface property determines the type of surface used for the -X
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/LeftSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes including Hinge,
+---Motor, and SteppingMotor render a 3D adornment instead. If this property
+---is selected in the Properties window, it will be highlighted in the game
+---world similar to that of a `SurfaceSelection`.
+---
+BasePart.LeftSurface = nil;
+---The LeftSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/LeftSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/LeftParamA` and `BasePart/LeftParamB` are used. For brevity,
+---these properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether.
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.LeftSurfaceInput = nil;
+---The LocalTransparencyModifier property is a multiplier to
+---`BasePart/Transparency` that is only visible to the local client. It does
+---not replicate from client to server. It is useful for when a part should
+---not render for a specific client, such as how the player does not see
+---their character's body parts when they zoom into first person mode.
+---
+---The property modifies the local part's transparency increases a part's
+---transparency on a scale from 0 to 1 using the following formula:
+---
+---```lua
+---	-- Calculate the part's client-side transparency. Values greater than 1
+---	round down to 1. local clientTransparency = part.Transparency + (1 *
+---	part.localTransparencyModifier)
+---```
+---
+---Take a look at the table below for an example of how this property
+---affect's a part's client-side transparency:
+---
+---| Transparency | LocalTransparencyModifier | Server-Side Transparency | Client-Side Transparency | Description                                                                                                                                                                               |
+---| ------------ | ------------------------- | ------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+---| 0.5          | 0                         | 0.5                      | 0.5                      | A modifier value of 0.5 means that the part's client-side transparency is affected as follows: 0.5 + 1\*0 = 0.5. The part's client-side transparency equals its server-side transparency. |
+---| 0.5          | 0.5                       | 0.5                      | 0.75                     | A modifier value of 0.5 means that the part's client-side transparency is affected as follows: 0.5 + 1\*0.5 = 0.75                                                                        |
+---| 0.5          | 1                         | 0.5                      | 1                        | A modifier value of 1 means that the part's client-side transparency is affected as follows: 0.5 + 1\*1 = >1. The client does not render the part.                                        |
+---
+BasePart.LocalTransparencyModifier = nil;
+---The Locked property determines whether a `BasePart|part` (or a
+---`Model|model` it is contained within) may be selected in Roblox Studio by
+---clicking on it. This property is most often enabled on parts within
+---environment models that aren't being edited at the moment. Roblox Studio
+---has a Lock/Unlock All tool that can toggle the Locked state of every part
+---descendant in a model at once.
+---
+BasePart.Locked = nil;
+---**Mass** is a read-only property that describes the product of a part's
+---volume and density. It is returned by the `BasePart/GetMass|GetMass`
+---function.
+---
+---- The volume of a part is determined by its `BasePart/Size|Size` and its
+---  `Part/Shape|Shape`, which varies depending on the kind of BasePart used,
+---  such as `WedgePart`.
+---- The density of a part is determined by its `BasePart/Material|Material`
+---  or `BasePart/CustomPhysicalProperties|CustomPhysicalProperties`, if
+---  specified.
+---
+---A common use of the Mass property is using it to calculate the magnitude
+---of a gravity-counteracting force. Using a `BodyForce`, apply a upward
+---force equal to the product of a part's Mass and `Workspace/Gravity`. This
+---will completely counteract the force of gravity on the part.
+---
+BasePart.Mass = nil;
+---If this property is enabled, the `BasePart|part` will not contribute to
+---the total mass or inertia of its rigid body as long as it is `Weld|welded`
+---to another part that has mass.
+---
+---<img
+---	src="/assets/blt6637aa711aa15ddc/Screen_Shot_2019-01-18_at_10.03.30_PM.png"
+---	alt="Massles property in property window" />
+---
+---If the part is its own root part according to `BasePart/GetRootPart` then
+---this will be ignored for that part, and it will still contribute mass and
+---inertia to its rigid body like a normal part. Parts that are massless
+---should never become an assembly root part unless all other parts in the
+---assembly are also massless.
+---
+---This might be useful for things like optional accessories on vehicles that
+---you don't want to affect the handling of the car or a massless render mesh
+---welded to a simpler collision mesh. For instance, to create a massless
+---`MeshPart`, you would use the follow code:
+---
+---```lua
+---local mesh = Instance.new("MeshPart")
+---mesh.Parent = game.Workspace
+---mesh.MeshId = "insert meshId here"
+---mesh.Massless = true
+---```
+---
+BasePart.Massless = nil;
+---The Material property allows a builder to set a part's texture and default
+---physical properties (in the case that `BasePart/CustomPhysicalProperties`
+---is unset). The default Plastic material has a very light texture, and the
+---SmoothPlastic material has no texture at all. Some material textures like
+---DiamondPlate and Granite have very visible textures. Each material's
+---texture reflects sunlight differently, especially Foil.
+---
+---Setting this property then enabling `BasePart/CustomPhysicalProperties`
+---will use the default physical properties of a material. For instance,
+---DiamondPlate is a very dense material while Wood is very light. A part's
+---density determines whether it will float in terrain water.
+---
+---The Glass material changes rendering behavior on moderate graphics
+---settings. It applies a bit of reflectiveness (similar to
+---`BasePart/Reflectance`) and perspective distortion. The effect is
+---especially pronounced on sphere-shaped parts (set `BasePart/Shape` to
+---Ball). Semitransparent objects and Glass parts behind Glass are not
+---visible.
+---
+BasePart.Material = nil;
+---The system searches the `MaterialVariant|MaterialVariant` instance with
+---specified MaterialVariant name and `BasePart/Material` type. If it
+---successfully finds a matching MaterialVariant instance, it uses this
+---MaterialVariant instance to replace the default material. Default material
+---can be the built-in material or an override MaterialVariant specified in
+---`MaterialService|MaterialService`.
+---
+BasePart.MaterialVariant = nil;
+---The Orientation property describes the part's rotation in degrees around
+---the X, Y and Z axes using a Vector3. The rotations are applied in Y → X →
+---Z order. This differs from proper [Euler angles][1], and is instead
+---[Tait–Bryan angles][2] which describe **yaw, pitch and roll**. It is also
+---worth noting how this property differs from the `CFrame.Angles()`
+---constructor, which applies rotations in a different order (Z → Y → X). For
+---better control over the rotation of a part, it is recommended that
+---`BasePart/CFrame` is set instead.
+---
+---[1]: https://en.wikipedia.org/wiki/Euler_angles
+---[2]: https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
+---
+---When setting this property any `Weld|Welds`, `ManualWeld|ManualWelds`,
+---`Snap`, `Motor`, and `Motor6D|Motor6Ds` connected to this part will have
+---the matching `JointInstance/C0|C0`/`JointInstance/C1|C1` property updated
+---and to allow the part to move relative to any other parts it is joined to.
+---
+---WeldConstraints will also be temporarily disabled and re-enabled during
+---the move.
+---
+BasePart.Orientation = nil;
+---This property specifies the offset of the part's pivot from its
+---`datatype/CFrame`, that is `part:GetPivot()` is the same as
+---`part.CFrame * part.PivotOffset`.
+---
+---This is convenient for setting the pivot to a location in **local** space,
+---but setting a part's pivot to a location in **world** space can be done as
+---follows:
+---
+---```
+---local part = workspace.BluePart
+---local desiredPivotCFrameInWorldSpace = CFrame.new(0, 10, 0)
+---part.PivotOffset = part.CFrame:ToObjectSpace(desiredPivotCFrameInWorldSpace)
+---```
+---
+BasePart.PivotOffset = nil;
+---The Position property describes the coordinates of a `BasePart|part` using
+---a `DataType/Vector3`. It reflects the position of the part's
+---`BasePart/CFrame`, however it can also be set.
+---
+---When setting this property any `Weld|Welds`, `ManualWeld|ManualWelds`,
+---`Snap`, `Motor`, and `Motor6D|Motor6Ds` connected to this part will have
+---the matching `JointInstance/C0|C0`/`JointInstance/C1|C1` property updated
+---and to allow the part to move relative to any other parts it is joined to.
+---
+---WeldConstraints will also be temporarily disabled and re-enabled during
+---the move.
+---
+BasePart.Position = nil;
+---This returns the time in seconds since the part's physics got last updated
+---on the local client (or the server). Returns 0 when the part has no
+---physics (Anchored)
+---
+BasePart.ReceiveAge = nil;
+---The Reflectance property determines how much a `BasePart|part` reflects
+---the skybox. A value of 0 indicates the part is not reflective at all, and
+---a value of 1 indicates the part should fully reflect.
+---
+---Reflectance is not affected by `BasePart/Transparency`, unless the part is
+---fully transparent, in which case reflectance will not render at all.
+---Reflectance may or may not be ignored depending on the `BasePart/Material`
+---of the part.
+---
+BasePart.Reflectance = nil;
+---The ResizeIncrement property is a read-only property that describes the
+---smallest change in size allowable by the `BasePart/Resize` method. It
+---differs between implementations of the `BasePart` abstract class. For
+---instance, `Part` has this set to 1 and `TrussPart` has this set to 2
+---(since individual truss sections are 2x2x2 in size).
+---
+BasePart.ResizeIncrement = nil;
+---The ResizeableFaces property (with an **e**, not ResizableFaces) describes
+---using a Faces object the different faces on which a part may be resized.
+---For most implementations of `BasePart`, such as `Part` and `WedgePart`,
+---this property includes all faces. However, `TrussPart` will set its
+---ResizeableFaces set to only two faces since those kinds of parts must have
+---two `BasePart/Size` dimensions of length 2. This property is most commonly
+---used with tools used for building and manipulating parts and has little
+---use outside of that context. The `Handles` class, which has the
+---`Handles/Faces` property, can be used in conjunction with this property to
+---display only the handles on faces that can be resized on a part.
+---
+BasePart.ResizeableFaces = nil;
+---The RightParamA property is relevant when a part's `BasePart/RightSurface`
+---is set to Motor or SteppingMotor and `BasePart/RightSurfaceInput` is set
+---to Sin. It determines the **amplitude** of the motor's rotational
+---velocity, using the following formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.RightParamA = nil;
+---The RightParamB property is relevant when a part's `BasePart/RightSurface`
+---is set to Motor or SteppingMotor and `BasePart/RightSurfaceInput` is set
+---to Constant or Sin. For Constant, it determines the constant rotational
+---velocity of the motor. For Sin, it determines the **frequency** of the
+---motor's rotational velocity, using the following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.RightParamB = nil;
+---The RightSurface property determines the type of surface used for the +X
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/RightSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes including Hinge,
+---Motor, and SteppingMotor will render a 3D adornment instead. If this
+---property is selected in the Properties window, it will be highlighted in
+---the game world similar to that of a `SurfaceSelection`.
+---
+BasePart.RightSurface = nil;
+---The RightSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/RightSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/RightParamA` and `BasePart/RightParamB` are used. For brevity,
+---these properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether.
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.RightSurfaceInput = nil;
+---This property is the main rule in determining the root part of an
+---assembly. It is an integer between -127 and 127 that takes precedence over
+---all other rules for root part sort (including the weird rules based on
+---part `BasePart/Size|size`). A part with a higher RootPriority will take
+---priority over other `BasePart/Anchored|unanchored` parts with equal
+---`BasePart/Massless|Massless` values and a lower RootPriority.
+---
+---<img
+---src="/assets/bltc008b2f69b29c958/Screen_Shot_2019-01-18_at_10.09.15_PM.png"
+---alt="RootPriority in Properties window" />
+---
+---Use this to control which part of an assembly is the root part and keep
+---the root part stable if size changes.
+---
+---See also:
+---
+---- `understanding root parts|Understanding Root Parts`, an article
+---  documenting what root parts are and how to use them.
+---
+BasePart.RootPriority = nil;
+---The RotVelocity of a `BasePart|part` describes how its
+---`BasePart/Orientation` is presently changing. In other words, this
+---property describes how the fast part is rotating. The part only rotates if
+---it is not anchored.
+---
+---The unit of this property is **radians per second**.
+---
+---Using this in conjunction with `AlignOrientation` allows for aligned parts
+---to have matching RotVelocity and Orientation values.
+---
+BasePart.RotVelocity = nil;
+---The rotation of the part in degrees for the three axes.
+---
+---When setting this property any `Weld|Welds`, `ManualWeld|ManualWelds`,
+---`Snap`, `Motor`, and `Motor6D|Motor6Ds` connected to this part will have
+---the matching `JointInstance/C0|C0`/`JointInstance/C1|C1` property updated
+---and to allow the part to move relative to any other parts it is joined to.
+---
+---WeldConstraints will also be temporarily disabled and re-enabled during
+---the move.
+---
+BasePart.Rotation = nil;
+---The Size property determines the dimensions of a part. The individual
+---dimensions can go as low as 0.05 and as high as 2048 (or 2^11). The size
+---of the part is used in determining its mass, which is given by
+---`BasePart/GetMass`. The `BasePart/Shape` of a part can apply some
+---restrictions on Size - namely, a Ball must have the same 3 dimensions. A
+---part's Size is used by a variety of other objects:
+---
+---- `ParticleEmitter` uses Size to determine the area from which particles
+---  are spawned.
+---- `BlockMesh` uses Size to partially determine the rendered rectangular
+---  prism.
+---- `SpecialMesh` uses Size for some certain `SpecialMesh/MeshType`s to
+---  determine the size of the rendered mesh.
+---- `SurfaceLight` uses Size to determine the space to illuminate.
+---
+BasePart.Size = nil;
+---The ratio of the part's density to the density of water determined by the
+---`BasePart/Material`. Effects the part's behavior when in a water terrain
+---cell. Essentially, SpecificGravity refers to how many times more dense a
+---part is than water.
+---
+---<table>
+---	<thead>
+---		<tr>
+---			<th>Material</th>
+---			<th>SpecificGravity</th>
+---		</tr>
+---		<tr>
+---			<td>Plastic</td>
+---			<td>0.7</td>
+---		</tr>
+---		<tr>
+---			<td>Wood</td>
+---			<td>0.35</td>
+---		</tr>
+---		<tr>
+---			<td>Slate</td>
+---			<td>2.7</td>
+---		</tr>
+---		<tr>
+---			<td>Concrete</td>
+---			<td>2.4</td>
+---		</tr>
+---		<tr>
+---			<td>CorrodedMetal</td>
+---			<td>7.85</td>
+---		</tr>
+---		<tr>
+---			<td>DiamondMetal</td>
+---			<td>7.85</td>
+---		</tr>
+---		<tr>
+---			<td>Foil</td>
+---			<td>7.6</td>
+---		</tr>
+---		<tr>
+---			<td>Grass</td>
+---			<td>0.9</td>
+---		</tr>
+---		<tr>
+---			<td>Ice</td>
+---			<td>0.91</td>
+---		</tr>
+---		<tr>
+---			<td>Marble</td>
+---			<td>2.56</td>
+---		</tr>
+---		<tr>
+---			<td>Granite</td>
+---			<td>2.7</td>
+---		</tr>
+---		<tr>
+---			<td>Brick</td>
+---			<td>1.92</td>
+---		</tr>
+---		<tr>
+---			<td>Pebble</td>
+---			<td>2.4</td>
+---		</tr>
+---		<tr>
+---			<td>Sand</td>
+---			<td>1.6</td>
+---		</tr>
+---		<tr>
+---			<td>Fabric</td>
+---			<td>0.7</td>
+---		</tr>
+---		<tr>
+---			<td>SmoothPlastic</td>
+---			<td>0.7</td>
+---		</tr>
+---		<tr>
+---			<td>Metal</td>
+---			<td>7.85</td>
+---		</tr>
+---		<tr>
+---			<td>WoodPlanks</td>
+---			<td>0.35</td>
+---		</tr>
+---		<tr>
+---			<td>Cobblestone</td>
+---			<td>2.7</td>
+---		</tr>
+---	</thead>
+---</table>
+---
+BasePart.SpecificGravity = nil;
+---The TopParamA property is relevant when a part's `BasePart/TopSurface` is
+---set to Motor or SteppingMotor and `BasePart/TopSurfaceInput` is set to
+---Sin. It determines the **amplitude** of the motor's rotational velocity,
+---using the following formula:
+---
+---`MotorVelocity = ParamA * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.TopParamA = nil;
+---The TopParamB property is relevant when a part's `BasePart/TopSurface` is
+---set to Motor or SteppingMotor and `BasePart/TopSurfaceInput` is set to
+---Constant or Sin. For Constant, it determines the constant rotational
+---velocity of the motor. For Sin, it determines the **frequency** of the
+---motor's rotational velocity, using the following formula:
+---
+---`MotorVelocity = ParamB * math.sin(workspace.DistributedGameTime * ParamB)`
+---
+---In no other cases is this property used.
+---
+BasePart.TopParamB = nil;
+---The TopSurface property determines the type of surface used for the +Y
+---direction of a part. When two parts' faces are placed next to each other,
+---they may create a joint between them. If set to Motor, the
+---`BasePart/TopSurfaceInput` determines how a motor joint should behave.
+---
+---Most SurfaceTypes render a texture on the part face if the
+---`BasePart/Material` is set to Plastic. Some SurfaceTypes - Hinge, Motor
+---and SteppingMotor - will render a 3D adornment instead. If this property
+---is selected in the Properties window, it will be highlighted in the game
+---world similar to that of a `SurfaceSelection`.
+---
+BasePart.TopSurface = nil;
+---The TopSurfaceInput property determines the kind of input provided to a
+---part's `BasePart/TopSurface`. This is only relevant for Motor or
+---SteppingMotor SurfaceTypes. This property determines how
+---`BasePart/TopParamA` and `BasePart/TopParamB` are used. For brevity, these
+---properties will be referred to as ParamA and ParamB, respectively.
+---
+---- By default, this is set to NoInput. This stops the motor altogether,
+---- For Constant, the motor rotates at a constant velocity equal to
+---  `ParamB`.
+---- For Sin, the motor rotates at a velocity equal to
+---  `ParamA * math.sin(workspace.DistributedGameTime * ParamB)`. See
+---  `Workspace/DistributedGameTime`.
+---
+BasePart.TopSurfaceInput = nil;
+---The Transparency property controls the visibility of a part on a scale of
+---0 to 1, where 0 is completely visible (opaque), and a value of 1 is
+---completely invisible (not rendered at all).
+---
+---`BasePart/Reflectance` can reduce the overall transparency of a brick if
+---set to a value close to 1.
+---
+---While fully transparent parts are not rendered at all, partially
+---transparent objects have some significant rendering costs. Having many
+---translucent parts may slow down the game's performance.
+---
+---When transparent parts overlap, render order can act unpredictable - try
+---to keep semi-transparent parts from overlapping to avoid this.
+---
+---The `BasePart/LocalTransparencyModifier` is a multiplier to Transparency
+---that is only visible to the local client.
+---
+BasePart.Transparency = nil;
+---The Velocity of a part describes how its `BasePart/Position` is presently
+---changing. The unit of this property is **studs per second**. For
+---reference, the default Roblox character moves at 16 studs per second via
+---`Humanoid/WalkSpeed`. The acceleration due to gravity is found in
+---`Workspace/Gravity` (by default, -196.2 studs per second).
+---
+---Setting the Velocity of an part that is `BasePart/Anchored` will cause it
+---to act like a conveyor belt. Any object that touches the part will begin
+---to move in accordance with the Velocity.
+---
+---Some `BodyMover` objects will apply forces and thus change the Velocity of
+---a part over time. The simplest of these is a `BodyForce` which can be used
+---to counteract the acceleration due to gravity on a single part (set the +Y
+---axis of the `BodyForce/Force` to the product of the mass
+---(`/BasePart/GetMass`) and the gravity constant).
+---
+BasePart.Velocity = nil;
+---
+BasePart.brickColor = nil;
+---@param impulse Vector3
+---@return void
+---Applies an instant angular force impulse to this `BasePart|part`'s
+---assembly, causing the assembly to spin.
+---
+---The resulting angular velocity from the impulse relies on the assembly's
+---`BasePart/AssemblyMass|mass`. So a higher impulse is required to move more
+---massive assemblies. Impulses are useful for cases where you want a force
+---applied instantly, such as an explosion or collision.
+---
+---If the part is owned by the server, this function must be called on a
+---server `Script`. If the part is owned by a client, this function must be
+---called on a `LocalScript``.
+---
+BasePart.ApplyAngularImpulse = function(self, impulse) end;
 ---@return float
 BasePart.getMass = function(self) end;
 ---@return void
@@ -2531,40 +4233,12 @@ BasePart.MakeJoints = function(self) end;
 ---backward-compatibility; you should use the Mass property directly.
 ---
 BasePart.GetMass = function(self) end;
----@return Tuple
----The CanSetNetworkOwnership function checks whether you can set a
----`BasePart|part`'s network ownership.
+---@param normalId NormalId
+---@param deltaAmount int
+---@return bool
+---Changes the size of an object just like using the Studio resize tool.
 ---
----The function's return value verifies whether or not you can call
----`BasePart/SetNetworkOwner` or `BasePart/SetNetworkOwnershipAuto` without
----encountering an error. It returns true if you can modify/read the network
----ownership, or returns false and the reason you can't, as a string.
----
-BasePart.CanSetNetworkOwnership = function(self) end;
----@return Instance
----Returns the current player who is the network owner of this part, or nil
----in case of the server.
----
-BasePart.GetNetworkOwner = function(self) end;
----@param impulse Vector3
----@return void
----This function applies an instant force impulse to this `BasePart|part`'s
----assembly.
----
----The force is applied at the assembly's
----`BasePart/AssemblyCenterOfMass|center of mass`, so the resulting movement
----will only be linear.
----
----The resulting velocity from the impulse relies on the assembly's
----`BasePart/AssemblyMass|mass`. So a higher impulse is required to move more
----massive assemblies. Impulses are useful for cases where you want a force
----applied instantly, such as an explosion or collision.
----
----If the part is owned by the server, this function must be called on a
----server `Script`. If the part is owned by a client, this function must be
----called on a `LocalScript`.
----
-BasePart.ApplyImpulse = function(self, impulse) end;
+BasePart.Resize = function(self, normalId, deltaAmount) end;
 ---@param parts Objects
 ---@param collisionfidelity CollisionFidelity
 ---@param renderFidelity RenderFidelity
@@ -2670,6 +4344,11 @@ BasePart.ApplyImpulse = function(self, impulse) end;
 ---[1]: /assets/bltca314c0a724d0212/UnionAsync.jpg"
 ---
 BasePart.UnionAsync = function(self, parts, collisionfidelity, renderFidelity) end;
+---@return Instance
+---Returns the current player who is the network owner of this part, or nil
+---in case of the server.
+---
+BasePart.GetNetworkOwner = function(self) end;
 ---@param parts Objects
 ---@param collisionfidelity CollisionFidelity
 ---@param renderFidelity RenderFidelity
@@ -2700,37 +4379,30 @@ BasePart.UnionAsync = function(self, parts, collisionfidelity, renderFidelity) e
 ---```
 ---
 BasePart.SubtractAsync = function(self, parts, collisionfidelity, renderFidelity) end;
----@param impulse Vector3
----@param position Vector3
----@return void
----This function pplies an instant force impulse to this `BasePart|part`'s
----assembly, at the specified position in world space.
----
----If the position is not at the assembly's
----`BasePart/AssemblyCenterOfMass|center of mass`, the impulse will cause a
----positional and rotational movement.
----
----The resulting velocity from the impulse relies on the assembly's
----`BasePart/AssemblyMass|mass`. So a higher impulse is required to move more
----massive assemblies. Impulses are useful for cases where developers want a
----force applied instantly, such as an explosion or collision.
----
----If the part is owned by the server, this function must be called on a
----server `Script`. If the part is owned by a client, this function must be
----called on a `LocalScript`.
----
-BasePart.ApplyImpulseAtPosition = function(self, impulse, position) end;
 ---@param normalId NormalId
 ---@param deltaAmount int
 ---@return bool
 BasePart.resize = function(self, normalId, deltaAmount) end;
----@param playerInstance Player
 ---@return void
----Sets the given player as network owner for this and all connected parts.
----When playerInstance is nil, the server will be the owner instead of a
----player.
+---Breaks any surface connection with any adjacent part, including `Weld` and
+---other `JointInstance`.
 ---
-BasePart.SetNetworkOwner = function(self, playerInstance) end;
+BasePart.BreakJoints = function(self) end;
+---@return bool
+---Returns true if the game engine automatically decides the network owner
+---for this part.
+---
+BasePart.GetNetworkOwnershipAuto = function(self) end;
+---@param position Vector3
+---@return Vector3
+BasePart.GetVelocityAtPosition = function(self, position) end;
+---@param part BasePart
+---@return bool
+---Returns whether the parts can collide with each other or not. This
+---function takes into account the collision groups of the two parts. This
+---function will error if the specified part is not a BasePart.
+---
+BasePart.CanCollideWith = function(self, part) end;
 ---@return CFrame
 ---This function used to be relevant when Roblox's lag-compensating
 ---interpolation of parts online was internal. The interpolation is now
@@ -2738,38 +4410,36 @@ BasePart.SetNetworkOwner = function(self, playerInstance) end;
 ---
 BasePart.GetRenderCFrame = function(self) end;
 ---@return void
----Breaks any surface connection with any adjacent part, including `Weld` and
----other `JointInstance`.
+---Lets the game engine dynamically decide who will handle the part's physics
+---(one of the clients or the server).
 ---
-BasePart.BreakJoints = function(self) end;
----@param recursive bool
----@return Objects
----Returns a table of parts connected to the the object by any kind of rigid
----joint.
+BasePart.SetNetworkOwnershipAuto = function(self) end;
+---@param playerInstance Player
+---@return void
+---Sets the given player as network owner for this and all connected parts.
+---When playerInstance is nil, the server will be the owner instead of a
+---player.
 ---
----If _recursive_ is true this function will return all of the parts in the
----assembly rigidly connected to the BasePart.
+BasePart.SetNetworkOwner = function(self, playerInstance) end;
+---@param impulse Vector3
+---@return void
+---This function applies an instant force impulse to this `BasePart|part`'s
+---assembly.
 ---
----#### Rigid Joints
+---The force is applied at the assembly's
+---`BasePart/AssemblyCenterOfMass|center of mass`, so the resulting movement
+---will only be linear.
 ---
----When a joint connects two parts together `(Part0 → Part1)`, a joint is
----**rigid** if the physics of `Part1` are completely locked down by `Part0`.
----This only applies to the following joint types:
+---The resulting velocity from the impulse relies on the assembly's
+---`BasePart/AssemblyMass|mass`. So a higher impulse is required to move more
+---massive assemblies. Impulses are useful for cases where you want a force
+---applied instantly, such as an explosion or collision.
 ---
----- `Weld`
----- `Snap`
----- `ManualWeld`
----- `Motor`
----- `Motor6D`
----- `WeldConstraint`
+---If the part is owned by the server, this function must be called on a
+---server `Script`. If the part is owned by a client, this function must be
+---called on a `LocalScript`.
 ---
-BasePart.GetConnectedParts = function(self, recursive) end;
----@param normalId NormalId
----@param deltaAmount int
----@return bool
----Changes the size of an object just like using the Studio resize tool.
----
-BasePart.Resize = function(self, normalId, deltaAmount) end;
+BasePart.ApplyImpulse = function(self, impulse) end;
 ---@return Instance
 ---Returns the base part of an assembly (a collection of parts connected
 ---together). When moving an assembly of parts using a
@@ -2805,25 +4475,35 @@ BasePart.Resize = function(self, normalId, deltaAmount) end;
 ---
 BasePart.GetRootPart = function(self) end;
 ---@param impulse Vector3
+---@param position Vector3
 ---@return void
----Applies an instant angular force impulse to this `BasePart|part`'s
----assembly, causing the assembly to spin.
+---This function pplies an instant force impulse to this `BasePart|part`'s
+---assembly, at the specified position in world space.
 ---
----The resulting angular velocity from the impulse relies on the assembly's
+---If the position is not at the assembly's
+---`BasePart/AssemblyCenterOfMass|center of mass`, the impulse will cause a
+---positional and rotational movement.
+---
+---The resulting velocity from the impulse relies on the assembly's
 ---`BasePart/AssemblyMass|mass`. So a higher impulse is required to move more
----massive assemblies. Impulses are useful for cases where you want a force
----applied instantly, such as an explosion or collision.
+---massive assemblies. Impulses are useful for cases where developers want a
+---force applied instantly, such as an explosion or collision.
 ---
 ---If the part is owned by the server, this function must be called on a
 ---server `Script`. If the part is owned by a client, this function must be
----called on a `LocalScript``.
+---called on a `LocalScript`.
 ---
-BasePart.ApplyAngularImpulse = function(self, impulse) end;
----@return void
----Lets the game engine dynamically decide who will handle the part's physics
----(one of the clients or the server).
+BasePart.ApplyImpulseAtPosition = function(self, impulse, position) end;
+---@return Tuple
+---The CanSetNetworkOwnership function checks whether you can set a
+---`BasePart|part`'s network ownership.
 ---
-BasePart.SetNetworkOwnershipAuto = function(self) end;
+---The function's return value verifies whether or not you can call
+---`BasePart/SetNetworkOwner` or `BasePart/SetNetworkOwnershipAuto` without
+---encountering an error. It returns true if you can modify/read the network
+---ownership, or returns false and the reason you can't, as a string.
+---
+BasePart.CanSetNetworkOwnership = function(self) end;
 ---@return Objects
 ---Returns a table of all parts that are physically interacting with this
 ---part. If the part itself has CanCollide set to false, then this function
@@ -2832,32 +4512,74 @@ BasePart.SetNetworkOwnershipAuto = function(self) end;
 ---intersecting are not considered touching.
 ---
 BasePart.GetTouchingParts = function(self) end;
----@param part BasePart
----@return bool
----Returns whether the parts can collide with each other or not. This
----function takes into account the collision groups of the two parts. This
----function will error if the specified part is not a BasePart.
+---@param recursive bool
+---@return Objects
+---Returns a table of parts connected to the the object by any kind of rigid
+---joint.
 ---
-BasePart.CanCollideWith = function(self, part) end;
+---If _recursive_ is true this function will return all of the parts in the
+---assembly rigidly connected to the BasePart.
+---
+---#### Rigid Joints
+---
+---When a joint connects two parts together `(Part0 → Part1)`, a joint is
+---**rigid** if the physics of `Part1` are completely locked down by `Part0`.
+---This only applies to the following joint types:
+---
+---- `Weld`
+---- `Snap`
+---- `ManualWeld`
+---- `Motor`
+---- `Motor6D`
+---- `WeldConstraint`
+---
+BasePart.GetConnectedParts = function(self, recursive) end;
 ---@return void
 BasePart.breakJoints = function(self) end;
----@param position Vector3
----@return Vector3
-BasePart.GetVelocityAtPosition = function(self, position) end;
----@return bool
----Returns true if the game engine automatically decides the network owner
----for this part.
+---@class RBXScriptSignal.LocalSimulationTouched : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.LocalSimulationTouched, callback: fun(part: BasePart)): RBXScriptConnection
+---Fired when another part comes in contact with another object. This event
+---only sends data to the client notifying it that two parts have collided,
+---whereas `BasePart/Touched` sends data to the server.
 ---
-BasePart.GetNetworkOwnershipAuto = function(self) end;
+BasePart.LocalSimulationTouched = nil;
+---@class RBXScriptSignal.OutfitChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OutfitChanged, callback: fun()): RBXScriptConnection
+---Fired if the part's appearance is affected by the `Shirt` class.
+---
+BasePart.OutfitChanged = nil;
+---@class RBXScriptSignal.StoppedTouching : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.StoppedTouching, callback: fun(otherPart: BasePart)): RBXScriptConnection
+---
+BasePart.StoppedTouching = nil;
+---@class RBXScriptSignal.TouchEnded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.TouchEnded, callback: fun(otherPart: BasePart)): RBXScriptConnection
+---Fired when a `BasePart|part` stops touching another part. This event fires
+---under similar conditions to those of `BasePart/Touched`.
+---
+BasePart.TouchEnded = nil;
+---@class RBXScriptSignal.Touched : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Touched, callback: fun(otherPart: BasePart)): RBXScriptConnection
+---The Touched event fires when a part comes in contact with another part.
+---For instance, if PartA bumps into PartB, then PartA.Touched fires with
+---PartB, and PartB fires with PartA.
+---
+---This event only fires as a result of physics movement, so it will not fire
+---if the CFrame property was changed such that the part overlaps another
+---part. This also means that at least one of the parts involved must not be
+---`BasePart/Anchored` at the time of the collision.
+---
+---Many types of parts are removed or destroyed as soon as they hit another
+---part. This means that it is possible for the other part's
+---`Instance/Parent` to be nil. Be sure to check that `otherPart.Parent` is
+---not nil before using it, such as calling `Instance/FindFirstChild`.
+---
+BasePart.Touched = nil;
 ---@class BasePlayerGui : Instance
----The BasePlayerGui is an abstract class that all GUI drawing storage
----classes inherit from.
+---The BasePlayerGui is an abstract class that all GUI drawing storage classes
+---inherit from.
 ---
 local BasePlayerGui;
----@param position Vector2
----@param radius float
----@return Objects
-BasePlayerGui.GetGuiObjectsInCircle = function(self, position, radius) end;
 ---@param x int
 ---@param y int
 ---@return Objects
@@ -2876,12 +4598,54 @@ BasePlayerGui.GetGuiObjectsInCircle = function(self, position, radius) end;
 ---folders.
 ---
 BasePlayerGui.GetGuiObjectsAtPosition = function(self, x, y) end;
+---@param position Vector2
+---@param radius float
+---@return Objects
+BasePlayerGui.GetGuiObjectsInCircle = function(self, position, radius) end;
 ---@class BaseScript : LuaSourceContainer, Instance
 ---@field public Disabled bool
 ---@field public LinkedSource Content
 ---The base class for all script objects which run automatically.
 ---
 local BaseScript;
+---Determines whether a `BaseScript` will run or not.
+---
+---`Script`s and `LocalScript`s, when parented to a valid parent, will run
+---when Disabled is false.
+---
+---If Disabled is set to true whilst a script is running, the current thread
+---will be terminated.
+---
+---If Disabled is set to true from false, the script will run again. This
+---means the Disabled property can be toggled to restart a script:
+---
+---```lua
+---scriptObject.Disabled = false
+---scriptObject.Disabled = true
+---```
+---
+---Note, the above code snippet cannot be used within the script itself. This
+---is because once the script is disabled the thread will terminate.
+---
+BaseScript.Disabled = nil;
+---The content ID of an uploaded script. When set binds the uploaded code to
+---the script's `Script/Source`.
+---
+---By default, this property is set to _'[Embedded]'_. This means the source
+---of the script is not linked to an upload script and is instead written in
+---the script.
+---
+---```lua
+---script.LinkedSource = "http://www.roblox.com/asset/?id=1014476" -- link source
+---```
+---
+---Developers should remove a linked source via the properties window, rather
+---than setting the property to _'[Embedded]'_.
+---
+---For the LinkedSource property for `ModuleScript`s, please see
+---`ModuleScript/LinkedSource`.
+---
+BaseScript.LinkedSource = nil;
 ---@class BaseWrap : Instance
 ---@field public CageMeshId Content
 ---@field public CageOrigin CFrame
@@ -2889,23 +4653,84 @@ local BaseScript;
 ---@field public HSRAssetId Content
 ---@field public ImportOrigin CFrame
 ---@field public ImportOriginWorld CFrame
----The base class for `WrapTarget` and `WrapLayer` objects. Note that
----`MeshPart` is the only valid parent type for `BaseWrap` and that it
----behaves more like a component of `MeshPart` than an independent object.
+---The base class for `WrapTarget` and `WrapLayer` objects. Note that `MeshPart`
+---is the only valid parent type for `BaseWrap` and that it behaves more like a
+---component of `MeshPart` than an independent object.
 ---
 local BaseWrap;
----@param cageType CageType
----@param vertices Array
----@return void
-BaseWrap.ModifyVertices = function(self, cageType, vertices) end;
+---This property is set up automatically by the Avatar Importer plugin.
+---
+---Asset ID for cage mesh.
+---
+BaseWrap.CageMeshId = nil;
+---This property is set up automatically by the Avatar Importer plugin.
+---
+---Cage mesh offset relative to parent `MeshPart`.
+---
+BaseWrap.CageOrigin = nil;
+---Cage mesh offset in world space.
+---
+BaseWrap.CageOriginWorld = nil;
+---
+BaseWrap.HSRAssetId = nil;
+---This property is set up automatically by the Avatar Importer plugin.
+---
+---Describes where a global zero was while authoring the cage mesh in an
+---asset creation tool such as Blender or Maya. This property is not used by
+---the deformer but it is useful for tools/aligning scripts, for example
+---aligning two parts by matching their pivots as follows:
+---
+---```lua
+---local function alignWraps()
+---	local selectionService = game:GetService("Selection")
+---	local selectedObjects = selectionService:Get()
+---	local alignObjects = {}
+---	for _, obj in pairs(selectedObjects) do
+---		if obj:IsA("BaseWrap") then
+---			--print("Wrap: " .. obj.Name)
+---			table.insert(alignObjects, obj)
+---		else
+---			print("Ignore: " .. obj.Name)
+---		end
+---	end
+---
+---	if #alignObjects < 2 then
+---		warn("You need to select at least two wraps")
+---		return
+---	end
+---
+---	local anchorWrap = alignObjects[1]
+---	local worldA_from_Wrap = anchorWrap.ImportOriginWorld
+---	print("Anchor: " .. anchorWrap.Name)
+---	for i = 2, #alignObjects do
+---		local wrapToAlign = alignObjects[i]
+---		print("Align: " .. wrapToAlign.Name)
+---		local wrap_from_WorldB = wrapToAlign.ImportOriginWorld:Inverse()
+---		local worldA_from_WorldB = worldA_from_Wrap * wrap_from_WorldB
+---		local worldB = wrapToAlign.Parent.CFrame
+---		-- Note: adjust CFrame of the parent part
+---		wrapToAlign.Parent.CFrame = (worldB_from_WorldB * worldB)
+---	end
+---end
+---```
+---
+BaseWrap.ImportOrigin = nil;
+---Describes where the origin (in world space) was while authoring the cage
+---mesh in an asset creation tool such as Blender or Maya.
+---
+BaseWrap.ImportOriginWorld = nil;
 ---@return bool
 BaseWrap.IsHSRReady = function(self) end;
 ---@param cageType CageType
 ---@return Array
-BaseWrap.GetFaces = function(self, cageType) end;
+BaseWrap.GetVertices = function(self, cageType) end;
+---@param cageType CageType
+---@param vertices Array
+---@return void
+BaseWrap.ModifyVertices = function(self, cageType, vertices) end;
 ---@param cageType CageType
 ---@return Array
-BaseWrap.GetVertices = function(self, cageType) end;
+BaseWrap.GetFaces = function(self, cageType) end;
 ---@class Beam : Instance
 ---@field public Attachment0 Attachment
 ---@field public Attachment1 Attachment
@@ -2926,27 +4751,26 @@ BaseWrap.GetVertices = function(self, cageType) end;
 ---@field public Width0 float
 ---@field public Width1 float
 ---@field public ZOffset float
----A Beam object connects two `Attachment`s by drawing a texture between
----them.
+---A Beam object connects two `Attachment`s by drawing a texture between them.
 ---
 ---## Setting up a Beam
 ---
 ---To display, beams must be a descendant of the `Workspace` with their
----`Beam/Attachment0` and `Beam/Attachment1` properties set to `Attachment`s
----also descending from the `Workspace`.
+---`Beam/Attachment0` and `Beam/Attachment1` properties set to `Attachment`s also
+---descending from the `Workspace`.
 ---
 ---The beam's appearance can be customised using the range of properties
 ---available.
 ---
 ---## Beam Curvature
 ---
----Beams are configured to use a cubic [Bézier curve][1]. This means they are
----not constrained to straight lines, and the curve of the beam can be
----modified by changing `Beam/CurveSize0`, `Beam/CurveSize1` and the
----orientation of the beam's `Attachment`s.
+---Beams are configured to use a cubic [Bézier curve][1]. This means they are not
+---constrained to straight lines, and the curve of the beam can be modified by
+---changing `Beam/CurveSize0`, `Beam/CurveSize1` and the orientation of the
+---beam's `Attachment`s.
 ---
----Cubic Bézier curves are formed of four control points. They are determined
----as follows:
+---Cubic Bézier curves are formed of four control points. They are determined as
+---follows:
 ---
 ---- **P0**: The start of the beam, the position of `Beam/Attachment0`
 ---- **P1**: `Beam/CurveSize0` studs away from `Beam/Attachment0`, in
@@ -2955,8 +4779,8 @@ BaseWrap.GetVertices = function(self, cageType) end;
 ---  `Beam/Attachment1`'s negative X direction.
 ---- **P3**: The end of the beam, the position of `Beam/Attachment1`
 ---
----The beam starts at P0, goes towards P1, and arrives at P3, from the
----direction of P2. The beam will not necessarily pass through P1 and P2.
+---The beam starts at P0, goes towards P1, and arrives at P3, from the direction
+---of P2. The beam will not necessarily pass through P1 and P2.
 ---
 ---See the image below for a visual demonstration.
 ---
@@ -2966,6 +4790,397 @@ BaseWrap.GetVertices = function(self, cageType) end;
 ---[2]: /assets/blt160ad3fdeadd4ff2/BeamCurve1.png
 ---
 local Beam;
+---The `Attachment` the `Beam` originates from.
+---
+---A `Beam`'s Attachment0 is the first control point on the `Beam`'s [cubic
+---Bézier curve][1]. The orientation of Attachment0, alongside the `Beam`'s
+---`Beam/CurveSize0`, property determine the position of the second control
+---point.
+---
+---For the `Attachment` where the `Beam` ends see `Beam/Attachment1`.
+---
+---For more information how a `Beam` curves, see `Beam/CurveSize0`.
+---
+---[1]: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+---
+Beam.Attachment0 = nil;
+---The `Attachment` the `Beam` ends at.
+---
+---A `Beam`'s Attachment1 is the fourth and final control point on the
+---`Beam`'s [cubic Bézier curve][1]. The orientation of Attachment1,
+---alongside the `Beam`'s `Beam/CurveSize1` property, determine the position
+---of the third control point.
+---
+---For the `Attachment` where the `Beam` starts see `Beam/Attachment0`.
+---
+---For more information how a `Beam` curves, see `Beam/CurveSize1`.
+---
+---[1]: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+---
+Beam.Attachment1 = nil;
+---Scales the light emitted from `Beam`. By default, this property is 1 and
+---can set to any number within the range [0, 10000]. Increasing the value of
+---`Beam/LightInfluence|LightInfluence` decreases the effect of
+---**Brightness**. **Brightness** doesn't have any effect when
+---`Beam/LightInfluence|LightInfluence` is 1.
+---
+Beam.Brightness = nil;
+---Determines the color of the `Beam`.
+---
+---If the `Beam`'s `Beam/Texture` is set, this color will be applied to the
+---`Beam`'s texture. If no `Beam/Texture` has been set then the `Beam` will
+---appear as a solid bar colored in accordance with this property.
+---
+---#### Beams and ColorSequences
+---
+---This property is a `DataType/ColorSequence`, allowing the color to be
+---configured to vary across the length of the `Beam`. Take for example the
+---following `DataType/ColorSequence`.
+---
+---```lua
+---local colorSequence = ColorSequence.new({
+---	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)), -- red
+---	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)), -- green
+---	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 255)), -- blue
+---	}
+---)
+---```
+---
+---Applying this `DataType/ColorSequence` to a `Beam` would yield the
+---following result:
+---
+---![enter image description here][1]
+---
+---Note the `Beam`'s coloration also depends on the number of `Beam/Segments`
+---the `Beam` has. Each segment of the beam can only show a transition
+---between two colors. Therefore a `Beam` will need to have at least n-1
+---segments in order for the color to display correctly, where n is the
+---number of `DataType/ColorSequenceKeypoint`s in the
+---`DataType/ColorSequence`
+---
+---[1]: /assets/blt44487f7a1e259ab2/BeamColor.png
+---
+Beam.Color = nil;
+---Determines, along with `Beam/Attachment0` the position of the first
+---control point in the Beam's Bézier curve.
+---
+---The position of this point can be determined by the following equation:
+---
+---```lua
+---local controlPoint1 = Beam.Attachment0.WorldPosition + (Beam.Attachment0.CFrame.rightVector * Beam.CurveSize0)
+---```
+---
+---#### Beam Curvature
+---
+---Beams are configured to use a cubic [Bézier curve][1]. This means they are
+---not constrained to straight lines, and the curve of the beam can be
+---modified by changing CurveSize0, `Beam/CurveSize1` and the orientation of
+---the beam's `Attachment`s.
+---
+---Cubic Bézier curves are formed of four control points. They are determined
+---as follows:
+---
+---- **P0**: The start of the beam, the position of `Beam/Attachment0`
+---- **P1**: CurveSize0 studs away from `Beam/Attachment0`, in
+---  `Beam/Attachment0`'s positive X direction.
+---- **P2**: `Beam/CurveSize1` studs away from `Beam/Attachment1`, in
+---  `Beam/Attachment1`'s negative X direction.
+---- **P3**: The end of the beam, the position of `Beam/Attachment1`
+---
+---The beam starts at P0, goes towards P1, and arrives at P3, from the
+---direction of P2. The beam will not necessarily pass through P1 and P2.
+---
+---See the images below for a visual demonstration.
+---
+---![BeamCurve1][2] ![BeamCurve2][3]
+---
+---[1]: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+---[2]: /assets/blt160ad3fdeadd4ff2/BeamCurve1.png
+---[3]: /assets/bltb31fc0c526df1ad5/BeamCurve2.png
+---
+Beam.CurveSize0 = nil;
+---Determines, along with `Beam/Attachment0` the position of the first
+---control point in the Beam's Bézier curve.
+---
+---The position of this point can be determined by the following equation:
+---
+---```lua
+---local controlPoint2 = Beam.Attachment1.WorldPosition - (Beam.Attachment1.CFrame.rightVector * Beam.CurveSize1)
+---```
+---
+---#### Beam Curvature
+---
+---Beams are configured to use a cubic [Bézier curve][1]. This means they are
+---not constrained to straight lines, and the curve of the beam can be
+---modified by changing `Beam/CurveSize0`, CurveSize1 and the orientation of
+---the beam's `Attachment`s.
+---
+---Cubic Bézier curves are formed of four control points. They are determined
+---as follows:
+---
+---- **P0**: The start of the beam, the position of `Beam/Attachment0`
+---- **P1**: `Beam/CurveSize0` studs away from `Beam/Attachment0`, in
+---  `Beam/Attachment0`'s positive X direction.
+---- **P2**: CurveSize1 studs away from `Beam/Attachment1`, in
+---  `Beam/Attachment1`'s negative X direction.
+---- **P3**: The end of the beam, the position of `Beam/Attachment1`
+---
+---The beam starts at P0, goes towards P1, and arrives at P3, from the
+---direction of P2. The beam will not necessarily pass through P1 and P2.
+---
+---See the images below for a visual demonstration.
+---
+---![enter image description here][2] ![enter image description here][3]
+---
+---[1]: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+---[2]: /assets/blt160ad3fdeadd4ff2/BeamCurve1.png
+---[3]: /assets/bltb31fc0c526df1ad5/BeamCurve2.png
+---
+Beam.CurveSize1 = nil;
+---Determines whether the `Beam` is visible or not.
+---
+---When this property is set to false, the `Beam`'s `Beam/Segments` will not
+---be displayed.
+---
+Beam.Enabled = nil;
+---Determines whether the `Beam/Segments` of the `Beam` will always face the
+---`Workspace/CurrentCamera` regardless of its orientation.
+---
+---A `Beam` has no depth, and is hence a two dimensional projection existing
+---in three dimensional space. This means that, by default, a `Beam` is not
+---visible from every angle.
+---
+---When FaceCamera is set to true, the `Beam` will always be orientated
+---towards the `Workspace/CurrentCamera`.
+---
+Beam.FaceCamera = nil;
+---Determines to what degree the colors of the `Beam` are blended with the
+---colors behind it.
+---
+---The LightEmission property determines the blending of the `Beam` with the
+---colors behind it. It should be set in the range [0, 1]. A value of 0 uses
+---normal blending modes, and a value of 1 will use additive blending. The
+---value of the additive blending is determined by this property.
+---
+---Pictured below are two sets of overlapping `Beam`s. The right one has its
+---LightEmission set to 1, so the texture appears brighter due to the
+---additive blending on the overlaps.
+---
+---![enter image description here][1]
+---
+---This property should not be confused with `Beam/LightInfluence`, which
+---determines how particles are affected by environment light. This property
+---does not cause the `Beam` to light the environment. To do that, consider
+---using a `SurfaceLight`.
+---
+---[1]: /assets/blta7d562b91fdd7f61/BeamLightEmission.png
+---
+Beam.LightEmission = nil;
+---Determines the degree to which the `Beam` is influenced by the
+---environment's lighting.
+---
+---LightInfluence is clamped between 0 and 1. When LightInfluence is 0, the
+---`Beam` will be unaffected by the environment's lighting. When
+---LightInfluence is 1 however, it will be fully affected by lighting (as a
+---`BasePart` would be).
+---
+---For an example of this, and a demonstration of how this property interacts
+---with `Beam/LightEmission`, please see the images below.
+---
+---![enter image description here][1]
+---
+---![enter image description here][2]
+---
+---[1]: /assets/blt58bbd58122916e57/BeamLight1.png
+---[2]: /assets/blt1d1d4b30144114c3/BeamLight2.png
+---
+Beam.LightInfluence = nil;
+---Sets how many straight segments the `Beam` is made up of.
+---
+---This value can be any integer greater than 0. The default value is 10.
+---
+---#### Beam Segments and curvature
+---
+---Rather than being a perfect curve, a beam is made up of straight segments.
+---The more segments, the higher the resoloution of the curve. See the image
+---below for a demonstration of this:
+---
+---![enter image description here][1]
+---
+---For more information on how a `Beam` is configured to curve, see the page
+---for `Beam/CurveSize0`.
+---
+---#### Beam Segments with Color and Transparency
+---
+---The `Beam/Color` and `Beam/Transparency` properties require a certain
+---number of segments to display correctly. This is because each segment can
+---only show a transition between two colors or transparencies. Therefore a
+---`Beam` requires at least n-1 segments to display correctly, where n is the
+---number of keypoint associated with the `Beam`'s `Beam/Color` and
+---`Beam/Transparency`.
+---
+---[1]: /assets/bltef72a1d7a20e9601/Beam.Segments.jpg
+---
+Beam.Segments = nil;
+---The content ID of the texture to be displayed on the `Beam`.
+---
+---If the Texture property of the beam is not set the beam will be displayed
+---as a solid line. This also occurs when the texture is set to an invalid
+---content ID or the image associated with the texture has not yet loaded.
+---
+---The appearance of the texture can be further modified by other `Beam`
+---properties including `Beam/Color` and `Beam/Transparency`.
+---
+---The scaling of the texture is determined by the `Beam/TextureMode`,
+---`Beam/TextureLength`, `Beam/Width0` and `Beam/Width1` properties.
+---
+Beam.Texture = nil;
+---Sets the length of the `Beam`s texture if `Beam/TextureMode` is 'Wrap' or
+---'Static'. If `Beam/TextureMode` is 'Stretch' then it determines the size
+---of the texture relative to the `Beam`'s length.
+---
+---#### Beam texture behavior
+---
+---How a `Beam|Beam's` texture scales or repeats is dependent on the
+---`Beam/TextureMode` property.
+---
+---When `Beam/TextureMode` is 'Wrap' the size of the repeating texture is
+---equal to TextureLength in studs. For an example of this see the image
+---below:
+---
+---![beamTexture1][1]
+---
+---Note, the 'Static' `Enum/TextureMode` type is not used for `Beam`s and
+---therefore behaves identically to 'Wrap'.
+---
+---When `Beam/TextureMode` is set to 'Stretch' however the texture will be
+---stretched relative to the beam's length. The size of the texture relative
+---to the `Beam`'s length will be one over the TextureLength. In practice,
+---this means the texture will repeat TextureLength times. For an example of
+---this see the image below:
+---
+---![beamTexture2][2]
+---
+---[1]: /assets/blt92742bad209f4935/beamTexture.gif
+---[2]: /assets/blt034506939f5674b3/beamTexture2.gif
+---
+Beam.TextureLength = nil;
+---Determines the manner in which the `Beam/Texture` scales and repeats.
+---
+---#### Beam Texture Behavior
+---
+---How a `Beam`'s texture scales or repeats is dependent on the TextureMode
+---property.
+---
+---When TextureMode is 'Wrap' the size of the repeating texture corresponds
+---to `Beam/TextureLength` in studs. For an example of this see the image
+---below:
+---
+---<img src="/assets/bltc5844d0ed6c3a747/textureMode_wrap.jpg" class = "half-sized" />
+---
+---Note, the 'Static' `Enum/TextureMode` type is not used for `Beam`s and
+---therefore behaves identically to 'Wrap'.
+---
+---When `Beam/TextureMode` is set to 'Stretch' however the texture will be
+---stretched relative to the beam's length. The size of the texture relative
+---to the `Beam`'s length will be one over the `Beam/TextureLength`. In
+---practice, this means the texture will repeat `Beam/TextureLength` times.
+---For an example of this see the image below:
+---
+---<img src="/assets/blt0ab87fba075cad4a/textureMode_strech.jpg" class = "half-sized" />
+---
+Beam.TextureMode = nil;
+---Determines the speed at which the `Beam/Texture` image moves along the
+---`Beam`.
+---
+---When TextureSpeed is positive, the beam's texture will move from
+---`Beam/Attachment0` to `Beam/Attachment1`. This direction can be inverted
+---by setting TextureSpeed to a negative number.
+---
+---Note the speed at which the texture moves is relative to the length of the
+---texture. Meaning the more stretched the beam's `Beam/Texture` is, the
+---faster it will move at the same TextureSpeed.
+---
+Beam.TextureSpeed = nil;
+---Determines the transparency of the `Beam` across its segments.
+---
+---#### Beams and Transparency
+---
+---This property is a `DataType/NumberSequence`, allowing the transparency to
+---be configured to vary across the length of the `Beam`. Take for example
+---the following `DataType/NumberSequence`.
+---
+---```lua
+---local numberSequence = NumberSequence.new({
+---	NumberSequenceKeypoint.new(0, 1), -- transparent
+---	NumberSequenceKeypoint.new(0.5, 0), -- opaque
+---	NumberSequenceKeypoint.new(1, 1), -- transparent
+---	}
+---)
+---```
+---
+---Applying this `DataType/NumberSequence` to a `Beam` would yield the
+---following result:
+---
+---![enter image description here][1]
+---
+---Note the `Beam|Beam's` transparency also depends on the number of
+---`Beam/Segments` the `Beam` has. Each segment of the beam can only show a
+---transition between two transparencies. Therefore a `Beam` will need to
+---have at least n-1 segments in order to display correctly, where n is the
+---number of `DataType/NumberSequenceKeypoint`s in the
+---`DataType/NumberSequence`
+---
+---[1]: /assets/bltb919bbb4d83c7ba8/BeamTransparency.png
+---
+Beam.Transparency = nil;
+---The width in studs of the `Beam` at its base.
+---
+---The beam will be Width0 studs wide at `Beam/Attachment0` and the width
+---will change linearly to `Beam/Width1` studs at `Beam/Attachment1`. For a
+---visual demonstration of this, see the image below.
+---
+---![Width][1]
+---
+---The width properties should not be confused with `Beam/CurveSize0` and
+---`Beam/CurveSize1` which control the curvature of the beam.
+---
+---[1]: /assets/bltaa8ac3288251010b/Width.png
+---
+Beam.Width0 = nil;
+---The width in studs of the `Beam` at its end.
+---
+---The beam will be `Beam/Width0` studs wide at `Beam/Attachment0` and the
+---width will change linearly to Width1 studs at `Beam/Attachment1`. For a
+---visual demonstration of this, see the image below.
+---
+---![Width][1]
+---
+---The width properties should not be confused with `Beam/CurveSize0` and
+---`Beam/CurveSize1` which control the curvature of the beam.
+---
+---[1]: /assets/bltaa8ac3288251010b/Width.png
+---
+Beam.Width1 = nil;
+---The distance, in studs, the `Beam`s display is offset by relative to the
+---`Workspace/CurrentCamera`.
+---
+---When ZOffset is 0, the `Beam` will be displayed in its standard position
+---between `Beam/Attachment0` and `Beam/Attachment1`. ZOffset can be both
+---positive and negative.
+---
+---This property can be particularly useful when using multiple `Beam|Beams`
+---between the same `Attachment`s. Here, ZOffset can be used to layer the
+---`Beam`s and avoid [Z-fighting][1]. For example:
+---
+---See the image below for a visual demonstration of ZOffset:
+---
+---![ZOffset][2]
+---
+---[1]: https://en.wikipedia.org/wiki/Z-fighting
+---[2]: /assets/blta08e9828cbe14d33/ZOffset.gif
+---
+Beam.ZOffset = nil;
 ---@param offset float
 ---@return void
 ---Sets the current offset of the `Beam`'s texture cycle.
@@ -3030,34 +5245,34 @@ local BevelMesh;
 ---@field public SizeOffset Vector2
 ---@field public StudsOffset Vector3
 ---@field public StudsOffsetWorldSpace Vector3
----BillboardGuis are containers for `GuiObject|GuiObjects` that appear in the
----3D space. BillboardGuis always face the camera, and can either change size
----with distance or remain the same size on the screen based on the
+---BillboardGuis are containers for `GuiObject|GuiObjects` that appear in the 3D
+---space. BillboardGuis always face the camera, and can either change size with
+---distance or remain the same size on the screen based on the
 ---`BillboardGui/Size` property.
 ---
 ---Their position is relative to the `BillboardGui/Adornee`. If no Adornee is
 ---set, then the parent of the BillboardGui will be used as the adornee. For
----`BasePart|BaseParts`, the `BasePart/Position|Position` property will be
----used. For `Attachment|Attachments`, the
----`Attachment/WorldPosition|WorldPosition` property will be used.
+---`BasePart|BaseParts`, the `BasePart/Position|Position` property will be used.
+---For `Attachment|Attachments`, the `Attachment/WorldPosition|WorldPosition`
+---property will be used.
 ---
 ---The `BillboardGui/Size|Size` property of a BillboardGui works slightly
----differently than `GuiObject/Size|GuiObject.Size`. The Offset portion works
----the same, but the Scale portion is used as a size in studs in 3D space.
+---differently than `GuiObject/Size|GuiObject.Size`. The Offset portion works the
+---same, but the Scale portion is used as a size in studs in 3D space.
 ---
----A size of `UDim2.fromScale(4, 5)` is 4x5 studs, and scales the UI larger
----and smaller depending on distance from the camera. A size of
+---A size of `UDim2.fromScale(4, 5)` is 4x5 studs, and scales the UI larger and
+---smaller depending on distance from the camera. A size of
 ---`UDim2.fromOffset(200, 100)` is always 200x100 on the screen, and does not
 ---change size with distance. Scale and Offset values can also be combined
 ---together, like with `GuiObject/Size|GuiObject.Size`.
 ---
----When creating size-scaled BillboardGuis, it's important to make sure all
----the UI objects within are using Scale sizing and all text has
+---When creating size-scaled BillboardGuis, it's important to make sure all the
+---UI objects within are using Scale sizing and all text has
 ---`TextLabel/TextScaled` enabled, to ensure correct scaling.
 ---
----The AbsolutePosition property of a BillboardGui and all of its descendants
----is relative to the top left corner of its canvas, and so is always `0, 0`
----for the BillboardGui instance.
+---The AbsolutePosition property of a BillboardGui and all of its descendants is
+---relative to the top left corner of its canvas, and so is always `0, 0` for the
+---BillboardGui instance.
 ---
 ---## Caching Static UI for Performance
 ---
@@ -3068,78 +5283,329 @@ local BevelMesh;
 ---- A property of a descendant of the Gui changes.
 ---- A property of the Gui changes.
 ---
----If any of these events occur, the Gui's appearance will be recomputed the
----next frame it gets rendered.
+---If any of these events occur, the Gui's appearance will be recomputed the next
+---frame it gets rendered.
 ---
 local BillboardGui;
+---Controls whether the descendants will receive input events. If the UI
+---contains a `GuiButton` then that button will become clickable only if
+---Active is set to true on both the BillboardGui and the button.
+---
+---BillboardGuis will only receive user input if they are parented to the
+---PlayerGui. The `BillboardGui/Adornee` property can be used to target a
+---Part in the workspace while the UI itself is in the `PlayerGui`.
+---
+BillboardGui.Active = nil;
+---Sets the target part or attachment that the BillboardGui is positioned
+---relative to. If no Adornee is set, then the `Instance/Parent|Parent` is
+---used instead.
+---
+BillboardGui.Adornee = nil;
+---Determines whether the BillboardGui will render over top of 3D content, or
+---be occluded by it.
+---
+---When set to false, the BillboardGui will render like other 3D content, and
+---will be occluded by other 3D objects.
+---
+---When set to true, it always renders on top of 3D content, and the
+---appearance changes significantly:
+---
+---- Colors match how they appear inside a `ScreenGui`.
+---- Text may appear sharper on high DPI devices.
+---- `BillboardGui/LightInfluence` is treated as though it was 0.
+---- `BillboardGui/Brightness` has no effect.
+---
+BillboardGui.AlwaysOnTop = nil;
+---**Brightness** determines the factor by which the GUI's emitted light is
+---scaled. By default, this property is 1 and can be set to any number on the
+---range [0, 1000].
+---
+---By modifying this property, the apparent brightness of a GUI can be better
+---matched to its environment. For instance, a video billboard like those
+---found in Times Square can be made brighter to be clearly visible on a
+---bright day.
+---
+---This property won't produce any effect in the following scenarios wherein
+---the GUI does not emit light.:
+---
+---- When `BillboardGui/AlwaysOnTop|AlwaysOnTop` is true, the color of each
+---  pixel is the color shown on-screen.
+---- When `BillboardGui/LightInfluence|LightInfluence` is 1, all light from
+---  the GUI is reflected from the environment instead of being emit.
+---
+BillboardGui.Brightness = nil;
+---When set to true, portions of GuiObjects that fall outside of the
+---BillboardGui's canvas borders will not be drawn.
+---
+---Even when this property is false, objects that are completely outside of
+---the canvas of the BillboardGui will not render.
+---
+BillboardGui.ClipsDescendants = nil;
+---The current distance in studs that the `BillboardGui` is from the player's
+---camera. A changed event does not fire for this property unless the gui's
+---`BillboardGui/DistanceStep` is more than 0.
+---
+BillboardGui.CurrentDistance = nil;
+---Determines the distance in studs that a `BillboardGui` will stop scaling
+---larger in size at relative to the player's current camera. If the distance
+---of the gui is below this value, it will not be scaled any larger than it
+---would be at this distance. The value of this property defaults to 0 studs.
+---
+BillboardGui.DistanceLowerLimit = nil;
+---Determines the size `BillboardGui/CurrentDistance` increments and
+---decrements in studs as the player's camera moves closer and further from
+---the `BillboardGui`. The property defaults to 0 and rounds up starting from
+---`BillboardGui/DistanceLowerLimit`.
+---
+---For example, if this property is set to 0.5 and the player's camera is
+---moving away from the gui starting from 0 then CurrentDistance will
+---increase 0 -> 0.5 -> 1 -> 1.5 -> ... and so forth.
+---
+BillboardGui.DistanceStep = nil;
+---Determines the distance in studs that a `BillboardGui` will stop scaling
+---smaller in size at relative to the player's current camera. If the
+---distance of the gui is above this value, it will not be scaled any smaller
+---than it would be at this distance.
+---
+---This property is ignored if the value is less than 0. The default value is
+----1, meaning the property is ignored by default.
+---
+BillboardGui.DistanceUpperLimit = nil;
+---**ExtentsOffset** determines how the BillboardGui is offset from its
+---`BillboardGui/Adornee|Adornee`, relative to the `Camera` orientation and
+---units are half the dimensions of the model's `Camera`-aligned bounding
+---box.
+---
+---See also:
+---
+---- `BillboardGui/ExtentsOffsetWorldSpace|ExtentsOffsetWorldSpace`, which
+---  works similarly except the offset orientation is relative to the global
+---  axes
+---- `BillboardGui/StudsOffset|StudsOffset`, which works similarly except the
+---  units are studs
+---
+BillboardGui.ExtentsOffset = nil;
+---**ExtentsOffsetWorldSpace** determines how the BillboardGui is offset from
+---its `BillboardGui/Adornee|Adornee`, relative to the global axes and units
+---are half the dimensions of the model's axis-aligned bounding box.
+---
+---See also:
+---
+---- `BillboardGui/ExtentsOffset|ExtentsOffset`, which works similarly except
+---  the offset orientation is relative to the `Camera`
+---- `BillboardGui/StudsOffsetWorldSpace|StudsOffsetWorldSpace`, which works
+---  similarly except the units are studs
+---
+BillboardGui.ExtentsOffsetWorldSpace = nil;
+---Controls how much the BillboardGui is influenced by the lighting in the
+---environment.
+---
+---When set to 0, the UI behaves similarly to an LCD screen, acting as its
+---own light source and appearing the same regardless of the surrounding
+---lighting.
+---
+---When set to 1, the UI behaves similarly to a piece of paper, only
+---reflecting the light from another source.
+---
+BillboardGui.LightInfluence = nil;
+---The MaxDistance property of a `BillboardGui` sets how far away in studs
+---that billboard can be from the camera and still be drawn. If the camera
+---and billboard are moved further apart than the maximum distance, then the
+---billboard will not be visible regardless of any other properties of the
+---billboard or any GUI objects it contains. The default value of this
+---property is infinity
+---
+---If this value is set to less than or equal to 0 then the maximum distance
+---will be treated as infinite and the billboard will always be drawable.
+---
+---#### Example
+---
+---```lua
+----- Wait for default camera/control scripts to load
+---wait(5)
+---
+----- Declare and initialize objects
+---local camera = game.Workspace.CurrentCamera
+---local part = Instance.new("Part")
+---local billboard = Instance.new("BillboardGui")
+---local label = Instance.new("TextLabel")
+---
+----- Set up camera type
+---camera.CameraType = Enum.CameraType.Scriptable
+---
+----- Set part's position and lock in place
+---part.CFrame = CFrame.new(0, 10, 0)
+---part.Anchored = true
+---
+----- Set up billboard
+---billboard.MaxDistance = 10
+---billboard.Adornee = part
+---billboard.AlwaysOnTop = true
+---billboard.Size = UDim2.new(0, 50, 0, 50)
+---
+----- Set up label
+---label.Size = UDim2.new(1, 0, 1, 0)
+---
+----- Set partents of objects
+---label.Parent = billboard
+---billboard.Parent = part
+---part.Parent = game.Workspace
+---
+----- Move camera next to part. Wait a bit and then move camera
+---local cameraPosition0 = part.Position + Vector3.new(0, 0, 10)
+---local cameraPosition1 = part.Position + Vector3.new(0, 0, 20)
+---camera.CFrame = CFrame.new(cameraPosition0, part.Position)
+----- Contents of billboard will be visible here
+---wait(2)
+---camera.CFrame = CFrame.new(cameraPosition1, part.Position)
+----- Contents of billboard will no longer be visible (outside MaxDistance)
+---```
+---
+BillboardGui.MaxDistance = nil;
+---Used by scripts to hide the BillboardGui from a specific player.
+---
+---To hide the UI from more than one player, place the BillboardGui into
+---`StarterGui` and use a script to set the `BillboardGui/Enabled` property
+---according to whether the `Players/LocalPlayer` should be able to see it.
+---The `BillboardGui/Adornee` property can be used to attach the BillboardGui
+---to a `Part` or `Attachment` in the `Workspace`, instead of parenting it.
+---
+BillboardGui.PlayerToHideFrom = nil;
+---Controls the size that the BillboardGui will have on screen.
+---
+---The Scale component of the Size is interpreted as a size in studs, and the
+---UI will automatically scale with distance if Scale values are used.
+---
+---The Scale and Offset portions of the size are added together, and can be
+---used at the same time.
+---
+BillboardGui.Size = nil;
+---A 2D offset in size-relative units that acts like an anchor point. This
+---can be used similarly to the `GuiObject/AnchorPoint` property, but the
+---values are different.
+---
+---#### Common Values
+---
+---| SizeOffset | Explanation                                         |
+---| ---------: | --------------------------------------------------- |
+---|   0.0, 0.0 | The default. The UI will be anchored at its center. |
+---|   0.5, 0.5 | The UI will anchor at the bottom left.              |
+---|  0.5, -0.5 | The UI will anchor at the top left.                 |
+---|  -0.5, 0.5 | The UI will anchor at the top right.                |
+---| -0.5, -0.5 | The UI will anchor at the bottom right.             |
+---
+---See also:
+---
+---- `BillboardGui/StudsOffset|StudsOffset`,
+---  `BillboardGui/StudsOffsetWorldSpace|StudsOffsetWorldSpace`,
+---  `BillboardGui/ExtentsOffset|ExtentsOffset`,
+---  `BillboardGui/ExtentsOffsetWorldSpace|ExtentsOffsetWorldSpace`, which
+---  are all other offset properties that work in 3D space instead
+---
+BillboardGui.SizeOffset = nil;
+---**StudsOffset** determines how the BillboardGui is offset from its
+---`BillboardGui/Adornee|Adornee`, relative to the `Camera` orientation with
+---units in studs.
+---
+---See also:
+---
+---- `BillboardGui/StudsOffsetWorldSpace|StudsOffsetWorldSpace`, which works
+---  similarly except the offset orientation is relative to the global axes
+---- `BillboardGui/ExtentsOffset|ExtentsOffset`, which works similarly except
+---  the units are half the dimensions of the model's Camera-aligned bounding
+---  box
+---
+BillboardGui.StudsOffset = nil;
+---**StudsOffsetWorldSpace** determines how the BillboardGui is offset from
+---its `BillboardGui/Adornee|Adornee`, relative to the global axes with units
+---in studs.
+---
+---See also:
+---
+---- `BillboardGui/StudsOffset|StudsOffset`, which works similarly except the
+---  offset orientation is relative to the `Camera`
+---- `BillboardGui/ExtentsOffsetWorldSpace|ExtentsOffsetWorldSpace`, which
+---  works similarly except the units are half the dimensions of the model's
+---  axis-aligned bounding box
+---
+BillboardGui.StudsOffsetWorldSpace = nil;
 ---@return Variant
 BillboardGui.GetScreenSpaceBounds = function(self) end;
 ---@class BinaryStringValue : ValueBase, Instance
----@field public Changed fun(value: BinaryString): RbxScriptSignal
----An internal type of `StringValue` object, that stores a `BinaryString`
----value.
+---@field public Changed RBXScriptSignal.Changed
+---An internal type of `StringValue` object, that stores a `BinaryString` value.
 ---
 local BinaryStringValue;
+---@class RBXScriptSignal.Changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Changed, callback: fun(value: BinaryString)): RBXScriptConnection
+---Fires if the `BinaryStringValue/Value` of the `BinaryStringValue` is
+---changed by the engine.
+---
+---In practice, this object is stored out of reach from normal scripts, so
+---this event cannot be connected to. If a BinaryStringValue is created by a
+---script, the engine will not do anything with it, so the event will never
+---fire.
+---
+---Equivalent changed events exist for similar objects, such as `NumberValue`
+---and `StringValue`, depending on what object type best suits the need.
+---
+BinaryStringValue.Changed = nil;
 ---@class BindableEvent : Instance
----@field public Event fun(arguments: Tuple): RbxScriptSignal
+---@field public Event RBXScriptSignal.Event
 ---An object that allows events defined in one server-side `Script` to be
 ---subscribed to by another script for one-way communication.
 ---
----BindableEvents do not allow for communication between the server and
----client. If you are looking for this functionality use `RemoteEvent`.
+---BindableEvents do not allow for communication between the server and client.
+---If you are looking for this functionality use `RemoteEvent`.
 ---
 ---## BindableEvents vs BindableFunctions
 ---
----Unlike BindableEvents, `BindableFunction|BindableFunctions` allow for
----two-way communication between two scripts:
+---Unlike BindableEvents, `BindableFunction|BindableFunctions` allow for two-way
+---communication between two scripts:
 ---
 ---- When a script fires a BindableEvent it does not yield for a return. The
----  script continues executing as the event is handled by the subscribed
----  script asynchronously.
----- When a script invokes a BindableFunction, however, that script yields
----  until the event is handled and returned by the subscribed script
----  synchronously. This allows for scripts to effectively pass data during
----  and after an event.
+---  script continues executing as the event is handled by the subscribed script
+---  asynchronously.
+---- When a script invokes a BindableFunction, however, that script yields until
+---  the event is handled and returned by the subscribed script synchronously.
+---  This allows for scripts to effectively pass data during and after an event.
 ---
 ---## BindableEvents vs RemoteEvents
 ---
----While BindableEvents allow for one-way communication server-server scripts
----or client-client `LocalScript|LocalScripts`, `RemoteEvent|RemoteEvents`
----allow for one-way communicate the server and client. For more information
----on RemoteEvents, see
+---While BindableEvents allow for one-way communication server-server scripts or
+---client-client `LocalScript|LocalScripts`, `RemoteEvent|RemoteEvents` allow for
+---one-way communicate the server and client. For more information on
+---RemoteEvents, see
 ---[Remote Events and Functions](/scripting/networking/remote-events-and-functions).
 ---
 ---## Parameter Limitations
 ---
 ---Any type of Roblox object such as an
----<a href="/reference/engine/enums">Enumeration</a>, `Instance`, or userdata
----can be passed as a parameter when a `RemoteEvent` is fired or a
----`RemoteFunction` invoked. Lua types such as numbers, strings, and booleans
----can also be passed, although there are some limitations on how data can be
----passed.
+---<a href="/reference/engine/enums">Enumeration</a>, `Instance`, or userdata can
+---be passed as a parameter when a `RemoteEvent` is fired or a `RemoteFunction`
+---invoked. Lua types such as numbers, strings, and booleans can also be passed,
+---although there are some limitations on how data can be passed.
 ---
 ---### Mixed Tables
 ---
 ---If a Table is passed as an argument to a BindableEvent it must be an array
----without missing entries or have string keys, not a mixture, or else the
----string keys will be lost.
+---without missing entries or have string keys, not a mixture, or else the string
+---keys will be lost.
 ---
----Avoid passing a mixed table (some values indexed by number and others by
----key), as **only the data indexed by number will be passed**. For example,
----when the server receives the `colorData` table illustrated below, it only
----sees indices 1 and 2 containing `"Blue"` and `"Yellow"` while the other
----data is lost in the transfer. Note, however, that **sub-tables** do not
----need to be indexed in the same way as their parent &mdash; in other words,
----as long as each individual sub-table is indexed with the same type, all of
----the data is preserved.
+---Avoid passing a mixed table (some values indexed by number and others by key),
+---as **only the data indexed by number will be passed**. For example, when the
+---server receives the `colorData` table illustrated below, it only sees indices
+---1 and 2 containing `"Blue"` and `"Yellow"` while the other data is lost in the
+---transfer. Note, however, that **sub-tables** do not need to be indexed in the
+---same way as their parent &mdash; in other words, as long as each individual
+---sub-table is indexed with the same type, all of the data is preserved.
 ---
 ---Metatables are not preserved.
 ---
 ---### Non-String Indices
 ---
----If any indices of a passed table are non-string type (`Instance`,
----userdata, function, another table, etc.), those indices will be converted
----to a string.
+---If any indices of a passed table are non-string type (`Instance`, userdata,
+---function, another table, etc.), those indices will be converted to a string.
 ---
 ---```lua
 ----- Mixed table
@@ -3238,12 +5704,78 @@ local BindableEvent;
 ---impossible to use these objects to pass functions between scripts.
 ---
 BindableEvent.Fire = function(self, arguments) end;
+---@class RBXScriptSignal.Event : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Event, callback: fun(arguments: Tuple)): RBXScriptConnection
+---This event is fired when any script calls the `BindableEvent/Fire` method
+---is called, using the same arguments as parameters.
+---
+---#### Parameter Limitations
+---
+---Any type of Roblox object such as an
+---<a href="/reference/engine/enums">Enumeration</a>, `Instance`, or userdata
+---can be passed as a parameter when a `RemoteEvent` is fired or a
+---`RemoteFunction` invoked. Lua types such as numbers, strings, and booleans
+---can also be passed, although there are some limitations on how data can be
+---passed.
+---
+---##### Mixed Tables
+---
+---If a Table is passed as an argument to a BindableEvent it must be an array
+---without missing entries or have string keys, not a mixture, or else the
+---string keys will be lost.
+---
+---Avoid passing a mixed table (some values indexed by number and others by
+---key), as **only the data indexed by number will be passed**. For example,
+---when the server receives the `colorData` table illustrated below, it only
+---sees indices 1 and 2 containing `"Blue"` and `"Yellow"` while the other
+---data is lost in the transfer. Note, however, that **sub-tables** do not
+---need to be indexed in the same way as their parent &mdash; in other words,
+---as long as each individual sub-table is indexed with the same type, all of
+---the data is preserved.
+---
+---Metatables are not preserved.
+---
+---##### Non-String Indices
+---
+---If any indices of a passed table are non-string type (`Instance`,
+---userdata, function, another table, etc.), those indices will be converted
+---to a string.
+---
+---```lua
+----- Mixed table
+---local colorData = {}
+---colorData[1] = "Blue"
+---colorData[2] = "Yellow"
+---colorData["Color1"] = "Green"
+---colorData["Color2"] = "Red"
+---
+----- Table with two key-indexed sub-tables
+---local playerData = {}
+---playerData["CharData"] = {
+---	-- All children indexed by key
+---	CharName = "Diva Dragonslayer",
+---	CharClass = "Knight"
+---}
+---playerData["Inventory"] = {
+---	-- All children numerically indexed
+---	"Sword",
+---	"Bow",
+---	"Rope"
+---}
+---```
+---
+---##### Functions
+---
+---Functions passed as parameters will not be replicated, therefore making it
+---impossible to use these objects to pass functions between scripts.
+---
+BindableEvent.Event = nil;
 ---@class BindableFunction : Instance
 ---An object that allows you to give access to functions to external scripts.
----Functions put in BindableFunctions will not be replicated, therefore
----making it impossible to use these objects to pass functions between
----scripts. Functions are invoked through `BindableFunction/Invoke`, which
----calls `BindableFunction/OnInvoke`.
+---Functions put in BindableFunctions will not be replicated, therefore making it
+---impossible to use these objects to pass functions between scripts. Functions
+---are invoked through `BindableFunction/Invoke`, which calls
+---`BindableFunction/OnInvoke`.
 ---
 ---BindableFunctions do not allow for communication between the server and
 ---client. If you are looking for this functionality use
@@ -3255,48 +5787,46 @@ BindableEvent.Fire = function(self, arguments) end;
 ---one-way communication between two scripts:
 ---
 ---- When a script invokes a BindableFunction it yields until the event is
----  handled and returned by the subscribed script synchronously. This allows
----  for scripts to effectively pass data during and after an event.
+---  handled and returned by the subscribed script synchronously. This allows for
+---  scripts to effectively pass data during and after an event.
 ---- When a script fires a BindableEvent, however, it does not yield for a
 ---  return. The script continues executing as the event is handled by the
 ---  subscribed script asynchronously.
 ---
 ---## BindableFunctions vs RemoteFunctions
 ---
----While BindableFunctions allow for two-way communication server-server
----scripts or client-client `LocalScript|LocalScripts`,
----`RemoteFunction|RemoteFunctions` allow for two-way communicate the server
----and client. For more information on RemoteFunctions, see
+---While BindableFunctions allow for two-way communication server-server scripts
+---or client-client `LocalScript|LocalScripts`, `RemoteFunction|RemoteFunctions`
+---allow for two-way communicate the server and client. For more information on
+---RemoteFunctions, see
 ---[Remote Events and Functions](/scripting/networking/remote-events-and-functions).
 ---
 ---## Limitations
 ---
----Invocations will **yield** until the corresponding callback is found. If
----the callback was never set, the script that invokes it will not resume
----execution.
+---Invocations will **yield** until the corresponding callback is found. If the
+---callback was never set, the script that invokes it will not resume execution.
 ---
 ---### Subscription
 ---
----Only one function can be bound to `BindableFunction/Invoke` at a time. If
----you assign multiple functions, only the last one assigned will be used.
+---Only one function can be bound to `BindableFunction/Invoke` at a time. If you
+---assign multiple functions, only the last one assigned will be used.
 ---
 ---### Parameter Limitations
 ---
 ---Any type of Roblox object such as an
----<a href="/reference/engine/enums">Enumeration</a>, `Instance`, or userdata
----can be passed as a parameter when a `RemoteEvent` is fired or a
----`RemoteFunction` invoked. Lua types such as numbers, strings, and booleans
----can also be passed, although there are some limitations on how data can be
----passed.
+---<a href="/reference/engine/enums">Enumeration</a>, `Instance`, or userdata can
+---be passed as a parameter when a `RemoteEvent` is fired or a `RemoteFunction`
+---invoked. Lua types such as numbers, strings, and booleans can also be passed,
+---although there are some limitations on how data can be passed.
 ---
 ---#### Table Identity
 ---
----Copies of tables are produced when passed as arguments to or returned from
----the OnInvoke callback. This means that means that tables passed as
----arguments will not be exactly equivalent to those provided on invocation,
----and tables returned to the invoker will not be exactly equivalent to the
----ones returned by the OnInvoke callback. You can demonstrate this by
----running the following script in a BindableFunction:
+---Copies of tables are produced when passed as arguments to or returned from the
+---OnInvoke callback. This means that means that tables passed as arguments will
+---not be exactly equivalent to those provided on invocation, and tables returned
+---to the invoker will not be exactly equivalent to the ones returned by the
+---OnInvoke callback. You can demonstrate this by running the following script in
+---a BindableFunction:
 ---
 ---```lua
 ---local bindableFunction = script.Parent
@@ -3314,9 +5844,9 @@ BindableEvent.Fire = function(self, arguments) end;
 ---print("return", tostring(retVal), retVal)
 ---```
 ---
----The above code may produce the following results in the output. Notice how
----the memory addresses of every table printed are completely different from
----each other, indicating they each represent different tables:
+---The above code may produce the following results in the output. Notice how the
+---memory addresses of every table printed are completely different from each
+---other, indicating they each represent different tables:
 ---
 ---```text
 ---  13:55:22.228  Subscriber table: 0xc7daaba4d5307f10  ▶ {...} - Publisher:11
@@ -3327,22 +5857,20 @@ BindableEvent.Fire = function(self, arguments) end;
 ---
 ---#### Mixed Tables
 ---
----Avoid passing a mixed table (some values indexed by number and others by
----key), as **only the data indexed by number will be passed**. For example,
----when the server receives the `colorData` table illustrated below, it only
----sees indices 1 and 2 containing `"Blue"` and `"Yellow"` while the other
----data is lost in the transfer. Note, however, that **sub-tables** do not
----need to be indexed in the same way as their parent &mdash; in other words,
----as long as each individual sub-table is indexed with the same type, all of
----the data is preserved.
+---Avoid passing a mixed table (some values indexed by number and others by key),
+---as **only the data indexed by number will be passed**. For example, when the
+---server receives the `colorData` table illustrated below, it only sees indices
+---1 and 2 containing `"Blue"` and `"Yellow"` while the other data is lost in the
+---transfer. Note, however, that **sub-tables** do not need to be indexed in the
+---same way as their parent &mdash; in other words, as long as each individual
+---sub-table is indexed with the same type, all of the data is preserved.
 ---
 ---Metatables are not preserved.
 ---
 ---#### Non-String Indices
 ---
----If any indices of a passed table are non-string type (`Instance`,
----userdata, function, another table, etc.), those indices will be converted
----to a string.
+---If any indices of a passed table are non-string type (`Instance`, userdata,
+---function, another table, etc.), those indices will be converted to a string.
 ---
 ---```lua
 ----- Mixed table
@@ -3483,24 +6011,24 @@ local BindableFunction;
 ---
 BindableFunction.Invoke = function(self, arguments) end;
 ---@class BlockMesh : BevelMesh, DataModelMesh, Instance
----The BlockMesh object applies a 'brick' mesh to the `BasePart` it is
----parented to. It behaves identically to a `SpecialMesh` with
----`SpecialMesh/MeshType` set to 'brick'.
+---The BlockMesh object applies a 'brick' mesh to the `BasePart` it is parented
+---to. It behaves identically to a `SpecialMesh` with `SpecialMesh/MeshType` set
+---to 'brick'.
 ---
 ---## What does a BlockMesh do?
 ---
----A BlockMesh gives the `BasePart` it was applied to a brick shaped mesh. It
----is identical in appearance to a standard Roblox `Part`.
+---A BlockMesh gives the `BasePart` it was applied to a brick shaped mesh. It is
+---identical in appearance to a standard Roblox `Part`.
 ---
 ---The dimensions of the mesh will scale linearly in all directions with
----`BasePart/Size`, this means a part containing a BlockMesh can be resized
----the same way as any other part.
+---`BasePart/Size`, this means a part containing a BlockMesh can be resized the
+---same way as any other part.
 ---
----The additional functionality a BlockMesh brings however, is the ability to
----set the `DataModelMesh/Scale` and `DataModelMesh/Offset` properties. These
----allow the position and dimensions of the mesh that is displayed to be
----changed without changing the `BasePart/Position` or `BasePart/Size` of the
----`BasePart` the mesh is parented to.
+---The additional functionality a BlockMesh brings however, is the ability to set
+---the `DataModelMesh/Scale` and `DataModelMesh/Offset` properties. These allow
+---the position and dimensions of the mesh that is displayed to be changed
+---without changing the `BasePart/Position` or `BasePart/Size` of the `BasePart`
+---the mesh is parented to.
 ---
 ---Note as the `BlockMesh` object does not include a texture the
 ---`DataModelMesh/VertexColor` property does not do anything.
@@ -3512,52 +6040,104 @@ local BlockMesh;
 ---@field public Threshold float
 ---The **BloomEffect** simulates the camera viewing a very bright light. It
 ---causes brighter colors to glow, similar to applying the neon
----`BasePart/Material|Material` to everything, including the the `Sky`.
----Multiple **BloomEffect** objects can be applied at once and they will
----compose their effects together.
+---`BasePart/Material|Material` to everything, including the the `Sky`. Multiple
+---**BloomEffect** objects can be applied at once and they will compose their
+---effects together.
 ---
 ---Like other post-processing effects, **BloomEffect** will only work while
 ---`PostEffect/Enabled|Enabled` and when parented to `Lighting` or
----`Workspace/CurrentCamera`. Also, it may render differently depending on
----your Studio settings (see the **Quality Level** settings in **Rendering**
----&rarr; **Performance**).
+---`Workspace/CurrentCamera`. Also, it may render differently depending on your
+---Studio settings (see the **Quality Level** settings in **Rendering** &rarr;
+---**Performance**).
 ---
 ---For more details on this effect and others, see
 ---[Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects).
 ---
 local BloomEffect;
+---Intensity determines how intensely the colors that bloom (determined by
+---the `BloomEffect/Threshold|Threshold`) will additively blend with
+---themselves. Higher values will produce brighter colors.
+---
+BloomEffect.Intensity = nil;
+---Size determines the radius of the bloom effect in pixels in a similar
+---manner to `BlurEffect/Size`. Larger values create a wider bloom effect,
+---and a value of 0 will disable the bleed (but not the color adjustment).
+---
+BloomEffect.Size = nil;
+---Threshold determines how bright a color can be before it blooms. If set to
+---1, only pure white colors will bloom. If set to 0, all colors will bloom.
+---
+BloomEffect.Threshold = nil;
 ---@class BlurEffect : PostEffect, Instance
 ---@field public Size float
----The **BlurEffect** applies a gaussian blur to the entire rendered game
----world. The strength of the blur is controlled by the `BlurEffect/Size`.
----Only one **BlurEffect** can be applied at once (the instance with the
----greatest `BlurEffect/Size|Size` takes priority).
+---The **BlurEffect** applies a gaussian blur to the entire rendered game world.
+---The strength of the blur is controlled by the `BlurEffect/Size`. Only one
+---**BlurEffect** can be applied at once (the instance with the greatest
+---`BlurEffect/Size|Size` takes priority).
 ---
 ---Like other post-processing effects, **BlurEffect** will only work while
 ---`PostEffect/Enabled|Enabled` and when parented to `Lighting` or
----`Workspace/CurrentCamera`. Also, it may render differently on low-end
----devices and/or depending on your Studio settings (see the **Quality
----Level** settings in **Rendering** &rarr; **Performance**).
+---`Workspace/CurrentCamera`. Also, it may render differently on low-end devices
+---and/or depending on your Studio settings (see the **Quality Level** settings
+---in **Rendering** &rarr; **Performance**).
 ---
 ---For more details on this effect and others, see
 ---[Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects).
 ---
 local BlurEffect;
+---Size controls the blur radius, measured in pixels. The larger the size,
+---the blurrier the screen will become.
+---
+BlurEffect.Size = nil;
 ---@class BodyAngularVelocity : BodyMover, Instance
 ---@field public AngularVelocity Vector3
 ---@field public MaxTorque Vector3
 ---@field public P float
 ---@field public angularvelocity Vector3
 ---@field public maxTorque Vector3
----The BodyAngularVelocity object applies a [torque][1] (or **rotational
----force**) on a `BasePart` such that it maintains a constant [angular
----velocity][3] as determined by its
----`BodyAngularVelocity/AngularVelocity|AngularVelocity` property. This
----allows for the creation of parts that continually rotate. It is the
----rotational counterpart to a `BodyVelocity`. If you would like to maintain
+---The BodyAngularVelocity object applies a [torque][1] (or **rotational force**)
+---on a `BasePart` such that it maintains a constant [angular velocity][3] as
+---determined by its `BodyAngularVelocity/AngularVelocity|AngularVelocity`
+---property. This allows for the creation of parts that continually rotate. It is
+---the rotational counterpart to a `BodyVelocity`. If you would like to maintain
 ---a constant [angular displacement][2], use a `BodyGyro` instead.
 ---
 local BodyAngularVelocity;
+---The AngularVelocity property is a `DataType/Vector3` which determines the
+---goal angular velocity a `BodyAngularVelocity` should maintain through the
+---exertion of torque. For this property, the direction of the vector is the
+---axis of rotation. The magnitude is the angular velocity in **radians per
+---second**. By default, this property is `(0, 2, 0)`.
+---
+---**Tip:** You can multiply a `DataType/Vector3` by `math.rad(360)`, or
+---**2π**, in order to convert [angular frequency][5] (rotations per second)
+---into the desired [angular velocity][3] (radians per second). For example:
+---Setting `BodyAngularVelocity/AngularVelocity|AngularVelocity` to
+---`Vector3.new(0, 1, 0) * math.rad(360)` ≈ `Vector3.new(0, 6.283, 0)` will
+---cause a part to spin around the Y axis once per second.
+---
+BodyAngularVelocity.AngularVelocity = nil;
+---The MaxTorque property determines the limit of the torque that may be
+---exerted on each world axis. If a part isn't moving, consider raising this
+---value (and also check that it is not `BasePart/Anchored|Anchored` or
+---attached to another anchored part). See also `BodyAngularVelocity/P|P`
+---(power).
+---
+BodyAngularVelocity.MaxTorque = nil;
+---The P property determines how much
+---[power](<https://en.wikipedia.org/wiki/Power_(physics)>) is used while
+---applying torque in order to reach the goal
+---`BodyAngularVelocity/AngularVelocity|AngularVelocity`. The higher this
+---value, the more power will be used and the faster it will be used.
+---
+BodyAngularVelocity.P = nil;
+---
+BodyAngularVelocity.angularvelocity = nil;
+---The maxTorque property is a deprecated variant of
+---`BodyAngualrVelocity/MaxTorque` that lets you set how much force could be
+---applied to each axis.
+---
+BodyAngularVelocity.maxTorque = nil;
 ---@class BodyColors : CharacterAppearance, Instance
 ---@field public HeadColor BrickColor
 ---@field public HeadColor3 Color3
@@ -3571,27 +6151,107 @@ local BodyAngularVelocity;
 ---@field public RightLegColor3 Color3
 ---@field public TorsoColor BrickColor
 ---@field public TorsoColor3 Color3
----BodyColors is a utility object used by Roblox to load avatar body colors
----from the website. Avatars that are loaded from the website will
----automatically have a BodyColors object corresponding to said avatar's body
----color configuration. When parented inside of a character with a
----`Humanoid`, it will apply the colors to each specified limb.
+---BodyColors is a utility object used by Roblox to load avatar body colors from
+---the website. Avatars that are loaded from the website will automatically have
+---a BodyColors object corresponding to said avatar's body color configuration.
+---When parented inside of a character with a `Humanoid`, it will apply the
+---colors to each specified limb.
 ---
 local BodyColors;
+---Sets the color of the head, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set `BodyColors.HeadColor3`.
+---
+BodyColors.HeadColor = nil;
+---Sets the color of the head, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set HeadColor to the closest `BrickColor`.
+---
+BodyColors.HeadColor3 = nil;
+---Sets the color of the left arm, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set BodyColors.LeftArmColor3
+---
+BodyColors.LeftArmColor = nil;
+---Sets the color of the left arm, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set LeftArmColor to the closest `BrickColor`.
+---
+BodyColors.LeftArmColor3 = nil;
+---Sets the color of the left leg, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set `BodyColors.LeftLegColor3`.
+---
+BodyColors.LeftLegColor = nil;
+---Sets the color of the left leg, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set LeftLegColor to the closest `BrickColor`.
+---
+BodyColors.LeftLegColor3 = nil;
+---Sets the color of the right arm, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set `BodyColors.RightArmColor3`.
+---
+BodyColors.RightArmColor = nil;
+---Sets the color of the right arm, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set RightArmColor to the closest `BrickColor`.
+---
+BodyColors.RightArmColor3 = nil;
+---Sets the color of the right leg, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set `BodyColors.RightLegColor3`.
+---
+BodyColors.RightLegColor = nil;
+---Sets the color of the right leg, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set RightLegColor to the closest `BrickColor`.
+---
+BodyColors.RightLegColor3 = nil;
+---Sets the color of the torso, as a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a>.
+---
+---Setting this will also set `BodyColors.TorsoColor3`.
+---
+BodyColors.TorsoColor = nil;
+---Sets the color of the torso, as a
+---<a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+---Setting this will also set TorsoColor to the closest `BrickColor`.
+---
+BodyColors.TorsoColor3 = nil;
 ---@class BodyForce : BodyMover, Instance
 ---@field public Force Vector3
 ---@field public force Vector3
----The BodyForce object applies (or exerts) a force on the part to which it
----is parented. If the magnitude of such a force is great enough, parts can
----begin to accelerate. The force is determined by the `BodyForce/Force`
----property, and is defined on the three world axes.
+---The BodyForce object applies (or exerts) a force on the part to which it is
+---parented. If the magnitude of such a force is great enough, parts can begin to
+---accelerate. The force is determined by the `BodyForce/Force` property, and is
+---defined on the three world axes.
 ---
----A BodyForce alone cannot apply a torque (it cannot cause the parent to
----rotate on its own). To apply a force at a specific point (e.g. to apply
----torque for angular acceleration) or apply forces relative to the
----orientation of the part, use a `BodyThrust` instead.
+---A BodyForce alone cannot apply a torque (it cannot cause the parent to rotate
+---on its own). To apply a force at a specific point (e.g. to apply torque for
+---angular acceleration) or apply forces relative to the orientation of the part,
+---use a `BodyThrust` instead.
 ---
 local BodyForce;
+---The Force property determines the magnitude of force exerted on each axis,
+---relative to the world.
+---
+BodyForce.Force = nil;
+---A deprecated variant of `BodyForce.Force` that indicates the amount of
+---force applied on each axis.
+---
+BodyForce.force = nil;
 ---@class BodyGyro : BodyMover, Instance
 ---@field public CFrame CFrame
 ---@field public D float
@@ -3599,27 +6259,67 @@ local BodyForce;
 ---@field public P float
 ---@field public cframe CFrame
 ---@field public maxTorque Vector3
----The **BodyGyro** object applies a torque (rotational force) on a
----`BasePart` such that it maintains a constant angular displacement, or
----orientation. This allows for the creation of parts that point in a certain
----direction, as if a real gyroscope were acting upon it. Essentially, it's
----the rotational counterpart to a `BodyPosition`.
+---The **BodyGyro** object applies a torque (rotational force) on a `BasePart`
+---such that it maintains a constant angular displacement, or orientation. This
+---allows for the creation of parts that point in a certain direction, as if a
+---real gyroscope were acting upon it. Essentially, it's the rotational
+---counterpart to a `BodyPosition`.
 ---
 ---If you would like to maintain a constant angular velocity, use a
 ---`BodyAngularVelocity` instead.
 ---
----The `BodyGyro/CFrame|CFrame` property controls the goal orientation. Only
----the angular components of the `DataType/CFrame` are used; position will
----make no difference. `BodyGyro/MaxTorque|MaxTorque` limits the amount of
----angular force that may be applied, `BodyGyro/P|P` controls the power used
----in achieving the goal orientation, and `BodyGyro/D|D` controls dampening
----behavior.
+---The `BodyGyro/CFrame|CFrame` property controls the goal orientation. Only the
+---angular components of the `DataType/CFrame` are used; position will make no
+---difference. `BodyGyro/MaxTorque|MaxTorque` limits the amount of angular force
+---that may be applied, `BodyGyro/P|P` controls the power used in achieving the
+---goal orientation, and `BodyGyro/D|D` controls dampening behavior.
 ---
 local BodyGyro;
+---The CFrame property (not to be confused with `BasePart/CFrame`) determines
+---the target orientation towards which torque will be exerted. Since
+---`BodyGyro` does not apply translational force, the
+---translational/positional component of the `DataType/CFrame`, `CFrame.p`,
+---is ignored. Consider using one of the following CFrame constructors in
+---setting this property: `CFrame.fromAxisAngle`, `CFrame.fromEulerAnglesXYZ`
+---or `CFrame.fromEulerAnglesYXZ`. Beware of
+---[gimbal lock](https://en.wikipedia.org/wiki/Gimbal_lock) as you choose
+---which of these methods and what angles (in radians). Additionally, you
+---could use `CFrame.new(gyro.Parent.Position, targetPosition)` in order to
+---have the BodyGyro "look at" a targetPosition (`DataType/Vector3`).
+---
+BodyGyro.CFrame = nil;
+---The D property is how much **dampening** will be applied to the torque
+---used to reach the goal `BodyGyro/CFrame|CFrame`. When the part approaches
+---the goal orientation it needs to decelerate, otherwise it will rotate past
+---the goal and have to stop and re-accelerate back toward the goal. This is
+---often creates undesirable **rubber-banding** effect, so applying dampening
+---using this property is how that effect is avoided. The higher this value
+---is set, the greater the dampening curve becomes, or the slower the part
+---will approach the goal orientation.
+---
+BodyGyro.D = nil;
+---The MaxTorque property determines the limit on the amount of torque that
+---may be applied on each axis in reaching the goal orientation
+---(`BodyGyro/CFrame|CFrame`). If a part isn't moving, consider increasing
+---this value (also check that it is not `BasePart/Anchored|Anchored` or
+---attached to any anchored parts).
+---
+BodyGyro.MaxTorque = nil;
+---The P property determines how much
+---[power](<https://en.wikipedia.org/wiki/Power_(physics)>) is used while
+---applying torque in order to reach the goal `BodyGyro/CFrame|CFrame`. The
+---higher this value, the more power will be used and the faster it will be
+---used.
+---
+BodyGyro.P = nil;
+---
+BodyGyro.cframe = nil;
+---
+BodyGyro.maxTorque = nil;
 ---@class BodyMover : Instance
----BodyMover is the abstract base class for the set of legacy objects that
----exert forces to `BasePart`s in different ways. In general, the subclasses
----of BodyMover can be placed into one of two categories based on the type of
+---BodyMover is the abstract base class for the set of legacy objects that exert
+---forces to `BasePart`s in different ways. In general, the subclasses of
+---BodyMover can be placed into one of two categories based on the type of
 ---force(s) they exert:
 ---
 ---## Translational Force
@@ -3630,11 +6330,10 @@ local BodyGyro;
 ---
 ---## Rotational Force (Torque)
 ---
----- `BodyThrust`: Exert a force relative to object coordinates, which
----  applies torque if positioned in a certain way
+---- `BodyThrust`: Exert a force relative to object coordinates, which applies
+---  torque if positioned in a certain way
 ---- `BodyGyro`: Exert torque to maintain a certain orientation
----- `BodyAngularVelocity`: Exert torque to maintain a certain angular
----  velocity
+---- `BodyAngularVelocity`: Exert torque to maintain a certain angular velocity
 ---
 ---An exception is the `RocketPropulsion` class, which exerts **both**
 ---translational and rotational forces to cause a part to track down another
@@ -3648,25 +6347,59 @@ local BodyMover;
 ---@field public Position Vector3
 ---@field public maxForce Vector3
 ---@field public position Vector3
----@field public ReachedTarget fun(): RbxScriptSignal
----The **BodyPosition** object applies a force on a `BasePart` such that it
----will maintain a constant position in the world. The
+---@field public ReachedTarget RBXScriptSignal.ReachedTarget
+---The **BodyPosition** object applies a force on a `BasePart` such that it will
+---maintain a constant position in the world. The
 ---`BodyPosition/Position|Position` property, not to be confused with
 ---`BasePart/Position`, controls the target world position. This is the
----translational counterpart to a `BodyGyro`. If you need further control on
----a force applied to an object, consider using a `BodyForce` or `BodyThrust`
+---translational counterpart to a `BodyGyro`. If you need further control on a
+---force applied to an object, consider using a `BodyForce` or `BodyThrust`
 ---instead.
 ---
 ---The strength of the force applied by this object is controlled by several
----factors, namely the distance to the goal position: the force is stronger
----when farther away from the goal. This is amplified by `BodyPosition/P|P`
----(power). The present velocity will also dampen the force applied by this
----object, and this is amplified by `BodyPosition/D|D` (dampening). The
----resulting force is then capped by `BodyPosition/MaxForce|MaxForce`. Note
----the force applied on the part to achieve the goal position may vary on a
----per-axis basis.
+---factors, namely the distance to the goal position: the force is stronger when
+---farther away from the goal. This is amplified by `BodyPosition/P|P` (power).
+---The present velocity will also dampen the force applied by this object, and
+---this is amplified by `BodyPosition/D|D` (dampening). The resulting force is
+---then capped by `BodyPosition/MaxForce|MaxForce`. Note the force applied on the
+---part to achieve the goal position may vary on a per-axis basis.
 ---
 local BodyPosition;
+---The D property determines how much **dampening** will be applied to the
+---force used toward reaching the goal `BodyPostion/Position|Position`. When
+---the part approaches the goal position it needs to decelerate, otherwise it
+---will move past the goal and have to stop and re-accelerate back toward the
+---goal. This is often creates undesirable **rubber-banding** effect, so
+---applying dampening using this property is how that effect is avoided. The
+---higher this value is set, the greater the dampening curve becomes, or the
+---slower the part will approach the goal position.
+---
+BodyPosition.D = nil;
+---The MaxForce property determines the limit on the amount of force that may
+---be applied on each axis in reaching the goal
+---`BodyPosition/Position|Position`. If a part isn't moving, consider
+---increasing this value (also check that it is not
+---`BasePart/Anchored|Anchored` or attached to any anchored parts).
+---
+BodyPosition.MaxForce = nil;
+---The P property determines how much
+---[power](<https://en.wikipedia.org/wiki/Power_(physics)>) is used while
+---applying force in order to reach the goal
+---`BodyPosition/Position|Position`. The higher this value, the more power
+---will be used and the faster it will be used. The force the `BodyPosition`
+---exerts increases as the difference between the part's current position and
+---the goal position increases. This property is multiplied to this force to
+---either amplify or diminish it.
+---
+BodyPosition.P = nil;
+---The Position property determines the goal position towards which the
+---`BodyPosition` will apply force.
+---
+BodyPosition.Position = nil;
+---
+BodyPosition.maxForce = nil;
+---
+BodyPosition.position = nil;
 ---@return Vector3
 ---This function returns the last force in the object.
 ---
@@ -3675,6 +6408,13 @@ BodyPosition.GetLastForce = function(self) end;
 ---The lastForce function returns the last force in the object.
 ---
 BodyPosition.lastForce = function(self) end;
+---@class RBXScriptSignal.ReachedTarget : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ReachedTarget, callback: fun()): RBXScriptConnection
+---Fired when the Parent of the BodyPosition reaches the desired
+---`BodyPosition/Position` (within .1 studs). Once this event fires it will
+---not fire again until `BodyPosition/Position` is updated.
+---
+BodyPosition.ReachedTarget = nil;
 ---@class BodyThrust : BodyMover, Instance
 ---@field public Force Vector3
 ---@field public Location Vector3
@@ -3690,33 +6430,73 @@ BodyPosition.lastForce = function(self) end;
 ---position), use a `BodyGyro`.
 ---
 local BodyThrust;
+---The Force property determines the amount of force exerted on each axis
+---relative to the part. Unlike `BodyForce/Force`, this property is relative
+---to the part and not the world. The force is exerted at the
+---`BodyThrust/Location|Location`, which is also relative to the part.
+---
+BodyThrust.Force = nil;
+---The Location property determines the relative offset from the center part
+---at which the `BodyThrust/Force` is exerted. This is the primary means for
+---turning force into torque.
+---
+BodyThrust.Location = nil;
+---
+BodyThrust.force = nil;
+---
+BodyThrust.location = nil;
 ---@class BodyVelocity : BodyMover, Instance
 ---@field public MaxForce Vector3
 ---@field public P float
 ---@field public Velocity Vector3
 ---@field public maxForce Vector3
 ---@field public velocity Vector3
----The BodyVelocity object applies a [force][1] on a `BasePart` such that it
----will maintain a constant velocity. The `BodyVelocity/Velocity` property,
----not to be confused wtih `BasePart/Velocity`, controls the goal velocity.
----This is the translational counterpart to a `BodyAngularVelocity`. If you
----need the part to move toward a goal position, use a `BodyPosition`
----instead. If you need further control on a force applied to an object,
----consider using a `BodyForce` or `BodyThrust` instead.
+---The BodyVelocity object applies a [force][1] on a `BasePart` such that it will
+---maintain a constant velocity. The `BodyVelocity/Velocity` property, not to be
+---confused wtih `BasePart/Velocity`, controls the goal velocity. This is the
+---translational counterpart to a `BodyAngularVelocity`. If you need the part to
+---move toward a goal position, use a `BodyPosition` instead. If you need further
+---control on a force applied to an object, consider using a `BodyForce` or
+---`BodyThrust` instead.
 ---
 ---The strength of the force applied by this object is controlled by several
 ---factors, namely the difference between the part's current velocity and the
 ---goal velocity. This is multiplied by `BodyVelocity/P|P` (power) to either
 ---amplify or diminish it. The resulting force is then capped by
 ---`BodyVelocity/MaxForce|MaxForce`. By setting `BodyVelocity/Velocity` to
----`(0, 0, 0)` it is possible to simulate `BasePart/Anchored|Anchored`
----behavior with less strictness.
+---`(0, 0, 0)` it is possible to simulate `BasePart/Anchored|Anchored` behavior
+---with less strictness.
 ---
 local BodyVelocity;
----@return Vector3
----Returns the last force in the object.
+---The MaxForce property determines the limit on the amount of force that may
+---be applied on each axis in reaching the goal
+---`BodyVelocity/Velocity|Velocity`. If a part isn't moving, consider
+---increasing this value (also check that it is not
+---`BasePart/Anchored|Anchored` or attached to any anchored parts).
 ---
-BodyVelocity.lastForce = function(self) end;
+BodyVelocity.MaxForce = nil;
+---his property is ignored if PGS is enabled via
+---Workspace.PGSPhysicsSolverEnabled, which is enabled by default.
+---
+---The P property determines how much
+---[power](<https://en.wikipedia.org/wiki/Power_(physics)>) is used while
+---applying force in order to reach the goal
+---`BodyVelocity/Velocity|Velocity`. The higher this value, the more power
+---will be used and the faster it will be used. The force the `BodyVelocity`
+---exerts increases as the difference between the part's current velocity and
+---the goal velocity increases. This property is multiplied to this force to
+---either amplify or diminish it.
+---
+BodyVelocity.P = nil;
+---The Velocity property (not to be confused with `BasePart/Velocity`)
+---determines the target velocity towards which force will be exerted. It is
+---specified relative to the world, not the part.
+---
+BodyVelocity.Velocity = nil;
+---
+BodyVelocity.maxForce = nil;
+---
+BodyVelocity.velocity = nil;
 ---@return Vector3
 ---**GetLastForce** is not implemented. It will always return the 0 vector.
 ---Developers are advised to use
@@ -3724,6 +6504,10 @@ BodyVelocity.lastForce = function(self) end;
 ---instead
 ---
 BodyVelocity.GetLastForce = function(self) end;
+---@return Vector3
+---Returns the last force in the object.
+---
+BodyVelocity.lastForce = function(self) end;
 ---@class Bone : Attachment, Instance
 ---@field public IsCFrameDriven bool
 ---@field public Transform CFrame
@@ -3733,82 +6517,143 @@ BodyVelocity.GetLastForce = function(self) end;
 ---within a skinned mesh part.
 ---
 ---Bone extends `Attachment`. The inherited CFrame property is used as the
----reference position of the Bone. The inherited WorldCFrame and the other
----World properties will continue to return the initial un-transformed
----position.
+---reference position of the Bone. The inherited WorldCFrame and the other World
+---properties will continue to return the initial un-transformed position.
 ---
 ---Unlike `Attachment` instances, Bones can be children of other Bones in
 ---addition to [`Parts`](/reference/engine/classes/Part). When parented to
----another Bone the child bone's world position will be relative to the
----parent Bone's position. Bones form an explicit hierarchy.
+---another Bone the child bone's world position will be relative to the parent
+---Bone's position. Bones form an explicit hierarchy.
 ---
----To support animation, Bones have a `Bone.Transform` property that
----functions similarly to `Motor6D.Transform`. It is not replicated or
----serialized and is meant to be driven by animation as an offset from the
----reference pose.
+---To support animation, Bones have a `Bone.Transform` property that functions
+---similarly to `Motor6D.Transform`. It is not replicated or serialized and is
+---meant to be driven by animation as an offset from the reference pose.
 ---
----The movement of Bones can affect the appearance of parts, but does not
----change the shape of the part physically for collision detection.
+---The movement of Bones can affect the appearance of parts, but does not change
+---the shape of the part physically for collision detection.
 ---
----Bones internally implement the animatable joint interface and can be
----driven by Animators interchangeably with Motor6Ds. Animation data authored
----for a tree of motors can be played as-is on an equivalent tree of bones
----and vice versa.
+---Bones internally implement the animatable joint interface and can be driven by
+---Animators interchangeably with Motor6Ds. Animation data authored for a tree of
+---motors can be played as-is on an equivalent tree of bones and vice versa.
 ---
----For a `Motor6D` the child part is relative to Transform _
----ParentPart.CFrame _ CParent
+---For a `Motor6D` the child part is relative to Transform _ ParentPart.CFrame _
+---CParent
 ---
----For a `Bone` all child Bones are relative to Transform _ ParentPart.CFrame
----_ `Bone.CFrame`
+---For a `Bone` all child Bones are relative to Transform _ ParentPart.CFrame _
+---`Bone.CFrame`
 ---
 ---Physical Constraints directly attached to Bones will use the transformed
 ---positions for simulation.
 ---
 ---Many bones, like bones in a character's face, hands, or corrective "twist
----joints" in limbs, may not need physical representation because they are
----only meant for small, but expressive, movements.
+---joints" in limbs, may not need physical representation because they are only
+---meant for small, but expressive, movements.
 ---
 ---The mesh importer supports importing meshes with skeletal joint data with
----vertices weighted to those joints. This will be saved in the mesh asset
----data for each part.
+---vertices weighted to those joints. This will be saved in the mesh asset data
+---for each part.
 ---
----Named joints defined within a `MeshPart` or `FileMesh` mesh asset data
----will skin to Bones with the same name found as children of that part,
----Bones that are direct children of those Bones (recursively), or children
----of other parts in the same Model that are connected to the part directly
----or indirectly by `Motor6D`, `Weld`, `BallSocketConstraint`,
----`HingeConstraint`, or other skinning-enabled joints within the same
----`Model`. Other descendant Models are considered separate models.
+---Named joints defined within a `MeshPart` or `FileMesh` mesh asset data will
+---skin to Bones with the same name found as children of that part, Bones that
+---are direct children of those Bones (recursively), or children of other parts
+---in the same Model that are connected to the part directly or indirectly by
+---`Motor6D`, `Weld`, `BallSocketConstraint`, `HingeConstraint`, or other
+---skinning-enabled joints within the same `Model`. Other descendant Models are
+---considered separate models.
 ---
 ---In the absence of Bones, skinning will skin mesh joints relative to a
----connected `MeshPart` or `FileMesh` parent part with the same instance name
----as the mesh joint using the offset defined by that part's mesh asset joint
----data as if it contained a `Bone` instance with the same name.
+---connected `MeshPart` or `FileMesh` parent part with the same instance name as
+---the mesh joint using the offset defined by that part's mesh asset joint data
+---as if it contained a `Bone` instance with the same name.
 ---
----Skinning is based on joint connections so that classic dismemberment on
----death works as expected. The "within the same Model" rule prevents
----characters that are welded together from unexpectedly skinning together as
----a singular visual entity.
+---Skinning is based on joint connections so that classic dismemberment on death
+---works as expected. The "within the same Model" rule prevents characters that
+---are welded together from unexpectedly skinning together as a singular visual
+---entity.
 ---
 local Bone;
+---
+Bone.IsCFrameDriven = nil;
+---**Transform** determines the current animated offset of the bone relative
+---to its `Attachment/CFrame|CFrame`. This property is set by Roblox when
+---animations on skinned meshes are played, although it can be manipulated
+---manually in a manner similar to `Motor6D/Transform`.
+---
+---See also:
+---
+---- `Motor6D/Transform`, a property which plays a similar role in character
+---  rig animation
+---- `Bone/TransformedCFrame|TransformedCFrame` and
+---  `Bone/TransformedWorldCFrame|TransformedWorldCFrame`, whose values are
+---  partially determined by this property
+---
+Bone.Transform = nil;
+---**TransformedCFrame** describes the combined `Attachment/CFrame|CFrame`
+---offset of the bone and the current animation offset
+---(`Bone/Transform|Transform`) in the bone's local space.
+---
+---See also:
+---
+---- `Bone/Transform|Transform`, a property which partially determines this
+---  property's value
+---- `Bone/TransformedWorldCFrame`, a world-space variant of this property
+---
+Bone.TransformedCFrame = nil;
+---**TransformedWorldCFrame** describes the combined
+---`Attachment/CFrame|CFrame` offset of the bone and the current animation
+---offset (`Bone/Transform|Transform`) in world space.
+---
+---See also:
+---
+---- `Bone/Transform|Transform`, a property which partially determines this
+---  property's value
+---- `Bone/TransformedCFrame`, a local-space variant of this property
+---
+Bone.TransformedWorldCFrame = nil;
 ---@class BoolValue : ValueBase, Instance
 ---@field public Value bool
----@field public Changed fun(value: bool): RbxScriptSignal
----@field public changed fun(value: bool): RbxScriptSignal
----An instance which is used to hold a boolean value. The value can be used
----for many things, including to communicate between scripts.
+---@field public Changed RBXScriptSignal.Changed
+---@field public changed RBXScriptSignal.changed
+---An instance which is used to hold a boolean value. The value can be used for
+---many things, including to communicate between scripts.
 ---
 local BoolValue;
+---Used to hold a boolean value.
+---
+BoolValue.Value = nil;
+---@class RBXScriptSignal.Changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Changed, callback: fun(value: bool)): RBXScriptConnection
+---Fired whenever the `BoolValue/Value` of the `BoolValue` is changed. It
+---will run with the new value being stored in the argument object, instead
+---of a string representing the property being changed.
+---
+---This event, like other changed events, can be used to track when an
+---BoolValue changes and to track the different values that it may change to.
+---
+---For instance, this may be useful in games that rely on BoolValues to track
+---game states and values, such as switch or enabled states.
+---
+---Equivalent changed events exist for similar objects, such as `NumberValue`
+---and `StringValue`, depending on what object type best suits the need.
+---
+BoolValue.Changed = nil;
+---@class RBXScriptSignal.changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.changed, callback: fun(value: bool)): RBXScriptConnection
+---
+BoolValue.changed = nil;
 ---@class BoxHandleAdornment : HandleAdornment, PVAdornment, GuiBase3d, GuiBase, Instance
 ---@field public Size Vector3
----For handles to be interactive, they must be parented to a player's
----PlayerGui or the CoreGui.
+---For handles to be interactive, they must be parented to a player's PlayerGui
+---or the CoreGui.
 ---
 ---The **BoxHandleAdornment** is a rectangular prism that can be adorned to a
----`BasePart`. This adornment can listen to input events and is commonly used
----to make dragger tools.
+---`BasePart`. This adornment can listen to input events and is commonly used to
+---make dragger tools.
 ---
 local BoxHandleAdornment;
+---The size of the adornment.
+---
+BoxHandleAdornment.Size = nil;
 ---@class Breakpoint : Instance
 ---@field public Condition string
 ---@field public ContinueExecution bool
@@ -3820,14 +6665,29 @@ local BoxHandleAdornment;
 ---@field public Script string
 ---@field public Verified bool
 local Breakpoint;
+---
+Breakpoint.Condition = nil;
+---
+Breakpoint.ContinueExecution = nil;
+---
+Breakpoint.Enabled = nil;
+---
+Breakpoint.Id = nil;
+---
+Breakpoint.Line = nil;
+---
+Breakpoint.LogMessage = nil;
+---
+Breakpoint.MetaBreakpointId = nil;
+---
+Breakpoint.Script = nil;
+---
+Breakpoint.Verified = nil;
 ---@class BreakpointManager : Instance
----@field public MetaBreakpointAdded fun(breakpoint: MetaBreakpoint): RbxScriptSignal
----@field public MetaBreakpointChanged fun(breakpoint: MetaBreakpoint): RbxScriptSignal
----@field public MetaBreakpointRemoved fun(breakpoint: MetaBreakpoint): RbxScriptSignal
+---@field public MetaBreakpointAdded RBXScriptSignal.MetaBreakpointAdded
+---@field public MetaBreakpointChanged RBXScriptSignal.MetaBreakpointChanged
+---@field public MetaBreakpointRemoved RBXScriptSignal.MetaBreakpointRemoved
 local BreakpointManager;
----@param metaBreakpointId int
----@return MetaBreakpoint
-BreakpointManager.GetBreakpointById = function(self, metaBreakpointId) end;
 ---@param metaBreakpointId int
 ---@return void
 BreakpointManager.RemoveBreakpointById = function(self, metaBreakpointId) end;
@@ -3836,26 +6696,56 @@ BreakpointManager.RemoveBreakpointById = function(self, metaBreakpointId) end;
 ---@param condition Instance
 ---@return Instance
 BreakpointManager.AddBreakpoint = function(self, script, line, condition) end;
+---@param metaBreakpointId int
+---@return MetaBreakpoint
+BreakpointManager.GetBreakpointById = function(self, metaBreakpointId) end;
+---@class RBXScriptSignal.MetaBreakpointAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MetaBreakpointAdded, callback: fun(breakpoint: MetaBreakpoint)): RBXScriptConnection
+---
+BreakpointManager.MetaBreakpointAdded = nil;
+---@class RBXScriptSignal.MetaBreakpointChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MetaBreakpointChanged, callback: fun(breakpoint: MetaBreakpoint)): RBXScriptConnection
+---
+BreakpointManager.MetaBreakpointChanged = nil;
+---@class RBXScriptSignal.MetaBreakpointRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MetaBreakpointRemoved, callback: fun(breakpoint: MetaBreakpoint)): RBXScriptConnection
+---
+BreakpointManager.MetaBreakpointRemoved = nil;
 ---@class BrickColorValue : ValueBase, Instance
 ---@field public Value BrickColor
----@field public Changed fun(value: BrickColor): RbxScriptSignal
----@field public changed fun(value: BrickColor): RbxScriptSignal
+---@field public Changed RBXScriptSignal.Changed
+---@field public changed RBXScriptSignal.changed
 ---An instance which is used to store a BrickColor value.
 ---
 local BrickColorValue;
+---Used to hold a
+---<a href="/reference/engine/datatypes/BrickColor">BrickColor</a> value.
+---
+BrickColorValue.Value = nil;
+---@class RBXScriptSignal.Changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Changed, callback: fun(value: BrickColor)): RBXScriptConnection
+---Fired whenever the `BrickColorValue/Value` of the `BrickColorValue` is
+---changed. It will run with the new value being stored in the argument
+---object, instead of a string representing the property being changed.
+---
+---This event, like other changed events, can be used to track when an
+---BrickColorValue changes and to track the different values that it may
+---change to.
+---
+---Equivalent changed events exist for similar objects, such as `NumberValue`
+---and `StringValue`, depending on what object type best suits the need.
+---
+BrickColorValue.Changed = nil;
+---@class RBXScriptSignal.changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.changed, callback: fun(value: BrickColor)): RBXScriptConnection
+---
+BrickColorValue.changed = nil;
 ---@class BrowserService : Instance
----@field public AuthCookieCopiedToEngine fun(): RbxScriptSignal
----@field public BrowserWindowClosed fun(): RbxScriptSignal
----@field public BrowserWindowWillNavigate fun(url: string): RbxScriptSignal
----@field public JavaScriptCallback fun(content: string): RbxScriptSignal
+---@field public AuthCookieCopiedToEngine RBXScriptSignal.AuthCookieCopiedToEngine
+---@field public BrowserWindowClosed RBXScriptSignal.BrowserWindowClosed
+---@field public BrowserWindowWillNavigate RBXScriptSignal.BrowserWindowWillNavigate
+---@field public JavaScriptCallback RBXScriptSignal.JavaScriptCallback
 local BrowserService;
----@return void
-BrowserService.OpenWeChatAuthWindow = function(self) end;
----@param moduleName string
----@param eventName string
----@param params string
----@return void
-BrowserService.EmitHybridEvent = function(self, moduleName, eventName, params) end;
 ---@param url string
 ---@return void
 BrowserService.OpenBrowserWindow = function(self, url) end;
@@ -3878,23 +6768,83 @@ BrowserService.CopyAuthCookieFromBrowserToEngine = function(self) end;
 ---@param params string
 ---@return void
 BrowserService.ReturnToJavaScript = function(self, callbackId, success, params) end;
+---@return void
+BrowserService.OpenWeChatAuthWindow = function(self) end;
+---@param moduleName string
+---@param eventName string
+---@param params string
+---@return void
+BrowserService.EmitHybridEvent = function(self, moduleName, eventName, params) end;
+---@class RBXScriptSignal.AuthCookieCopiedToEngine : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AuthCookieCopiedToEngine, callback: fun()): RBXScriptConnection
+---
+BrowserService.AuthCookieCopiedToEngine = nil;
+---@class RBXScriptSignal.BrowserWindowClosed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BrowserWindowClosed, callback: fun()): RBXScriptConnection
+---
+BrowserService.BrowserWindowClosed = nil;
+---@class RBXScriptSignal.BrowserWindowWillNavigate : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BrowserWindowWillNavigate, callback: fun(url: string)): RBXScriptConnection
+---
+BrowserService.BrowserWindowWillNavigate = nil;
+---@class RBXScriptSignal.JavaScriptCallback : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.JavaScriptCallback, callback: fun(content: string)): RBXScriptConnection
+---
+BrowserService.JavaScriptCallback = nil;
 ---@class BulkImportService : Instance
----@field public AssetImported fun(assetType: AssetType, name: string, id: int64): RbxScriptSignal
----@field public BulkImportFinished fun(state: int): RbxScriptSignal
----@field public BulkImportStarted fun(): RbxScriptSignal
+---@field public AssetImported RBXScriptSignal.AssetImported
+---@field public BulkImportFinished RBXScriptSignal.BulkImportFinished
+---@field public BulkImportStarted RBXScriptSignal.BulkImportStarted
 local BulkImportService;
 ---@param assetTypeToImport int
 ---@return void
 BulkImportService.LaunchBulkImport = function(self, assetTypeToImport) end;
 ---@return void
 BulkImportService.ShowBulkImportView = function(self) end;
+---@class RBXScriptSignal.AssetImported : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AssetImported, callback: fun(assetType: AssetType, name: string, id: int64)): RBXScriptConnection
+---
+BulkImportService.AssetImported = nil;
+---@class RBXScriptSignal.BulkImportFinished : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BulkImportFinished, callback: fun(state: int)): RBXScriptConnection
+---
+BulkImportService.BulkImportFinished = nil;
+---@class RBXScriptSignal.BulkImportStarted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BulkImportStarted, callback: fun()): RBXScriptConnection
+---
+BulkImportService.BulkImportStarted = nil;
 ---@class CFrameValue : ValueBase, Instance
 ---@field public Value CFrame
----@field public Changed fun(value: CFrame): RbxScriptSignal
----@field public changed fun(value: CFrame): RbxScriptSignal
+---@field public Changed RBXScriptSignal.Changed
+---@field public changed RBXScriptSignal.changed
 ---A container object for a single `DataType/CFrame` value.
 ---
 local CFrameValue;
+---Used to hold a <a href="/reference/engine/datatypes/CFrame">CFrame</a>
+---value.
+---
+CFrameValue.Value = nil;
+---@class RBXScriptSignal.Changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Changed, callback: fun(value: CFrame)): RBXScriptConnection
+---Fired whenever the `CFrameValue/Value` of the `CFrameValue` is changed. It
+---will run with the new value being stored in the argument object, instead
+---of a string representing the property being changed.
+---
+---This event, like other changed events, can be used to track when an
+---CFrameValue changes and to track the different values that it may change
+---to.
+---
+---For instance, this even may be useful in games that rely on CFrameValues
+---to track game object `DataType/CFrame` positions and movements.
+---
+---Equivalent changed events exist for similar objects, such as `NumberValue`
+---and `StringValue`, depending on what object type best suits the need.
+---
+CFrameValue.Changed = nil;
+---@class RBXScriptSignal.changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.changed, callback: fun(value: CFrame)): RBXScriptConnection
+---
+CFrameValue.changed = nil;
 ---@class CSGDictionaryService : FlyweightService, Instance
 ---CSGDictionaryService is an internal service that stores a cache of
 ---`BinaryStringValue` objects, each value representing a unique data set for
@@ -3904,9 +6854,9 @@ local CFrameValue;
 ---
 local CSGDictionaryService;
 ---@class CacheableContentProvider : Instance
----A variant of the `ContentProvider` that caches assets that have already
----been received. This service is not used directly, but it is used by the
----services that inherit from it.
+---A variant of the `ContentProvider` that caches assets that have already been
+---received. This service is not used directly, but it is used by the services
+---that inherit from it.
 ---
 local CacheableContentProvider;
 ---@class CalloutService : Instance
@@ -3940,58 +6890,404 @@ CalloutService.DetachCalloutsByDefinitionId = function(self, definitionId) end;
 ---@field public NearPlaneZ float
 ---@field public ViewportSize Vector2
 ---@field public focus CFrame
----@field public FirstPersonTransition fun(entering: bool): RbxScriptSignal
----@field public InterpolationFinished fun(): RbxScriptSignal
+---@field public FirstPersonTransition RBXScriptSignal.FirstPersonTransition
+---@field public InterpolationFinished RBXScriptSignal.InterpolationFinished
 ---The Camera object defines a view of the 3D game world.
 ---
 ---## Where the Camera object is found
 ---
----In an instance of the game, each client has its own Camera object
----associated with it. Camera objects exist only upon the viewer's client,
----residing in that user's local Workspace, and therefore cannot be edited
----directly from the server.
+---In an instance of the game, each client has its own Camera object associated
+---with it. Camera objects exist only upon the viewer's client, residing in that
+---user's local Workspace, and therefore cannot be edited directly from the
+---server.
 ---
 ---Each client's particular Camera object can be accessed through the
 ---`Workspace/CurrentCamera` property of the `Workspace` on that client.
 ---
----Note, `Workspace/CurrentCamera` can also be used to find the Camera object
----in Roblox Studio.
+---Note, `Workspace/CurrentCamera` can also be used to find the Camera object in
+---Roblox Studio.
 ---
 ---## How the Camera object works
 ---
----The Camera's properties define the current view of the 3D game world. The
----most important of these being:
+---The Camera's properties define the current view of the 3D game world. The most
+---important of these being:
 ---
----- The `Camera/CFrame` property represents the position and orientation of
----  the camera.
----- The `Camera/Focus` property represents the point the camera is looking
----  at. It is important this property is set as it also represents where the
----  game thinks you are in the world. Certain visuals will be more detailed
----  and will update more frequently, depending on how close they are to the
----  Focus. Roblox's default [camera scripts][1] take care of this.
----- The `Camera/CameraType` property is read by the game's [camera
----  scripts][1] and determines how the Camera should update each frame.
+---- The `Camera/CFrame` property represents the position and orientation of the
+---  camera.
+---- The `Camera/Focus` property represents the point the camera is looking at.
+---  It is important this property is set as it also represents where the game
+---  thinks you are in the world. Certain visuals will be more detailed and will
+---  update more frequently, depending on how close they are to the Focus.
+---  Roblox's default [camera scripts][1] take care of this.
+---- The `Camera/CameraType` property is read by the game's [camera scripts][1]
+---  and determines how the Camera should update each frame.
 ---- The `Camera/CameraSubject` property is read by the game's [camera
 ---  scripts][1] and determines what object the Camera should follow.
----- The `Camera/FieldOfView` property represents the extent of the
----  observable world visible.
+---- The `Camera/FieldOfView` property represents the extent of the observable
+---  world visible.
 ---
 ---## How to work with the Camera
 ---
 ---Roblox's [camera scripts][1] update the Camera's properties every frame
----dependent on the current `Camera/CameraType`. This means developers
----looking to control the Camera themselves have two options.
+---dependent on the current `Camera/CameraType`. This means developers looking to
+---control the Camera themselves have two options.
 ---
 ---1.  Setting the `Camera/CameraType` property to _'Scriptable'_. When the
----    Camera is in _'Scriptable'_ mode the default [camera scripts][1] will
----    not update the camera. In most cases this is the easiest option.
+---    Camera is in _'Scriptable'_ mode the default [camera scripts][1] will not
+---    update the camera. In most cases this is the easiest option.
 ---2.  Replacing or modifying the default [camera scripts][1] in
----    `StarterPlayerScripts|StarterPlayer.StarterPlayerScripts`. This is
----    only recommended for advanced developers.
+---    `StarterPlayerScripts|StarterPlayer.StarterPlayerScripts`. This is only
+---    recommended for advanced developers.
 ---
 ---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
 ---
 local Camera;
+---This property is the `DataType/CFrame` of the `Camera` and definies its
+---position and orientation in the 3D world.
+---
+---Some transformations, such as the rotation of the head when using VR
+---devices are not reflected in this property. For this reason, developers
+---should use `Camera/GetRenderCFrame` to obtain the 'true' `DataType/CFrame`
+---of the camera.
+---
+---#### How to set the camera's CFrame
+---
+---You can move the camera by setting the CFrame property. However, the
+---default [camera scripts][1] also set the CFrame property. When manually
+---setting the CFrame property, it may be overwritten by the [camera
+---scripts][1] which update every frame. There are two options to address
+---this:
+---
+---1.  Set the camera `Camera/CameraType` to _'Scriptable'_. When the camera
+---    is _'Scriptable'_ the default scripts will not update the CFrame. This
+---    method is simplest and recommended in most cases
+---
+---2.  Replace the default [camera scripts][1] with an alternative that
+---    doesn't interfere with the developer's desired implementation. This is
+---    only recommended when developers do not need any default camera's
+---    functionality
+---
+---#### How the Camera CFrame works
+---
+---Like all `DataType/CFrame|CFrame` data, the camera CFrame represents a
+---position and an orientation.
+---
+---The most intuitive way to position and orientate the `Camera` is by using
+---the _new_ CFrame constructor with the _pos_ and _lookAt_ parameters, for
+---example:
+---
+---```lua
+---local pos = Vector3.new(0, 10, 0)
+---local lookAt = Vector3.new(10, 0, 0)
+---local cameraCFrame = CFrame.new(pos, lookAt)
+---workspace.CurrentCamera.CFrame = cameraCFrame
+---```
+---
+---In the above example the `Camera` is positioned at _Vector3.new(0, 10, 0)_
+---and oriented to be looking towards _Vector3.new(10, 0, 0)_.
+---
+---#### Animating the Camera CFrame
+---
+---Although the camera can be placed in the manner demonstrated above, you
+---may want to animate the Camera to smoothly move from one CFrame to
+---another. For this, there are a number of options:
+---
+---1. Creating a `Tween` using `TweenService` that animates the CFrame
+---   property of the camera. See the code sample below for an example of
+---   this
+---2. Setting the camera CFrame every frame with
+---   `RunService/BindToRenderStep` and the _lerp_ CFrame method
+---
+---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
+---
+Camera.CFrame = nil;
+---When using the default [camera scripts][1], the CameraSubject property has
+---two roles:
+---
+---- Defining the object the `Camera` is to follow, in the case of the
+---  _'Follow'_, _'Attach'_, _'Track'_, _'Watch'_ and _'Custom'_
+---  `Camera/CameraType|CameraTypes`
+---- For all `Camera/CameraType|CameraTypes` but _'Scriptable'_, the object
+---  whose position the `Camera|Camera`'s `Camera/Focus` will be set to
+---
+---CameraSubject accepts a variety of `Instance|Instances`. The default
+---[camera scripts][1] respond differently to different CameraSubject types:
+---
+---- `Humanoid`: By default the CameraSubject is set to the
+---  `Player/LocalPlayer|LocalPlayer`'s `Humanoid`. The camera scripts will
+---  follow the `Humanoid` factoring in the `Humanoid|Humanoid`'s current
+---  state and `Humanoid/CameraOffset`
+---- `BasePart`: The camera scripts will follow the position of any
+---  `BasePart`, with a vertical offset in the case of
+---  `VehicleSeat|VehicleSeats`
+---
+---You can configure the `Camera` to follow a `Model` by setting the
+---CameraSubject to the model's `Model/PrimaryPart`.
+---
+---The CameraSubject cannot be set to _nil_. If it is, it will revert to its
+---previous value.
+---
+---To restore the CameraSubject to its default value, set it to the
+---`Player/LocalPlayer|LocalPlayer`'s `Humanoid` like so:
+---
+---```lua
+---local Players = game:GetService("Players")
+---
+---local localPlayer = Players.LocalPlayer
+---
+---local function resetCameraSubject()
+---	if workspace.CurrentCamera and localPlayer.Character then
+---		local humanoid = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+---		if humanoid then
+---			workspace.CurrentCamera.CameraSubject = humanoid
+---		end
+---	end
+---end
+---```
+---
+---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
+---
+Camera.CameraSubject = nil;
+---The default Roblox [camera scripts][1] have several built in behaviors.
+---Setting the CameraType of a player's `Camera` will toggle between these
+---behaviors. Note some CameraType's require a valid `Camera/CameraSubject`
+---to work correctly.
+---
+---- Fixed: `Camera` is stationary
+---- Follow: `Camera` moves with the `Camera/CameraSubject` and rotates to
+---  keep the subject in the center of view
+---- Attach: `Camera` moves with the `Camera/CameraSubject` at a fixed offset
+---  and will rotate as the subject rotates
+---- Track: `Camera` moves with the `Camera/CameraSubject` but does not
+---  rotate automatically
+---- Watch: `Camera` is stationary but will rotate to keep the
+---  `Camera/CameraSubject` in the center of view
+---- Custom: Default
+---- Scriptable: No default behavior. Used by developers to script custom
+---  behavior
+---
+---The above only applies when you use the default Roblox [camera
+---scripts][1]. If you write your own camera scripts, you can choose to
+---listen to CameraType and implement your own behaviors or ignore the
+---property entirely.
+---
+---#### Manually controlling the Camera
+---
+---In some cases you may wish to manually control the `Camera` (for example
+---during a cut-scene). The best way to do this is by setting the CameraType
+---to _'Scriptable'_. The default [camera scripts][1] will not move or update
+---the `Camera` on its own if CameraType is set to _'Scriptable'_. This means
+---you can freely modify the `Camera` using its properties and functions. For
+---more information on positioning and orientating the `Camera` manually see
+---the `Camera/CFrame|Camera.CFrame` page.
+---
+---If you want complete control over the camera at all times, you may replace
+---the default [camera scripts][1] with your own.
+---
+---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
+---
+Camera.CameraType = nil;
+---This property has been superseded by `Camera/CFrame` which functions
+---identically and should be used instead.
+---
+Camera.CoordinateFrame = nil;
+---Sets how many degrees in the diagonal direction (from one corner of the
+---viewport to its opposite corner) the camera can view.
+---
+---See `Camera/FieldOfView|FieldOfView` for a more general explanation of
+---FOV.
+---
+Camera.DiagonalFieldOfView = nil;
+---Field of view, often shortened to FOV, is the extent of the observable
+---game world that can be seen on screen at a given moment. The FieldOfView
+---property is clamped between 1 and 120 degrees and defaults at 70. Very low
+---or very high fields of view are not recommended as they can be
+---disorientating to players.
+---
+---The FieldOfView property sets how many degrees in the vertical direction
+---(y-axis) the camera can view. Uniform scaling is enforced meaning the
+---vertical and horizontal field of view are always related by the [aspect
+---ratio][1] of the screen. This means the FieldOfView property also
+---determines the horizontal field of view.
+---
+---See the images below for an example of how different FieldOfView settings
+---can impact the extent of the perceptive game world. At a FOV of 70, a
+---considerable portion of the game world is visible:
+---
+---![A demonstration of the default FOV of 70][3]
+---
+---However when the FOV is reduced to 30, although the `Camera|Camera`'s
+---`Camera/CFrame` has not changed, a much smaller portion of the game world
+---is rendered:
+---
+---![A demonstration of a reduced FOV of 30][2]
+---
+---#### Suggested uses for FieldOfView
+---
+---Changing FOV can produce a variety of effects, such as:
+---
+---- Reducing FOV to give the impression of magnification (for example when
+---  using binoculars)
+---- Increasing FOV when the player is 'sprinting' to give the impression of
+---  a lack of control
+---
+---[1]: https://en.wikipedia.org/wiki/Aspect_ratio_(image)
+---[2]: /assets/bltdfff0429f210bfb2/Fov30.png
+---[3]: /assets/bltd7070fca08aa332f/Fov70.png
+---
+Camera.FieldOfView = nil;
+---The `Camera|Camera`'s FOV must be updated to reflect
+---`ViewportSize|Camera/ViewportSize` changes. The value of the
+---FieldOfViewMode property determines which FOV value will be kept constant.
+---
+---For example, when the value of FieldOfViewMode is set to
+---`FieldOfViewMode/Vertical`, the horizontal FOV is updated when the
+---viewport is resized, while the vertical FOV is kept constant. On the other
+---hand, if the value is set to `FieldOfViewMode/Diagonal`, both horizontal
+---and vertical FOV might be changed to keep the diagonal FOV constant.
+---
+Camera.FieldOfViewMode = nil;
+---The `Camera` Focus is a `DataType/CFrame` that determines the area in 3D
+---space the graphics engine will prioritize.
+---
+---Certain graphical operations Roblox performs, such as updating lighting,
+---can take a lot of time or computational effort to complete. Focus tells
+---Roblox the area in 3D space to prioritize when performing such operations.
+---For example dynamic lighting from objects such as `PointLight|PointLights`
+---may not render at distances far from the Focus.
+---
+---The default Roblox [camera scripts][1] automatically set the Focus to
+---follow the `Camera/CameraSubject` (usually a `Humanoid`). However, Focus
+---will not be automatically updated in the following cases:
+---
+---- When the `Camera/CameraType` is set to _'Scriptable'_
+---- When the default [camera scripts][1] are not being used
+---
+---In these cases, you should update Focus every frame, using
+---`RunService/BindToRenderStep` function at the _'Camera'_
+---`Enum/RenderPriority`.
+---
+---Focus has no bearing on the positioning or orientation of the `Camera`
+---(see `Camera/CFrame|Camera.CFrame` for this).
+---
+---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
+---
+Camera.Focus = nil;
+---Un-linking the camera from a VR user's head motions can cause motion
+---sickness. This property should only be set to false after extensive
+---testing.
+---
+---Toggles whether the `Camera` will automatically track the head motion of a
+---player using a VR device.
+---
+---When HeadLocked is _true_, the engine will combine the `Camera`
+---`Camera/CFrame` with the `DataType/CFrame` of the user's head to render
+---the position and orientation of the `Camera` correctly. The camera will be
+---rendered at the following `DataType/CFrame`:
+---
+---```lua
+---local UserInputService = game:GetService("UserInputService")
+---local headCFrame = UserInputService:GetUserCFrame(Enum.UserCFrame.Head)
+---renderCFrame = workspace.CurrentCamera.CFrame * headCFrame
+---```
+---
+---#### Disabling HeadLocked
+---
+---You are recommended not to disable HeadLocked for the following reasons:
+---
+---- Players may experience motion sickness if an equivalent head tracking
+---  solution is not added
+---- The Roblox engine performs latency optimizations when HeadLocked is true
+---
+---However in some circumstances you may wish to develop your own head
+---tracking systems. For example, you may want custom camera transformations
+---that restrict or augment the `DataType/CFrame` of the head.
+---
+---See also:
+---
+---- `UserInputService|UserInputService`'s `UserInputService/GetUserCFrame`
+---  function, which can be used to obtain the `DataType/CFrame` of the head
+---- `UserInputService|UserInputService`'s
+---  `UserInputService/RecenterUserHeadCFrame` which is used to recenter the
+---  head to the current position and orientation of the VR device
+---- The `Camera/GetRenderCFrame` function which returns the `Camera`
+---  `Camera/CFrame` combined with the `DataType/CFrame` of the user's head
+---
+Camera.HeadLocked = nil;
+---HeadScale is the scale of the user's head when using VR.
+---
+---The unit scale of Roblox, from the user's perspective in VR, is defined as
+---follows:
+---
+---_unitScale = HeadScale (in studs) / Feet ^ 2_
+---
+---This means the larger the HeadScale value, the smaller the world will look
+---from the user's perspective when using VR devices.
+---
+---When not using VR, this property has no effect.
+---
+---This property should not be confused with `Humanoid` HeadScale, which is a
+---`NumberValue` parented to a `Humanoid` to control its scaling.
+---
+---See also:
+---
+---The following are also useful when developing for VR:
+---
+---- `Camera/HeadLocked`
+---- `Camera/GetRenderCFrame`
+---
+Camera.HeadScale = nil;
+---The MaxAxisFieldOfView property sets how many degrees along the longest
+---viewport axis the camera can view.
+---
+---When the longest axis is the vertical axis, this property will behave
+---similar to the `Camera/FieldOfView|FieldOfView` property. This is
+---generally the case when a device is in a portrait orientation. In a
+---landscape orientation the longest axis will be the horizontal axis. In
+---this case, the property describes the horizontal FOV of the `Camera`.
+---
+---See `Camera/FieldOfView|FieldOfView` for a more general explanation of
+---FOV.
+---
+Camera.MaxAxisFieldOfView = nil;
+---The NearPlaneZ property describes how far away the Camera's near clipping
+---plane is in studs. The near clipping plane is a geometric plane that sits
+---in-front of the `Camera|Camera`'s `Camera/CFrame`. Anything between this
+---plane and the camera will not render. This creates a cutaway view when
+---viewing objects at very short distances. See the images below for a visual
+---example of this:
+---
+---![A demonstration of how the near clipping plane resides in front of the camera's view][1]
+---![A demonstration of how anything falling behind the clipping plane is not rendered][2]
+---
+---The value of NearPlaneZ varies across different platforms, but is
+---currently always between _-0.1_ and _-0.5_.
+---
+---- Most windows systems, all Xbox systems and most iOS systems support the
+---  more precise value of _-0.1_
+---- Currently Mac and Android systems only support a NearPlaneZ of _-0.5_,
+---  although this may change in the future
+---
+---[1]: /assets/blt0750d33a37b8193c/NearPlaneZ1.jpg
+---[2]: /assets/bltc9bb8208e79147ec/NearPlaneZ2.jpg
+---
+Camera.NearPlaneZ = nil;
+---ViewportSize describes the dimensions, in pixels, of the client's
+---viewport.
+---
+---![A visual demonstration of the ViewportSize][1]
+---
+---- This property ignores the GUI inset applied by the top bar, meaning the
+---  center of the screen can be found at precisely at 50% of the
+---  ViewportSize in both directions
+---- You can find the position of a `DataType/Vector3` in the world on the
+---  viewport using `Camera/WorldToViewportPoint`
+---
+---[1]: /assets/blt2287d09729431008/ViewportSize.png
+---
+Camera.ViewportSize = nil;
+---
+Camera.focus = nil;
 ---@param mode CameraPanMode
 ---@return void
 ---This function sets the `Enum/CameraPanMode` to be used by the `Camera` on
@@ -4096,45 +7392,26 @@ Camera.Interpolate = function(self, endPos, endFocus, duration) end;
 ---[1]: /assets/blte6e03947775417f3/WorldToViewportPointImage.jpg
 ---
 Camera.WorldToViewportPoint = function(self, worldPoint) end;
----@param ignoreList Objects
----@return float
----This function is used by _'PopperCam'_ in the default [camera scripts][1]
----to ensure obstructions do not come between the `Camera` and the
----`Camera|Camera`'s subject.
----
----This function will check all `BasePart|BaseParts` and `Terrain` in the
----`Workspace` with the following exceptions:
----
----- Any `Instance` specified in the _ignoreList_ (including its descendants)
----  will be ignored
----- `BasePart|BaseParts` with `BasePart/CanCollide` set to false are ignored
----- `BasePart|BaseParts` with a `BasePart/Transparency` greater than 0.95
----  will be ignored Water `Terrain` is ignored
----
----Note, as this function requires an _ignoreList_ to run, you should pass an
----empty table when none is required.
----
----[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
----
-Camera.GetLargestCutoffDistance = function(self, ignoreList) end;
 ---@param modelCoord CFrame
 ---@return void
 Camera.SetImageServerView = function(self, modelCoord) end;
----@return float
----This function is broken and should not be used This function returns the
----current 'pan' speed of the `Camera`.
+---@param units int
+---@return void
+---This function pans the `Camera` around the `Camera/Focus` in 45 degree
+---increments around the Y axis.
 ---
----The 'pan' speed of the `Camera` describes the speed at which the `Camera`
----is rotating around its `Camera/Focus` around the Y axis.
+---The rotation is applied to the `Camera|Camera`'s `Camera/CFrame` property.
 ---
----See also:
+---This function pans the `Camera` in 45 degree increments, for example:
 ---
----- `Camera/GetTiltSpeed` for the speed at which the `Camera` is rotating
----  around its `Camera/Focus` on the `Camera|Camera`'s X axis
----- `Camera/PanUnits` to 'pan' the camera
----- `Camera/TiltUnits` to 'tilt' the camera
+---```lua
+---workspace.CurrentCamera:PanUnits(1) -- 45 degrees
+---workspace.CurrentCamera:PanUnits(-2) -- -90 degrees
+---```
 ---
-Camera.GetPanSpeed = function(self) end;
+---PanUnits does not require the `Camera/CameraType` to be _'Scriptable'_.
+---
+Camera.PanUnits = function(self, units) end;
 ---@param rollAngle float
 ---@return void
 ---This function is outdated and no longer considered best practice.
@@ -4176,53 +7453,27 @@ Camera.GetPanSpeed = function(self) end;
 ---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
 ---
 Camera.SetRoll = function(self, rollAngle) end;
----@param castPoints Array
 ---@param ignoreList Objects
----@return Objects
----This function returns an array of `BasePart|BaseParts` that are obscuring
----the lines of sight between `Camera|Camera`'s `Camera/CFrame` and the
----_castPoints_.
+---@return float
+---This function is used by _'PopperCam'_ in the default [camera scripts][1]
+---to ensure obstructions do not come between the `Camera` and the
+---`Camera|Camera`'s subject.
 ---
----GetPartsObscuringTarget is used by the 'Invisicam' in in the default
----[camera scripts][1] to hide parts between the `Camera|Camera`'s
----`Camera/CFrame` and `Camera/Focus`.
+---This function will check all `BasePart|BaseParts` and `Terrain` in the
+---`Workspace` with the following exceptions:
 ---
----Any `Instance|Instances` included in the _ignoreList_ array will, along
----with their descendants, be ignored.
+---- Any `Instance` specified in the _ignoreList_ (including its descendants)
+---  will be ignored
+---- `BasePart|BaseParts` with `BasePart/CanCollide` set to false are ignored
+---- `BasePart|BaseParts` with a `BasePart/Transparency` greater than 0.95
+---  will be ignored Water `Terrain` is ignored
 ---
----See below for a visual example of this function. The `Camera` is
----represented by the grey camera model and the cast points are represented
----by the colored dots. The `Part|Parts` highlighted in red are the ones that
----would be returned.
----
----![A visual demonstration of the function][2]
----
----The castPoints parameter is given as an array of
----`DataType/Vector3|Vector3s`, for example:
----
----```lua
----local castPoints = {Vector3.new(0, 10, 0), Vector3.new(0, 15, 0)}
----local ignoreList = {}
----workspace.CurrentCamera:GetPartsObscuringTarget(castPoints, ignoreList)
----```
----
----The array of `BasePart|BaseParts` returned is in an arbitrary order, and
----no additional raycast data is provided (for example hit position, hit
----material and surface normal). If this information is required, you should
----a `Workspace` raycast function such as
----`Workspace/FindPartOnRayWithIgnoreList`.
----
----If `Terrain` obscures a cast point, `BasePart|BaseParts` obscuring the
----cast point between the obscuring `Terrain` and the cast point will not be
----returned.
----
----Note, this function benefits from internal optimisations that make it more
----performant than casting a ray for each cast point individually.
+---Note, as this function requires an _ignoreList_ to run, you should pass an
+---empty table when none is required.
 ---
 ---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
----[2]: /assets/blt0e4c694e16185086/GetPartsObscuringTarget.png
 ---
-Camera.GetPartsObscuringTarget = function(self, castPoints, ignoreList) end;
+Camera.GetLargestCutoffDistance = function(self, ignoreList) end;
 ---@param x float
 ---@param y float
 ---@param depth float
@@ -4273,6 +7524,9 @@ Camera.ScreenPointToRay = function(self, x, y, depth) end;
 ---- `Camera/PanUnits`
 ---
 Camera.TiltUnits = function(self, units) end;
+---@param distance float
+---@return bool
+Camera.Zoom = function(self, distance) end;
 ---@return CFrame
 ---This function returns the actual `DataType/CFrame` of the `Camera` as it
 ---is rendered. This includes any roll applied using `Camera/SetRoll` and the
@@ -4333,9 +7587,75 @@ Camera.GetRenderCFrame = function(self) end;
 ---```
 ---
 Camera.ViewportPointToRay = function(self, x, y, depth) end;
----@param distance float
----@return bool
-Camera.Zoom = function(self, distance) end;
+---@param castPoints Array
+---@param ignoreList Objects
+---@return Objects
+---This function returns an array of `BasePart|BaseParts` that are obscuring
+---the lines of sight between `Camera|Camera`'s `Camera/CFrame` and the
+---_castPoints_.
+---
+---GetPartsObscuringTarget is used by the 'Invisicam' in in the default
+---[camera scripts][1] to hide parts between the `Camera|Camera`'s
+---`Camera/CFrame` and `Camera/Focus`.
+---
+---Any `Instance|Instances` included in the _ignoreList_ array will, along
+---with their descendants, be ignored.
+---
+---See below for a visual example of this function. The `Camera` is
+---represented by the grey camera model and the cast points are represented
+---by the colored dots. The `Part|Parts` highlighted in red are the ones that
+---would be returned.
+---
+---![A visual demonstration of the function][2]
+---
+---The castPoints parameter is given as an array of
+---`DataType/Vector3|Vector3s`, for example:
+---
+---```lua
+---local castPoints = {Vector3.new(0, 10, 0), Vector3.new(0, 15, 0)}
+---local ignoreList = {}
+---workspace.CurrentCamera:GetPartsObscuringTarget(castPoints, ignoreList)
+---```
+---
+---The array of `BasePart|BaseParts` returned is in an arbitrary order, and
+---no additional raycast data is provided (for example hit position, hit
+---material and surface normal). If this information is required, you should
+---a `Workspace` raycast function such as
+---`Workspace/FindPartOnRayWithIgnoreList`.
+---
+---If `Terrain` obscures a cast point, `BasePart|BaseParts` obscuring the
+---cast point between the obscuring `Terrain` and the cast point will not be
+---returned.
+---
+---Note, this function benefits from internal optimisations that make it more
+---performant than casting a ray for each cast point individually.
+---
+---[1]: https://developer.roblox.com/articles/Movement-and-camera-controls
+---[2]: /assets/blt0e4c694e16185086/GetPartsObscuringTarget.png
+---
+Camera.GetPartsObscuringTarget = function(self, castPoints, ignoreList) end;
+---@return float
+---This function returns, in radians, the current roll applied to the
+---`Camera` using `Camera/SetRoll`. Roll is defined as rotation around the
+---`Camera|Camera`'s Z-axis.
+---
+---This function only returns roll applied using the `Camera/SetRoll`
+---function. Roll manually applied to the `Camera|Camera`'s `Camera/CFrame`
+---is not accounted for. To obtain the actual roll of the `Camera`, including
+---roll manually applied, you can use the following snippet:
+---
+---```lua
+---local function getActualRoll()
+---	local camera = workspace.CurrentCamera
+---
+---	local trueUp = Vector3.new(0, 1, 0)
+---	local cameraUp = camera:GetRenderCFrame().upVector
+---
+---	return math.acos(trueUp:Dot(cameraUp))
+---end
+---```
+---
+Camera.GetRoll = function(self) end;
 ---@param worldPoint Vector3
 ---@return Tuple
 ---This function returns the screen location and depth of a
@@ -4369,44 +7689,20 @@ Camera.Zoom = function(self, distance) end;
 ---
 Camera.WorldToScreenPoint = function(self, worldPoint) end;
 ---@return float
----This function returns, in radians, the current roll applied to the
----`Camera` using `Camera/SetRoll`. Roll is defined as rotation around the
----`Camera|Camera`'s Z-axis.
+---This function is broken and should not be used This function returns the
+---current 'pan' speed of the `Camera`.
 ---
----This function only returns roll applied using the `Camera/SetRoll`
----function. Roll manually applied to the `Camera|Camera`'s `Camera/CFrame`
----is not accounted for. To obtain the actual roll of the `Camera`, including
----roll manually applied, you can use the following snippet:
+---The 'pan' speed of the `Camera` describes the speed at which the `Camera`
+---is rotating around its `Camera/Focus` around the Y axis.
 ---
----```lua
----local function getActualRoll()
----	local camera = workspace.CurrentCamera
+---See also:
 ---
----	local trueUp = Vector3.new(0, 1, 0)
----	local cameraUp = camera:GetRenderCFrame().upVector
+---- `Camera/GetTiltSpeed` for the speed at which the `Camera` is rotating
+---  around its `Camera/Focus` on the `Camera|Camera`'s X axis
+---- `Camera/PanUnits` to 'pan' the camera
+---- `Camera/TiltUnits` to 'tilt' the camera
 ---
----	return math.acos(trueUp:Dot(cameraUp))
----end
----```
----
-Camera.GetRoll = function(self) end;
----@param units int
----@return void
----This function pans the `Camera` around the `Camera/Focus` in 45 degree
----increments around the Y axis.
----
----The rotation is applied to the `Camera|Camera`'s `Camera/CFrame` property.
----
----This function pans the `Camera` in 45 degree increments, for example:
----
----```lua
----workspace.CurrentCamera:PanUnits(1) -- 45 degrees
----workspace.CurrentCamera:PanUnits(-2) -- -90 degrees
----```
----
----PanUnits does not require the `Camera/CameraType` to be _'Scriptable'_.
----
-Camera.PanUnits = function(self, units) end;
+Camera.GetPanSpeed = function(self) end;
 ---@return float
 ---This function is broken and should not be used.
 ---
@@ -4422,49 +7718,65 @@ Camera.PanUnits = function(self, units) end;
 ---`Camera/TiltUnits` to 'tilt' the camera
 ---
 Camera.GetTiltSpeed = function(self) end;
+---@class RBXScriptSignal.FirstPersonTransition : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.FirstPersonTransition, callback: fun(entering: bool)): RBXScriptConnection
+---Broken: This event is broken and should not be used.
+---
+---This event fires when the local user's `Camera` switches in and out of
+---first person mode.
+---
+---This event no longer functions and cannot be used by developers due to its
+---security context.
+---
+---You can instead check the distance between the `Camera|Camera`'s
+---`Camera/CFrame` and `Camera/Focus` to determine if the local user is in
+---first person mode. For example:
+---
+---```lua
+---local camera = workspace.CurrentCamera
+---local distance = (camera.CFrame.p - camera.Focus.p).magnitude
+---local isFirstPerson = distance <= 0.5
+---```
+---
+Camera.FirstPersonTransition = nil;
+---@class RBXScriptSignal.InterpolationFinished : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.InterpolationFinished, callback: fun()): RBXScriptConnection
+---This event fires when the `Camera` has finished interpolating using the
+---`Camera/Interpolate` function.
+---
+---This event will not fire if a tween is interrupted due to
+---`Camera/Interpolate` being called again.
+---
+---You are advised to use `TweenService` to animate the `Camera` instead, as
+---it is more reliable and provides more options for easing styles.
+---
+Camera.InterpolationFinished = nil;
 ---@class CanvasGroup : GuiObject, GuiBase2d, GuiBase, Instance
 ---@field public GroupColor Color3
 ---@field public GroupTransparency float
----Renders descendants as a group with color and transparency applied to all
----of them.
+---Renders descendants as a group with color and transparency applied to all of
+---them.
 ---
 local CanvasGroup;
+---Color that applies to all descendants.
+---
+CanvasGroup.GroupColor = nil;
+---Transparency that applies to all descendants.
+---
+CanvasGroup.GroupTransparency = nil;
 ---@class CatalogPages : Pages, Instance
 local CatalogPages;
 ---@class ChangeHistoryService : Instance
----@field public OnRedo fun(waypoint: string): RbxScriptSignal
----@field public OnUndo fun(waypoint: string): RbxScriptSignal
----The ChangeHistoryService provides a way for plugins to undo and redo
----changes and to create waypoints when changes are made to the place.
+---@field public OnRedo RBXScriptSignal.OnRedo
+---@field public OnUndo RBXScriptSignal.OnUndo
+---The ChangeHistoryService provides a way for plugins to undo and redo changes
+---and to create waypoints when changes are made to the place.
 ---
 local ChangeHistoryService;
 ---@return void
 ---Executes the last action that was undone.
 ---
 ChangeHistoryService.Redo = function(self) end;
----@return Tuple
----Returns whether there are actions that can be redone, and, if there are,
----returns the last of them.
----
-ChangeHistoryService.GetCanRedo = function(self) end;
----@return void
----Undos the last action taken, for which there exists a waypoint.
----
-ChangeHistoryService.Undo = function(self) end;
----@return void
----Clears the history, causing all undo/redo waypoints to be removed.
----
-ChangeHistoryService.ResetWaypoints = function(self) end;
----@return Tuple
----Returns whether there are actions that can be undone, and, if there are,
----returns the last of them.
----
-ChangeHistoryService.GetCanUndo = function(self) end;
----@param name string
----@return void
----Sets a new waypoint which can be used as an undo or redo point.
----
-ChangeHistoryService.SetWaypoint = function(self, name) end;
 ---@param state bool
 ---@return void
 ---Sets whether or not the ChangeHistoryService is enabled. When set to
@@ -4473,9 +7785,46 @@ ChangeHistoryService.SetWaypoint = function(self, name) end;
 ---append to the list once more
 ---
 ChangeHistoryService.SetEnabled = function(self, state) end;
+---@return Tuple
+---Returns whether there are actions that can be redone, and, if there are,
+---returns the last of them.
+---
+ChangeHistoryService.GetCanRedo = function(self) end;
+---@return void
+---Clears the history, causing all undo/redo waypoints to be removed.
+---
+ChangeHistoryService.ResetWaypoints = function(self) end;
+---@return void
+---Undos the last action taken, for which there exists a waypoint.
+---
+ChangeHistoryService.Undo = function(self) end;
+---@param name string
+---@return void
+---Sets a new waypoint which can be used as an undo or redo point.
+---
+ChangeHistoryService.SetWaypoint = function(self, name) end;
+---@return Tuple
+---Returns whether there are actions that can be undone, and, if there are,
+---returns the last of them.
+---
+ChangeHistoryService.GetCanUndo = function(self) end;
+---@class RBXScriptSignal.OnRedo : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OnRedo, callback: fun(waypoint: string)): RBXScriptConnection
+---Fired when the user reverses the undo command. Waypoint describes the type
+---action that has been redone.
+---
+ChangeHistoryService.OnRedo = nil;
+---@class RBXScriptSignal.OnUndo : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.OnUndo, callback: fun(waypoint: string)): RBXScriptConnection
+---Fired when the user undoes an action in studio. Waypoint describes the
+---type action that has been undone.
+---
+ChangeHistoryService.OnUndo = nil;
 ---@class ChannelSelectorSoundEffect : CustomDspSoundEffect, SoundEffect, Instance
 ---@field public Channel int
 local ChannelSelectorSoundEffect;
+---
+ChannelSelectorSoundEffect.Channel = nil;
 ---@class CharacterAppearance : Instance
 ---Base class for objects that change a character's appearance.
 ---
@@ -4485,104 +7834,59 @@ local CharacterAppearance;
 ---@field public BodyPart BodyPart
 ---@field public MeshId int64
 ---@field public OverlayTextureId int64
----This property modifies the appearance of an R6 body part. It has no effect
----in R15 characters.
+---This property modifies the appearance of an R6 body part. It has no effect in
+---R15 characters.
 ---
 local CharacterMesh;
+---The texture of a CharacterMesh. It can be overridden by Shirts, Pants,
+---T-Shirts, and the `CharacterMesh/OverlayTextureId` property.
+---
+CharacterMesh.BaseTextureId = nil;
+---The part of the Character's body that is affected.
+---
+CharacterMesh.BodyPart = nil;
+---Used to load a mesh file, and apply it to the given BodyPart.
+---
+CharacterMesh.MeshId = nil;
+---The assetId of the overlay texture. The overlay covers Shirts, Pants,
+---T-Shirts, and the `CharacterMesh/BaseTextureId`.
+---
+CharacterMesh.OverlayTextureId = nil;
 ---@class Chat : Instance
 ---@field public BubbleChatEnabled bool
 ---@field public LoadDefaultChat bool
----@field public BubbleChatSettingsChanged fun(settings: Variant): RbxScriptSignal
----@field public Chatted fun(part: Instance, message: string, color: ChatColor): RbxScriptSignal
----The **Chat** service houses the Lua code responsible for running the Lua
----Chat System. Similar to `StarterPlayerScripts`, default objects like
+---@field public BubbleChatSettingsChanged RBXScriptSignal.BubbleChatSettingsChanged
+---@field public Chatted RBXScriptSignal.Chatted
+---The **Chat** service houses the Lua code responsible for running the Lua Chat
+---System. Similar to `StarterPlayerScripts`, default objects like
 ---`Script|Scripts` and `ModuleScript|ModuleScripts` are inserted into the
 ---service.
 ---
 ---In addition to housing the Lua Chat System, this service also exposes
----functions used to filter text:
----`Chat/FilterStringAsync|FilterStringAsync()` and
----`Chat/FilterStringForBroadcast|FilterStringForBroadcast()`. Note that
----games which implement custom chat systems must use these functions to
----filter chat properly. See Text and Chat Filtering for more information.
+---functions used to filter text: `Chat/FilterStringAsync|FilterStringAsync()`
+---and `Chat/FilterStringForBroadcast|FilterStringForBroadcast()`. Note that
+---games which implement custom chat systems must use these functions to filter
+---chat properly. See Text and Chat Filtering for more information.
 ---
 local Chat;
----@param partOrCharacter Instance
----@param message string
----@param color ChatColor
----@return void
-Chat.ChatLocal = function(self, partOrCharacter, message, color) end;
----@param callbackType ChatCallbackType
----@param callbackFunction Function
----@return void
----RegisterChatCallback binds a function to some chat system event in order
----to affect the behavior of the Lua chat system. The first argument
----determines the event (using the `ChatCallbackType` enum) to which the
----second argument, the function, shall be bound. The default Lua chat system
----uses `Chat/InvokeChatCallback|InvokeChatCallback` to invoke registered
----functions. Attempting to register a server- or client- only callback on a
----peer that isn't a server or client respectively will raise an error. The
----following sections describe in what ways registered functions will be
----used.
+---If true, entering a message in the chat will result in a chat bubble
+---popping up above the player's `Player/Character`. This behavior can either
+---be enabled by directly ticking this checkbox in Studio, or by using a
+---`LocalScript`:
 ---
----#### OnCreatingChatWindow
+---```lua
+---local ChatService = game:GetService("Chat")
+---ChatService.BubbleChatEnabled = true
+---```
 ---
----Client-only. Invoked before the client constructs the chat window. Must
----return a table of settings to be merged into the information returned by
----the ChatSettings module.
+---This must be done on the client, toggling this value in a server-side
+---`Script` will have no effect.
 ---
----#### OnClientFormattingMessage
+Chat.BubbleChatEnabled = nil;
+---Toggles whether the default chat framework should be automatically loaded
+---when the game runs.
 ---
----Client-only. Invoked before the client displays a message (whether it is a
----player chat message, system message, or /me command). This function is
----invoked with the message object and may (or may not) return a table to be
----merged into `message.ExtraData`.
----
----#### OnClientSendingMessage
----
----Not invoked at this time.
----
----#### OnServerReceivingMessage
----
----Server-only. Invoked when the server receives a message from a speaker
----(note that speakers may not necessarily be a `Player` chatting). This
----callback is called with the Message object. The function can make changes
----to the Message object to change the manner in which the message is
----processed. **The Message object must be returned for this callback to do
----anything.** Setting this callback can allow the server to, for example:
----
----- Set `message.ShouldDeliver` to false in order to cancel delivery of the
----  message to players (useful for implementing a chat blacklist)
----- Get/set the speaker's name color (`message.ExtraData.NameColor`, a
----  Color3) on a message-by-message basis
----
-Chat.RegisterChatCallback = function(self, callbackType, callbackFunction) end;
----@return bool
-Chat.GetShouldUseLuaChat = function(self) end;
----@param userIdFrom int64
----@param userIdTo int64
----@return bool
----Will return false if the two users cannot communicate because their
----account settings do not allow it.
----
-Chat.CanUsersChatAsync = function(self, userIdFrom, userIdTo) end;
----@param partOrCharacter Instance
----@param message string
----@param color ChatColor
----@return void
----The Chat function fires the `Chat/Chatted` event with the parameters
----specified in this method.
----
----By default, there is a `LocalScript` inside of each player's
----`PlayerScripts` object named _BubbleChat_, which causes a dialog-like
----billboard to appear above the _partOrCharacter_ when the chatted event is
----fired.
----
----_Note:_ Since dialogs are controlled by a LocalScript, you will not be
----able to see any dialogs created from this method unless you are running in
----_Play Solo_ mode.
----
-Chat.Chat = function(self, partOrCharacter, message, color) end;
+Chat.LoadDefaultChat = nil;
 ---@param callbackType ChatCallbackType
 ---@param callbackArguments Tuple
 ---@return Tuple
@@ -4642,6 +7946,23 @@ Chat.SetBubbleChatSettings = function(self, settings) end;
 ---user generated text may be subjected to moderation action.
 ---
 Chat.FilterStringForBroadcast = function(self, stringToFilter, playerFrom) end;
+---@param userId int64
+---@return bool
+---Will return false if the player with the specified `Player/UserId` is not
+---allowed to chat because of their account settings.
+---
+Chat.CanUserChatAsync = function(self, userId) end;
+---@param stringToFilter string
+---@param playerToFilterFor Player
+---@return string
+---The FilterStringForPlayerAsync function filters a string appropriate to
+---the given player's age settings, so they see what is appropriate to them.
+---This function will only work if called from a `Script` on the server. If
+---called on a client it will fail.
+---
+Chat.FilterStringForPlayerAsync = function(self, stringToFilter, playerToFilterFor) end;
+---@return bool
+Chat.GetShouldUseLuaChat = function(self) end;
 ---@param stringToFilter string
 ---@param playerFrom Player
 ---@param playerTo Player
@@ -4671,21 +7992,89 @@ Chat.FilterStringForBroadcast = function(self, stringToFilter, playerFrom) end;
 ---- Names for a shop in a tycoon-style game
 ---
 Chat.FilterStringAsync = function(self, stringToFilter, playerFrom, playerTo) end;
----@param userId int64
+---@param partOrCharacter Instance
+---@param message string
+---@param color ChatColor
+---@return void
+Chat.ChatLocal = function(self, partOrCharacter, message, color) end;
+---@param partOrCharacter Instance
+---@param message string
+---@param color ChatColor
+---@return void
+---The Chat function fires the `Chat/Chatted` event with the parameters
+---specified in this method.
+---
+---By default, there is a `LocalScript` inside of each player's
+---`PlayerScripts` object named _BubbleChat_, which causes a dialog-like
+---billboard to appear above the _partOrCharacter_ when the chatted event is
+---fired.
+---
+---_Note:_ Since dialogs are controlled by a LocalScript, you will not be
+---able to see any dialogs created from this method unless you are running in
+---_Play Solo_ mode.
+---
+Chat.Chat = function(self, partOrCharacter, message, color) end;
+---@param userIdFrom int64
+---@param userIdTo int64
 ---@return bool
----Will return false if the player with the specified `Player/UserId` is not
----allowed to chat because of their account settings.
+---Will return false if the two users cannot communicate because their
+---account settings do not allow it.
 ---
-Chat.CanUserChatAsync = function(self, userId) end;
----@param stringToFilter string
----@param playerToFilterFor Player
----@return string
----The FilterStringForPlayerAsync function filters a string appropriate to
----the given player's age settings, so they see what is appropriate to them.
----This function will only work if called from a `Script` on the server. If
----called on a client it will fail.
+Chat.CanUsersChatAsync = function(self, userIdFrom, userIdTo) end;
+---@param callbackType ChatCallbackType
+---@param callbackFunction Function
+---@return void
+---RegisterChatCallback binds a function to some chat system event in order
+---to affect the behavior of the Lua chat system. The first argument
+---determines the event (using the `ChatCallbackType` enum) to which the
+---second argument, the function, shall be bound. The default Lua chat system
+---uses `Chat/InvokeChatCallback|InvokeChatCallback` to invoke registered
+---functions. Attempting to register a server- or client- only callback on a
+---peer that isn't a server or client respectively will raise an error. The
+---following sections describe in what ways registered functions will be
+---used.
 ---
-Chat.FilterStringForPlayerAsync = function(self, stringToFilter, playerToFilterFor) end;
+---#### OnCreatingChatWindow
+---
+---Client-only. Invoked before the client constructs the chat window. Must
+---return a table of settings to be merged into the information returned by
+---the ChatSettings module.
+---
+---#### OnClientFormattingMessage
+---
+---Client-only. Invoked before the client displays a message (whether it is a
+---player chat message, system message, or /me command). This function is
+---invoked with the message object and may (or may not) return a table to be
+---merged into `message.ExtraData`.
+---
+---#### OnClientSendingMessage
+---
+---Not invoked at this time.
+---
+---#### OnServerReceivingMessage
+---
+---Server-only. Invoked when the server receives a message from a speaker
+---(note that speakers may not necessarily be a `Player` chatting). This
+---callback is called with the Message object. The function can make changes
+---to the Message object to change the manner in which the message is
+---processed. **The Message object must be returned for this callback to do
+---anything.** Setting this callback can allow the server to, for example:
+---
+---- Set `message.ShouldDeliver` to false in order to cancel delivery of the
+---  message to players (useful for implementing a chat blacklist)
+---- Get/set the speaker's name color (`message.ExtraData.NameColor`, a
+---  Color3) on a message-by-message basis
+---
+Chat.RegisterChatCallback = function(self, callbackType, callbackFunction) end;
+---@class RBXScriptSignal.BubbleChatSettingsChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BubbleChatSettingsChanged, callback: fun(settings: Variant)): RBXScriptConnection
+---
+Chat.BubbleChatSettingsChanged = nil;
+---@class RBXScriptSignal.Chatted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Chatted, callback: fun(part: Instance, message: string, color: ChatColor)): RBXScriptConnection
+---Fires when `Chat/Chat` is called.
+---
+Chat.Chatted = nil;
 ---@class ChatInputBarConfiguration : TextChatConfigurations, Instance
 ---@field public Enabled bool
 ---@field public TargetTextChannel TextChannel
@@ -4694,6 +8083,17 @@ Chat.FilterStringForPlayerAsync = function(self, stringToFilter, playerToFilterF
 ---It is parented to `TextChatService`.
 ---
 local ChatInputBarConfiguration;
+---Determines whether to show the default text chat input bar.
+---
+---Set to false to hide the default text chat input bar.
+---
+ChatInputBarConfiguration.Enabled = nil;
+---A reference to the target `TextChannel`.
+---
+---Determines which `TextChannel` to use when the user sends a message with
+---the default text chat input bar.
+---
+ChatInputBarConfiguration.TargetTextChannel = nil;
 ---@class ChatWindowConfiguration : TextChatConfigurations, Instance
 ---@field public Enabled bool
 ---Configures properties of the default text chat window.
@@ -4701,6 +8101,11 @@ local ChatInputBarConfiguration;
 ---It is parented to `TextChatService`.
 ---
 local ChatWindowConfiguration;
+---Determines whether to show the default text chat window.
+---
+---Set to `false` to hide the default text chat window.
+---
+ChatWindowConfiguration.Enabled = nil;
 ---@class ChorusSoundEffect : SoundEffect, Instance
 ---@field public Depth float
 ---@field public Mix float
@@ -4708,43 +8113,53 @@ local ChatWindowConfiguration;
 ---A ChorusSoundEffect simulates the effect of multiple vocals or instruments
 ---playing the same part. It does this by taking the original sound and
 ---overlaying copies of that sound. These copies are not exact matches to the
----original but instead vary in pitch slightly. This simulates a real chorus,
----as different singers or instruments will have slight variations. This
----effect can be applied to either an individual sound or to a sound group by
----parenting it to the desired instance.
+---original but instead vary in pitch slightly. This simulates a real chorus, as
+---different singers or instruments will have slight variations. This effect can
+---be applied to either an individual sound or to a sound group by parenting it
+---to the desired instance.
 ---
----Like all other `SoundEffect`, a ChorusSoundEffect can be applied either to
----a `Sound` or `SoundGroup` by being parented to either.
+---Like all other `SoundEffect`, a ChorusSoundEffect can be applied either to a
+---`Sound` or `SoundGroup` by being parented to either.
 ---
 local ChorusSoundEffect;
+---Range: 0 to 1 (default 0.15) Controls how intense the effect is.
+---
+ChorusSoundEffect.Depth = nil;
+---Range: 0 to 1 (default 0.5) Percentage of the original sound that will be
+---applied to the filter. Raising this value will make the effect sound
+---louder and be more apparent.
+---
+ChorusSoundEffect.Mix = nil;
+---Range: 0 to 20 (default 0.5) How frequently the pitch variation changes.
+---Measured in Hz.
+---
+ChorusSoundEffect.Rate = nil;
 ---@class ClickDetector : Instance
 ---@field public CursorIcon Content
 ---@field public MaxActivationDistance float
----@field public MouseClick fun(playerWhoClicked: Player): RbxScriptSignal
----@field public MouseHoverEnter fun(playerWhoHovered: Player): RbxScriptSignal
----@field public MouseHoverLeave fun(playerWhoHovered: Player): RbxScriptSignal
----@field public RightMouseClick fun(playerWhoClicked: Player): RbxScriptSignal
----@field public mouseClick fun(playerWhoClicked: Player): RbxScriptSignal
+---@field public MouseClick RBXScriptSignal.MouseClick
+---@field public MouseHoverEnter RBXScriptSignal.MouseHoverEnter
+---@field public MouseHoverLeave RBXScriptSignal.MouseHoverLeave
+---@field public RightMouseClick RBXScriptSignal.RightMouseClick
+---@field public mouseClick RBXScriptSignal.mouseClick
 ---<img src="/assets/blt0ae8e57f698df61c/ClickDetector.png"  />
 ---<img src="/assets/bltdd49f2456410d52e/ClickDetector2.png"  />
 ---
----**ClickDetector** allows `Script|Scripts` and `LocalScript|LocalScripts`
----to receive pointer input on 3D objects through their
+---**ClickDetector** allows `Script|Scripts` and `LocalScript|LocalScripts` to
+---receive pointer input on 3D objects through their
 ---`ClickDetector/MouseClick|MouseClick` event. They work when parented to
 ---`BasePart|BasePart`, `Model|Model` or `Folder|Folder` objects. They detect
----basic mouse events: enter, leave, left click and right click. Touch input
----on `UserInputService/TouchEnabled|TouchEnabled` devices also fires click
----events.
+---basic mouse events: enter, leave, left click and right click. Touch input on
+---`UserInputService/TouchEnabled|TouchEnabled` devices also fires click events.
 ---
----The default control scripts bind the ButtonR2 `enum/KeyCode` to interact
----with ClickDetectors using `ContextActionService/BindActivate`, which can
----also be used to override this. When using gamepads, the center dot
----triggers
+---The default control scripts bind the ButtonR2 `enum/KeyCode` to interact with
+---ClickDetectors using `ContextActionService/BindActivate`, which can also be
+---used to override this. When using gamepads, the center dot triggers
 ---`ClickDetector/MouseHoverEnter|MouseHoverEnter`/`ClickDetector/MouseHoverLeave|MouseHoverLeave`.
 ---The bound activation button fires `ClickDetector/MouseClick|MouseClick`.
 ---
----Below is a simple template script for working with ClickDetectors. Paste
----it into a `Script` or a `LocalScript`.
+---Below is a simple template script for working with ClickDetectors. Paste it
+---into a `Script` or a `LocalScript`.
 ---
 ---```lua
 ---local clickDetector = workspace.Part.ClickDetector
@@ -4757,8 +8172,8 @@ local ChorusSoundEffect;
 ---```
 ---
 ---`ClickDetector/MaxActivationDistance|MaxActivationDistance` can be used to
----limit the distance a player may be from a ClickDetector object before it
----is no longer clickable.
+---limit the distance a player may be from a ClickDetector object before it is no
+---longer clickable.
 ---
 ---ClickDetector events fire on both the client and the server. Since a
 ---`LocalScript` will only run if it descends from a `Player` or Player's
@@ -4770,21 +8185,131 @@ local ChorusSoundEffect;
 ---## Input Priority
 ---
 ---If multiple ClickDetectors would detect a user input, only the deepest
----ClickDetector will fire events. If an action bound with
----`ContextActionService` uses the same input as a ClickDetector, the action
----bound with ContextActionService will take priority over ClickDetector
----events. If two ClickDetectors are siblings, the first ClickDetector will
----take priority. `UserInputService/InputBegan` will fire before
----ClickDetector events. Due to the nature of user input, you ought not
----depend on all `ClickDetector/MouseHoverEnter|MouseHoverEnter` events to
----fire a matching `ClickDetector/MouseHoverLeave|MouseHoverLeave` event.
+---ClickDetector will fire events. If an action bound with `ContextActionService`
+---uses the same input as a ClickDetector, the action bound with
+---ContextActionService will take priority over ClickDetector events. If two
+---ClickDetectors are siblings, the first ClickDetector will take priority.
+---`UserInputService/InputBegan` will fire before ClickDetector events. Due to
+---the nature of user input, you ought not depend on all
+---`ClickDetector/MouseHoverEnter|MouseHoverEnter` events to fire a matching
+---`ClickDetector/MouseHoverLeave|MouseHoverLeave` event.
 ---
 local ClickDetector;
+---The CursorIcon sets the mouse icon that will be displayed when the
+---`Mouse/mouse` hovers over this `ClickDetector`.
+---
+---If this property is left blank, the ClickDetector will use the default
+---icon:
+---
+---![Default cursor icon][1]
+---
+---To change the ClickDetector's cursor icon, set the property to the asset
+---id or URL of the image you would like to use. For instance, setting the
+---property to `2287179377` or [this][2] URL changes the cursor icon to:
+---
+---![Custom cursor icon][3]
+---
+---[1]: /assets/blt93eee9eb25194ca8/ClickDetectorCursorIcon.png
+---[2]: https://www.roblox.com/My/Item.aspx?ID=2287179377
+---[3]: /assets/blt59eec7aa0c76851a/InterestCursorIcon.png
+---
+ClickDetector.CursorIcon = nil;
+---The MaxActivationDistance property controls the maximum distance, in
+---studs, between a `Player/Character|Character` and the `ClickDetector` for
+---the character to be able to click it. This is used to limit from how far a
+---player can interact with a ClickDetector.
+---
+---For instance, a character within `10` studs of a ClickDetector with a
+---MaxActivationDistance of `5` would not be able to click the ClickDetector
+---because they are out of range. If, however, the MaxActivationDistance was
+---`15`, the character would be able to click it.
+---
+ClickDetector.MaxActivationDistance = nil;
+---@class RBXScriptSignal.MouseClick : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseClick, callback: fun(playerWhoClicked: Player)): RBXScriptConnection
+---The MouseClick event fires when a player presses and releases the left
+---mouse button while the cursor is hovering over a `BasePart` or `Model`
+---with a `ClickDetector`. Additionally, the Player's
+---`Player/Character|Character` must be within the
+---`ClickDetector/MaxActivationDistance|MaxActivationDistance` of the clicked
+---object. This event fires when using either a `Script` or `LocalScript`.
+---
+---#### Platform Support
+---
+---- On `UserInputService/TouchEnabled|TouchEnabled` platforms, this event
+---  fires when the user taps on the same model.
+---- On `UserInputService/GamepadEnabled|GamepadEnabled` platforms, this
+---  event fires when the center dot is over the same model and the A button
+---  is pressed and released.
+---
+---#### Related Events
+---
+---- If you want to check when a player right clicks on the ClickDetector,
+---  you can use the `ClickDetector/RightMouseClick|RightMouseClick` event.
+---- If you want a function to fire when a player hovers on or off of the
+---  ClickDetector without mouse clicking it you can use the
+---  `ClickDetector/MouseHoverEnter|MouseHoverEnter` and
+---  `ClickDetector/MouseHoverLeave|MouseHoverLeave` events.
+---
+ClickDetector.MouseClick = nil;
+---@class RBXScriptSignal.MouseHoverEnter : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseHoverEnter, callback: fun(playerWhoHovered: Player)): RBXScriptConnection
+---The MouseHoverEnter event fires when the player's `Mouse|mouse` begins
+---hovering over the `ClickDetector`'s parent. This event fires when using
+---either a `Script` or `LocalScript`.
+---
+---Due to the nature of user input, you ought not depend on all
+---MouseHoverEnter events to fire a matching
+---`ClickDetector/MouseHoverLeave|MouseHoverLeave` event.
+---
+---The player does not have to click the ClickDetector for this event to
+---fire. If you want an event to execute when the player clicks, you can use
+---`ClickDetector/MouseClick` and `ClickDetector/RightMouseClick` events.
+---
+ClickDetector.MouseHoverEnter = nil;
+---@class RBXScriptSignal.MouseHoverLeave : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.MouseHoverLeave, callback: fun(playerWhoHovered: Player)): RBXScriptConnection
+---The MouseHoverLeave event fires when a player's `Mouse|mouse` moves off of
+---the `ClickDetector`'s parent. This event fires when using either a
+---`Script` or `LocalScript`.
+---
+---Due to the nature of user input, you ought not depend on all
+---`ClickDetector/MouseHoverEnter|MouseHoverEnter` events to fire a matching
+---MouseHoverLeave event.
+---
+---The player does not have to click the ClickDetector for this event to
+---fire. If you want an function to run when the player clicks, you can use
+---`ClickDetector/MouseClick` and `ClickDetector/RightMouseClick` events.
+---
+ClickDetector.MouseHoverLeave = nil;
+---@class RBXScriptSignal.RightMouseClick : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.RightMouseClick, callback: fun(playerWhoClicked: Player)): RBXScriptConnection
+---The RightMouseClick event fires when a player presses and releases the
+---right mouse button while the cursor is hovering over a `BasePart` or
+---`Model` with a `ClickDetector`. Additionally, the Player's
+---`Player/Character|Character` must be within the
+---`ClickDetector/MaxActivationDistance|MaxActivationDistance` of the clicked
+---object. This event fires when using either a `Script` or `LocalScript`.
+---
+---#### Related Events
+---
+---- If you want to check when a player left clicks on the ClickDetector, you
+---  can use the `ClickDetector/MouseClick|MouseClick` event.
+---- If you want a function to fire when a player hovers on or off of the
+---  ClickDetector without clicking it you can use the
+---  `ClickDetector/MouseHoverEnter|MouseHoverEnter` and
+---  `ClickDetector/MouseHoverLeave|MouseHoverLeave` events.
+---
+ClickDetector.RightMouseClick = nil;
+---@class RBXScriptSignal.mouseClick : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.mouseClick, callback: fun(playerWhoClicked: Player)): RBXScriptConnection
+---
+ClickDetector.mouseClick = nil;
 ---@class ClientReplicator : NetworkReplicator, Instance
----@field public RCCProfilerDataComplete fun(success: bool, message: string): RbxScriptSignal
----@field public StatsReceived fun(stats: Dictionary): RbxScriptSignal
----The ClientReplicator is in charge of replicating changes from the server
----over to the client. It represents the client's connection to a server.
+---@field public RCCProfilerDataComplete RBXScriptSignal.RCCProfilerDataComplete
+---@field public StatsReceived RBXScriptSignal.StatsReceived
+---The ClientReplicator is in charge of replicating changes from the server over
+---to the client. It represents the client's connection to a server.
 ---
 local ClientReplicator;
 ---@param frameRate int
@@ -4794,56 +8319,124 @@ ClientReplicator.RequestRCCProfilerData = function(self, frameRate, timeFrame) e
 ---@param request bool
 ---@return void
 ClientReplicator.RequestServerStats = function(self, request) end;
+---@class RBXScriptSignal.RCCProfilerDataComplete : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.RCCProfilerDataComplete, callback: fun(success: bool, message: string)): RBXScriptConnection
+---
+ClientReplicator.RCCProfilerDataComplete = nil;
+---@class RBXScriptSignal.StatsReceived : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.StatsReceived, callback: fun(stats: Dictionary)): RBXScriptConnection
+---
+ClientReplicator.StatsReceived = nil;
 ---@class Clothing : CharacterAppearance, Instance
 ---@field public Color3 Color3
 ---The base class for clothing objects.
 ---
 local Clothing;
+---This property determines the colorization to be applied to the `Clothing`
+---texture. The default colorization value is
+---`DataType/Color3|Color3.new(1,1,1) (white). When set to white no
+---colorization occurs
+---
+---It functions similarly to `ImageLabel/ImageColor3` and
+---`Decal/Color3`except that it is applied to Clothing textures.
+---
+---It is useful for creating outfits that have many different color
+---variations, but share the same basic look, possibly for a character
+---creator in a roleplaying game or generating a lot of different varied
+---NPCs.
+---
+---#### Examples
+---
+---- Outfits that fade to different colors over time
+---- Outfits that have many different color variations, but share the same
+---  basic look
+---- A targeting texture that changes from red to blue when you target a
+---  specific type of object
+---
+---The image below demonstrates the same shirt with two different
+---colorizations. The first shirt has a red colorization and the second shirt
+---has a blue colorization.
+---
+---![Color3 Property in Studio Explorer][1]
+---
+---See also:
+---
+---- `ShirtGraphic/Color3`, determines the colorization to be applied to the
+---  ShirtGraphic texture
+---
+---[1]: /assets/blt5d44b95d3405bce0/ClothingColor3.png
+---
+Clothing.Color3 = nil;
 ---@class Clouds : Instance
 ---@field public Color Color3
 ---@field public Cover float
 ---@field public Density float
 ---@field public Enabled bool
----The **Clouds** object renders realistic clouds that drift slowly across
----the sky. Both cloud cover and density can be adjusted, as well as cloud
----color to achieve atmospheres like stormy skies, moody sunsets, alien
----worlds, etc.
+---The **Clouds** object renders realistic clouds that drift slowly across the
+---sky. Both cloud cover and density can be adjusted, as well as cloud color to
+---achieve atmospheres like stormy skies, moody sunsets, alien worlds, etc.
 ---
 ---See the <a href="/building-and-visuals/lighting-and-effects/index">Dynamic
 ---Clouds</a> article for a summary of properties and expected results.
 ---
 local Clouds;
+---This property controls the material color of cloud particles. However,
+---cloud color is influenced by several `Lighting` and `Atmosphere`
+---properties, so it is not intended as a dedicated property to simulate
+---colored sunsets, sunrises, etc.
+---
+---See the <a href="/building-and-visuals/lighting-and-effects/index">Dynamic
+---Clouds</a> article for a summary of properties and expected results.
+---
+Clouds.Color = nil;
+---This property defines the cloud cover within the overall skyscape layer.
+---Valid range is from 0 to 1 (sparse cloud cover to full cloud cover).
+---
+---See the <a href="/building-and-visuals/lighting-and-effects/index">Dynamic
+---Clouds</a> article for a summary of properties and expected results.
+---
+Clouds.Cover = nil;
+---This property controls the particulate density of clouds (the proportion
+---of airborne water vapor particles at full cloud cover).
+---
+---See the <a href="/building-and-visuals/lighting-and-effects/index">Dynamic
+---Clouds</a> article for a summary of properties and expected results.
+---
+Clouds.Density = nil;
+---This property toggles rendering of the `Clouds` object. Useful for
+---toggling on/off different `Clouds` objects that exist in the same place.
+---
+Clouds.Enabled = nil;
 ---@class ClusterPacketCache : Instance
----An internal service meant to cache cluster packets. This service will only
----be present if a `NetworkServer` is present.
+---An internal service meant to cache cluster packets. This service will only be
+---present if a `NetworkServer` is present.
 ---
 local ClusterPacketCache;
 ---@class CollectionService : Instance
----@field public ItemAdded fun(instance: Instance): RbxScriptSignal
----@field public ItemRemoved fun(instance: Instance): RbxScriptSignal
----@field public TagAdded fun(tag: string): RbxScriptSignal
----@field public TagRemoved fun(tag: string): RbxScriptSignal
----The `CollectionService` manages groups (collections) of instances with
----tags. Tags are sets of strings applied to objects that replicate from the
----server to the client and in Team Create. They are also serialized when
----places are saved. At the moment, tags are not visible within Roblox Studio
----except with the use of a tag-editing plugin.
+---@field public ItemAdded RBXScriptSignal.ItemAdded
+---@field public ItemRemoved RBXScriptSignal.ItemRemoved
+---@field public TagAdded RBXScriptSignal.TagAdded
+---@field public TagRemoved RBXScriptSignal.TagRemoved
+---The `CollectionService` manages groups (collections) of instances with tags.
+---Tags are sets of strings applied to objects that replicate from the server to
+---the client and in Team Create. They are also serialized when places are saved.
+---At the moment, tags are not visible within Roblox Studio except with the use
+---of a tag-editing plugin.
 ---
----The primary use of `CollectionService` is to register instances with
----specific tags that you can use to extend their behavior. If you find
----yourself adding the same script to many different objects, perhaps a
----script that uses CollectionService would be better. Here are a couple
----examples:
+---The primary use of `CollectionService` is to register instances with specific
+---tags that you can use to extend their behavior. If you find yourself adding
+---the same script to many different objects, perhaps a script that uses
+---CollectionService would be better. Here are a couple examples:
 ---
----- In an obstacle course with many bricks that kill players, don't paste
----  the same script in all your kill bricks! Instead, tag them with
----  "KillBrick". Then, have any brick tagged as such kill the player.
----- Payers with a VIP game pass could have their `Humanoid` tagged "VIP",
----  and be allowed through doors that only allow VIPs.
----- When creating a freeze-tag game, you could tag frozen players'
----  `Humanoid` objects with a "Frozen" tag. Then, use a `LocalScript` to
----  listen for the "Frozen" tag and create client-side visual effects to
----  reduce the number of objects replicated from server to client.
+---- In an obstacle course with many bricks that kill players, don't paste the
+---  same script in all your kill bricks! Instead, tag them with "KillBrick".
+---  Then, have any brick tagged as such kill the player.
+---- Payers with a VIP game pass could have their `Humanoid` tagged "VIP", and be
+---  allowed through doors that only allow VIPs.
+---- When creating a freeze-tag game, you could tag frozen players' `Humanoid`
+---  objects with a "Frozen" tag. Then, use a `LocalScript` to listen for the
+---  "Frozen" tag and create client-side visual effects to reduce the number of
+---  objects replicated from server to client.
 ---
 ---When working with collections and tags, it's a good idea to use an
 ---[object-oriented programming style][1]. In almost all situations, tagged
@@ -4851,25 +8444,42 @@ local ClusterPacketCache;
 ---this: when a tag is found (`CollectionService/GetTagged` and
 ---`CollectionService/GetInstanceAddedSignal`), create a Lua object with the
 ---Roblox instance. When it is removed
----(`CollectionService/GetInstanceRemovedSignal`), call a cleanup/destroy
----method within the Lua object. See the code samples for a better idea of
----how this can be done.
+---(`CollectionService/GetInstanceRemovedSignal`), call a cleanup/destroy method
+---within the Lua object. See the code samples for a better idea of how this can
+---be done.
 ---
 ---## Replication
 ---
 ---When tags replicate, **all tags on an object replicate at the same time**.
 ---Therefore, if you set a tag on an object from the client then add/remove a
----**different** tag on the same object from the server, the client's local
----tags on the object are overwritten. In
+---**different** tag on the same object from the server, the client's local tags
+---on the object are overwritten. In
 ---`Workspace/StreamingEnabled|StreamingEnabled` places, instances can be
 ---unloaded as they leave the client's streamed area. If such an instance
----re-enters the streamed area, properties and tags will be re-synchronized
----from the server. This can cause changes made by `LocalScript`s to be
+---re-enters the streamed area, properties and tags will be re-synchronized from
+---the server. This can cause changes made by `LocalScript`s to be
 ---overwritten/removed.
 ---
 ---[1]: https://www.lua.org/pil/16.html
 ---
 local CollectionService;
+---@param instance Instance
+---@param tag string
+---@return void
+---AddTag will apply a tag to an `Instance`, doing nothing if the tag is
+---already applied to the instance. Successfully adding a tag will fire a
+---signal created by `CollectionService/GetInstanceAddedSignal` with the
+---given tag.
+---
+---**Warning:** When tagging an instance, it is common that some resources
+---are used to give the tag its functionality, e.g. event connections or
+---tables. To prevent memory leaks, it is a good idea to clean these up
+---(disconnect, set to nil, etc) when no longer needed for a tag. Do this
+---when calling `CollectionService/RemoveTag`, calling `Instance/Destroy` or
+---in a function connected to a signal returned by
+---`CollectionService/GetInstanceRemovedSignal`.
+---
+CollectionService.AddTag = function(self, instance, tag) end;
 ---@param tag string
 ---@return RBXScriptSignal
 ---GetInstanceAdded is given a tag (a string) and returns a signal which
@@ -4982,30 +8592,59 @@ CollectionService.GetTagged = function(self, tag) end;
 ---`CollectionService/HasTag` to check for a single tag.
 ---
 CollectionService.GetTags = function(self, instance) end;
----@param instance Instance
----@param tag string
----@return void
----AddTag will apply a tag to an `Instance`, doing nothing if the tag is
----already applied to the instance. Successfully adding a tag will fire a
----signal created by `CollectionService/GetInstanceAddedSignal` with the
----given tag.
+---@class RBXScriptSignal.ItemAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ItemAdded, callback: fun(instance: Instance)): RBXScriptConnection
+---This function fires when a `Configuration`, `CustomEvent`,
+---`CustomEventReceiver`, `Dialog`, or `VehicleSeat` is added to the
+---`DataModel`.
 ---
----**Warning:** When tagging an instance, it is common that some resources
----are used to give the tag its functionality, e.g. event connections or
----tables. To prevent memory leaks, it is a good idea to clean these up
----(disconnect, set to nil, etc) when no longer needed for a tag. Do this
----when calling `CollectionService/RemoveTag`, calling `Instance/Destroy` or
----in a function connected to a signal returned by
----`CollectionService/GetInstanceRemovedSignal`.
+CollectionService.ItemAdded = nil;
+---@class RBXScriptSignal.ItemRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ItemRemoved, callback: fun(instance: Instance)): RBXScriptConnection
+---This function fires when a `Configuration`, `CustomEvent`,
+---`CustomEventReceiver`, `Dialog`, or `VehicleSeat` is removed from the
+---`DataModel`.
 ---
-CollectionService.AddTag = function(self, instance, tag) end;
+CollectionService.ItemRemoved = nil;
+---@class RBXScriptSignal.TagAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.TagAdded, callback: fun(tag: string)): RBXScriptConnection
+---
+CollectionService.TagAdded = nil;
+---@class RBXScriptSignal.TagRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.TagRemoved, callback: fun(tag: string)): RBXScriptConnection
+---
+CollectionService.TagRemoved = nil;
 ---@class Color3Value : ValueBase, Instance
 ---@field public Value Color3
----@field public Changed fun(value: Color3): RbxScriptSignal
----@field public changed fun(value: Color3): RbxScriptSignal
+---@field public Changed RBXScriptSignal.Changed
+---@field public changed RBXScriptSignal.changed
 ---A container object for a single `DataType/Color3` value.
 ---
 local Color3Value;
+---The stored <a href="/reference/engine/datatypes/Color3">Color3</a>.
+---
+Color3Value.Value = nil;
+---@class RBXScriptSignal.Changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Changed, callback: fun(value: Color3)): RBXScriptConnection
+---Fired whenever the `Color3Value/Value` of the `Color3Value` is changed. It
+---will run with the new value being stored in the argument object, instead
+---of a string representing the property being changed.
+---
+---This event, like other changed events, can be used to track when an
+---Color3Value changes and to track the different values that it may change
+---to.
+---
+---For instance, this may be useful in games that rely on Color3Values to
+---track values such as colors for games using customizable outfits or items.
+---
+---Equivalent changed events exist for similar objects, such as `NumberValue`
+---and `StringValue`, depending on what object type best suits the need.
+---
+Color3Value.Changed = nil;
+---@class RBXScriptSignal.changed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.changed, callback: fun(value: Color3)): RBXScriptConnection
+---
+Color3Value.changed = nil;
 ---@class ColorCorrectionEffect : PostEffect, Instance
 ---@field public Brightness float
 ---@field public Contrast float
@@ -5020,16 +8659,36 @@ local Color3Value;
 ---Multiple **ColorCorrectionEffect** objects can be applied at once and they
 ---will compose their effects together.
 ---
----Like other post-processing effects, **ColorCorrectionEffect** will only
----work while `PostEffect/Enabled|Enabled` and when parented to `Lighting` or
----`Workspace/CurrentCamera`. Also, it may render differently depending on
----your Studio settings (see the **Quality Level** settings in **Rendering**
----&rarr; **Performance**).
+---Like other post-processing effects, **ColorCorrectionEffect** will only work
+---while `PostEffect/Enabled|Enabled` and when parented to `Lighting` or
+---`Workspace/CurrentCamera`. Also, it may render differently depending on your
+---Studio settings (see the **Quality Level** settings in **Rendering** &rarr;
+---**Performance**).
 ---
 ---For more details on this effect and others, see
 ---[Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects).
 ---
 local ColorCorrectionEffect;
+---Brightness determines by how much the colors of pixels will be shifted. A
+---value of -1 will cause all pixels to be completely black while a value of
+---1 will cause them to be white.
+---
+ColorCorrectionEffect.Brightness = nil;
+---Contrast determines the separation between the dark and light colors.
+---Values less than 0 have reduced contrast while values greater than 0 have
+---increased contrast.
+---
+ColorCorrectionEffect.Contrast = nil;
+---Saturation determines the change in intensity of pixel colors. Values
+---above 1 will cause colors to be more vivid while values below 0 will make
+---colors more dull, eventually reaching full desaturation at -1.
+---
+ColorCorrectionEffect.Saturation = nil;
+---Determines by what factors the RGB channels of pixel colors are scaled.
+---The effect is multiplicative, so changing this to `[255, 0, 0]` (red)
+---would cause the green and blue channels to be multiplied by 0.
+---
+ColorCorrectionEffect.TintColor = nil;
 ---@class CommandInstance : Instance
 ---@field public AllowGUIAccessPoints bool
 ---@field public Checked bool
@@ -5041,6 +8700,24 @@ local ColorCorrectionEffect;
 ---@field public Permission CommandPermission
 ---@field public StatusTip string
 local CommandInstance;
+---
+CommandInstance.AllowGUIAccessPoints = nil;
+---
+CommandInstance.Checked = nil;
+---
+CommandInstance.DefaultShortcut = nil;
+---
+CommandInstance.DisplayName = nil;
+---
+CommandInstance.Enabled = nil;
+---
+CommandInstance.Icon = nil;
+---
+CommandInstance.Name = nil;
+---
+CommandInstance.Permission = nil;
+---
+CommandInstance.StatusTip = nil;
 ---@param displayName string
 ---@param statusTip string
 ---@param defaultShortcut string
@@ -5050,7 +8727,7 @@ CommandInstance.EnableGuiAccess = function(self, displayName, statusTip, default
 ---@return void
 CommandInstance.RegisterExecutionCallback = function(self, callbackFunction) end;
 ---@class CommandService : Instance
----@field public CommandExecuting fun(name: string, params: Variant): RbxScriptSignal
+---@field public CommandExecuting RBXScriptSignal.CommandExecuting
 local CommandService;
 ---@param name string
 ---@param params Variant
@@ -5062,6 +8739,10 @@ CommandService.Execute = function(self, name, params) end;
 ---@param permission CommandPermission
 ---@return CommandInstance
 CommandService.RegisterCommand = function(self, plugin, name, context, permission) end;
+---@class RBXScriptSignal.CommandExecuting : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.CommandExecuting, callback: fun(name: string, params: Variant)): RBXScriptConnection
+---
+CommandService.CommandExecuting = nil;
 ---@class CompressorSoundEffect : SoundEffect, Instance
 ---@field public Attack float
 ---@field public GainMakeup float
@@ -5069,66 +8750,101 @@ CommandService.RegisterCommand = function(self, plugin, name, context, permissio
 ---@field public Release float
 ---@field public SideChain Instance
 ---@field public Threshold float
----A compressor is used to reduce the dynamic range of audio by moving the
----highs and lows of a signal closer together. It does this by lowering the
----volume of the highest parts of a source while at the same time raising the
----overall volume. This type of effect is useful when you have many sounds
----playing and you want to make sure the quieter ones are still audible. This
----effect can be applied to either an individual sound or to a sound group by
----parenting it to the desired instance.
+---A compressor is used to reduce the dynamic range of audio by moving the highs
+---and lows of a signal closer together. It does this by lowering the volume of
+---the highest parts of a source while at the same time raising the overall
+---volume. This type of effect is useful when you have many sounds playing and
+---you want to make sure the quieter ones are still audible. This effect can be
+---applied to either an individual sound or to a sound group by parenting it to
+---the desired instance.
 ---
----Like all other `SoundEffect`, a ChorusSoundEffect can be applied either to
----a `Sound` or `SoundGroup` by being parented to either.
+---Like all other `SoundEffect`, a ChorusSoundEffect can be applied either to a
+---`Sound` or `SoundGroup` by being parented to either.
 ---
 ---A compressor has several properties which determine how it works. The
----`CompressorSoundEffect/Threshold` is the audio level where the compressor
----will start to lower the volume. As soon as the source goes below the
----threshold, the compressor will stop lowering the volume.
+---`CompressorSoundEffect/Threshold` is the audio level where the compressor will
+---start to lower the volume. As soon as the source goes below the threshold, the
+---compressor will stop lowering the volume.
 ---
 ---The `CompressorSoundEffect/Attack` determines how long it takes for the
 ---compressed effect to fully apply. After the threshold has been crossed the
----compressor will lower the volume over time until the desired ratio has
----been reached. It will take the time specified by Attack to reach this
----ratio.
+---compressor will lower the volume over time until the desired ratio has been
+---reached. It will take the time specified by Attack to reach this ratio.
 ---
 ---The `CompressorSoundEffect/Release` determines how long it takes for the
----compressor to remove its effect. After the volume of the source is under
----the threshold, the compressor will restore the volume back to the original
----over the time specified by Release.
+---compressor to remove its effect. After the volume of the source is under the
+---threshold, the compressor will restore the volume back to the original over
+---the time specified by Release.
 ---
 ---Along with lowering the volume when the sound has passed the threshold, a
----compressor will also amplify the entire sound (after any threshold
----lowering has taken effect). This allows quieter sounds to be amplified
----while louder sounds can stay about the same. The
----`CompressorSoundEffect/GainMakeup` determines how much the effect
----amplifies the sound.
+---compressor will also amplify the entire sound (after any threshold lowering
+---has taken effect). This allows quieter sounds to be amplified while louder
+---sounds can stay about the same. The `CompressorSoundEffect/GainMakeup`
+---determines how much the effect amplifies the sound.
 ---
 local CompressorSoundEffect;
+---Range: 0.1 to 1 (default 0.1) The time the effect takes to become active
+---after its Threshold has be reached. Measured in seconds.
+---
+CompressorSoundEffect.Attack = nil;
+---Range: 0 to 30 (default 0) The overall amplification applied to the
+---effect's Sound or SoundGroup after attenuation of sounds above the
+---threshold. Keep in mind this amplification will occur as long as the
+---effect is Active, regardless of whether the Threshold has be reached or
+---not. Measured in dB.
+---
+CompressorSoundEffect.GainMakeup = nil;
+---The ratio between the `CompressorSoundEffect/SideChain` sound effect, and
+---this sound effect.
+---
+CompressorSoundEffect.Ratio = nil;
+---Range: 0 to 5 (default 0.1) The time the effect takes to become inactive
+---after its sound is below the Threshold. Measured in seconds.
+---
+CompressorSoundEffect.Release = nil;
+---Applies a
+---<a rel="nofollow" href="https://en.wikipedia.org/wiki/Ducking">ducking</a>
+---effect to the compressor sound effect. The behavior of the sidechain
+---depends on the `Sound` or `SoundGroup` linked to it.
+---
+CompressorSoundEffect.SideChain = nil;
+---Range: -80 to 0 (default 0) Volume level at which point the compressor
+---applies its effect. If the effect's Sound or SoundGroup is below the
+---effect will not attenuate the sound, although the GainMakeup will still be
+---applied. Measured in dB.
+---
+CompressorSoundEffect.Threshold = nil;
 ---@class ConeHandleAdornment : HandleAdornment, PVAdornment, GuiBase3d, GuiBase, Instance
 ---@field public Height float
 ---@field public Radius float
----For handles to be interactive, they must be parented to a player's
----PlayerGui or the CoreGui.
+---For handles to be interactive, they must be parented to a player's PlayerGui
+---or the CoreGui.
 ---
----A **ConeHandleAdornment** is a cone that can be adorned to a `BasePart`.
----This adornment can listen to input events and is commonly used to make
----dragger tools.
+---A **ConeHandleAdornment** is a cone that can be adorned to a `BasePart`. This
+---adornment can listen to input events and is commonly used to make dragger
+---tools.
 ---
 local ConeHandleAdornment;
+---The height of the cone adornment.
+---
+ConeHandleAdornment.Height = nil;
+---The radius of the cone adornment.
+---
+ConeHandleAdornment.Radius = nil;
 ---@class Configuration : Instance
----The Configuration object is a container object that is designed to hold
----value objects to make values used in `Tool`s or any model using `Script`s
----more accessible.
+---The Configuration object is a container object that is designed to hold value
+---objects to make values used in `Tool`s or any model using `Script`s more
+---accessible.
 ---
 ---## How does the Configuration object work?
 ---
----The Configuration object is just a container, and does not automatically
----offer any additional functionality to a `Folder`.
+---The Configuration object is just a container, and does not automatically offer
+---any additional functionality to a `Folder`.
 ---
----Configurations should hold value objects (`BrickColorValue`,
----`NumberValue`, `IntValue`, `ObjectValue` etc). These value objects should
----be read by the `Script` or `LocalScript` associated with the configuration
----to determine constants such as damage, speed or color.
+---Configurations should hold value objects (`BrickColorValue`, `NumberValue`,
+---`IntValue`, `ObjectValue` etc). These value objects should be read by the
+---`Script` or `LocalScript` associated with the configuration to determine
+---constants such as damage, speed or color.
 ---
 ---For example,
 ---
@@ -5145,21 +8861,21 @@ local ConeHandleAdornment;
 ---
 ---The Configuration object is intended to be placed inside a `BasePart` in a
 ---`Model` or `Tool`. It was originally intended to be used with a tool that
----provided a GUI interface to edit these properties. However it is more
----common now for developers to edit these values directly in the Roblox
----Studio properties window.
+---provided a GUI interface to edit these properties. However it is more common
+---now for developers to edit these values directly in the Roblox Studio
+---properties window.
 ---
 ---## Why should I use the Configuration object?
 ---
 ---Use of Configurations is optional, but a number of developers chose to use
 ---them for the following reasons.
 ---
----- Variables held in a Configuration can be found quickly and are in a
----  single place
----- When sharing your work, others can make changes without needing to
----  modify your code
----- Provides a single location for variables read by multiple scripts in
----  more complex games
+---- Variables held in a Configuration can be found quickly and are in a single
+---  place
+---- When sharing your work, others can make changes without needing to modify
+---  your code
+---- Provides a single location for variables read by multiple scripts in more
+---  complex games
 ---
 local Configuration;
 ---@class ConfigureServerService : Instance
@@ -5174,17 +8890,38 @@ local ConfigureServerService;
 ---The base class for Constraint-based objects.
 ---
 local Constraint;
+---True if the constraint is currently active in the world.
+---
+---True if the constraint and both of its parts are in the `Workspace` and
+---the constraint's `Constraint/Enabled` property is true.
+---
+Constraint.Active = nil;
+---The `Attachment` that is connected to `Constraint/Attachment1`
+---
+Constraint.Attachment0 = nil;
+---The `Attachment` that is connected to `Constraint/Attachment0`
+---
+Constraint.Attachment1 = nil;
+---The color of the constraint.
+---
+Constraint.Color = nil;
+---Toggles whether or not this Constraint is enabled.
+---
+Constraint.Enabled = nil;
+---Toggles the visibility of this Constraint.
+---
+Constraint.Visible = nil;
 ---@class ContentProvider : Instance
 ---@field public BaseUrl string
 ---@field public RequestQueueSize int
----@field public AssetFetchFailed fun(assetId: Content): RbxScriptSignal
+---@field public AssetFetchFailed RBXScriptSignal.AssetFetchFailed
 ---Service that is used to load content, or assets, into a game.
 ---
----The service's main use is to preload assets into a game. When a new asset
----such as a `Decal` or `Sound` is used in a game, Roblox will load the
----content associated with it from Roblox servers. In some cases, this can be
----undesirable for developers as it can lead to a delay before the content
----loads into the game.
+---The service's main use is to preload assets into a game. When a new asset such
+---as a `Decal` or `Sound` is used in a game, Roblox will load the content
+---associated with it from Roblox servers. In some cases, this can be undesirable
+---for developers as it can lead to a delay before the content loads into the
+---game.
 ---
 ---With ContentProvider, developers can preload assets using the
 ---`ContentProvider/PreloadAsync` function. Another useful property is
@@ -5192,23 +8929,41 @@ local Constraint;
 ---proportion of assets in the request queue have been downloaded.
 ---
 local ContentProvider;
+---Used by the `ContentProvider` to download assets from the Roblox website.
+---
+---This URL points to a Roblox hosted website from which assets are
+---downloaded and is pulled from the AppSettings.xml file, located in the
+---version-hash folder.
+---
+---It is possible to overwrite this property using the
+---`ContentProvider/SetBaseUrl` function in the command bar; however, this is
+---not recommended and may cause asset loading issues.
+---
+ContentProvider.BaseUrl = nil;
+---Gives the number of items in `ContentProvider`'s request queue that need
+---to be downloaded.
+---
+---Items are added to the client's request queue when an asset is used for
+---the first time or `ContentProvider/PreloadAsync` is called.
+---
+---Developers are advised not to use RequestQueueSize to create loading bars.
+---This is because the queue size can both increase and decrease over time as
+---new assets are added and downloaded. Developers looking to display loading
+---progress should load assets one at a time (see example below).
+---
+ContentProvider.RequestQueueSize = nil;
 ---@param assetId Content
 ---@param encryptionKey string
 ---@return void
 ContentProvider.RegisterEncryptedAsset = function(self, assetId, encryptionKey) end;
----@return Array
-ContentProvider.GetDetailedFailedRequests = function(self) end;
----@param encryptionKey string
----@return void
-ContentProvider.RegisterDefaultEncryptionKey = function(self, encryptionKey) end;
----@param meshId string
----@return int
-ContentProvider.CalculateNumTrianglesInMesh = function(self, meshId) end;
----@return Array
-ContentProvider.GetFailedRequests = function(self) end;
 ---@param assetId Content
 ---@return void
 ContentProvider.UnregisterEncryptedAsset = function(self, assetId) end;
+---@param encryptionKey string
+---@return void
+ContentProvider.RegisterDefaultEncryptionKey = function(self, encryptionKey) end;
+---@return Array
+ContentProvider.GetFailedRequests = function(self) end;
 ---@param contentId Content
 ---@param sessionKey string
 ---@return void
@@ -5241,8 +8996,6 @@ ContentProvider.Preload = function(self, contentId) end;
 ---are advised not to do this as it may prevent assets from loading.
 ---
 ContentProvider.SetBaseUrl = function(self, url) end;
----@return void
-ContentProvider.UnregisterDefaultEncryptionKey = function(self) end;
 ---@param contentIdList Array
 ---@param callbackFunction Function
 ---@return void
@@ -5263,94 +9016,233 @@ ContentProvider.UnregisterDefaultEncryptionKey = function(self) end;
 ---passed-in instance.
 ---
 ContentProvider.PreloadAsync = function(self, contentIdList, callbackFunction) end;
+---@param meshId string
+---@return int
+ContentProvider.CalculateNumTrianglesInMesh = function(self, meshId) end;
+---@return void
+ContentProvider.UnregisterDefaultEncryptionKey = function(self) end;
+---@return Array
+ContentProvider.GetDetailedFailedRequests = function(self) end;
+---@class RBXScriptSignal.AssetFetchFailed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AssetFetchFailed, callback: fun(assetId: Content)): RBXScriptConnection
+---
+ContentProvider.AssetFetchFailed = nil;
 ---@class ContextActionService : Instance
----@field public BoundActionAdded fun(actionAdded: string, createTouchButton: bool, functionInfoTable: Dictionary, isCore: bool): RbxScriptSignal
----@field public BoundActionChanged fun(actionChanged: string, changeName: string, changeTable: Dictionary): RbxScriptSignal
----@field public BoundActionRemoved fun(actionRemoved: string, functionInfoTable: Dictionary, isCore: bool): RbxScriptSignal
----@field public GetActionButtonEvent fun(actionName: string): RbxScriptSignal
----@field public LocalToolEquipped fun(toolEquipped: Instance): RbxScriptSignal
----@field public LocalToolUnequipped fun(toolUnequipped: Instance): RbxScriptSignal
----ContextActionService is a game service that allows a game to bind user
----input to contextual actions, or actions that are only enabled under some
----condition or period of time. For example, allowing a player to open a door
----only while close by. In code, an action is simply a string (the name of
----the action) used by the service to differentiate between unique actions.
----The action string is provided to
----`ContextActionService/BindAction|BindAction` and
+---@field public BoundActionAdded RBXScriptSignal.BoundActionAdded
+---@field public BoundActionChanged RBXScriptSignal.BoundActionChanged
+---@field public BoundActionRemoved RBXScriptSignal.BoundActionRemoved
+---@field public GetActionButtonEvent RBXScriptSignal.GetActionButtonEvent
+---@field public LocalToolEquipped RBXScriptSignal.LocalToolEquipped
+---@field public LocalToolUnequipped RBXScriptSignal.LocalToolUnequipped
+---ContextActionService is a game service that allows a game to bind user input
+---to contextual actions, or actions that are only enabled under some condition
+---or period of time. For example, allowing a player to open a door only while
+---close by. In code, an action is simply a string (the name of the action) used
+---by the service to differentiate between unique actions. The action string is
+---provided to `ContextActionService/BindAction|BindAction` and
 ---`ContextActionService/UnbindAction|UnbindAction`, among other member
----functions. If two actions are bound to the same input, the most recently
----bound will take priority. When the most recent action is unbound, the one
----bound before that takes control again. Since ContextActionService deals
----with user input, you can only use it in `LocalScript|LocalScripts` which
----run on the client.
+---functions. If two actions are bound to the same input, the most recently bound
+---will take priority. When the most recent action is unbound, the one bound
+---before that takes control again. Since ContextActionService deals with user
+---input, you can only use it in `LocalScript|LocalScripts` which run on the
+---client.
 ---
 ---## What is a context?
 ---
 ---A **context** is simply a condition during which a player may perform some
----action. Some examples include holding a `Tool`, being `Seat|seated` in a
----car or standing near a door. Whatever the case may be, it is up to your
----`LocalScript|LocalScripts` to call BindAction when the context is entered
----and UnbindAction when the context is left.
+---action. Some examples include holding a `Tool`, being `Seat|seated` in a car
+---or standing near a door. Whatever the case may be, it is up to your
+---`LocalScript|LocalScripts` to call BindAction when the context is entered and
+---UnbindAction when the context is left.
 ---
 ---## What is an action?
 ---
----An **action** is simply some input that can be performed by the player
----while in that context. Such an action could open/close some menu, trigger
----a secondary tool action or send a request to the server using
----`RemoteFunction/InvokeServer`. An action is identified by a unique string
----as the first parameter of both
----`ContextActionService/BindAction|BindAction` and
----`ContextActionService/UnbindAction|UnbindAction`. The string can be
----anything, but it should reflect the **action being performed, not the
----input being used**. For example, don't use "KeyH" as an action name - use
----"CarHorn" instead. It is best to define your actions as a constant at the
----top of your script since you will use it in at least three different
----places in your code.
+---An **action** is simply some input that can be performed by the player while
+---in that context. Such an action could open/close some menu, trigger a
+---secondary tool action or send a request to the server using
+---`RemoteFunction/InvokeServer`. An action is identified by a unique string as
+---the first parameter of both `ContextActionService/BindAction|BindAction` and
+---`ContextActionService/UnbindAction|UnbindAction`. The string can be anything,
+---but it should reflect the **action being performed, not the input being
+---used**. For example, don't use "KeyH" as an action name - use "CarHorn"
+---instead. It is best to define your actions as a constant at the top of your
+---script since you will use it in at least three different places in your code.
 ---
 ---## Why bind actions contextually?
 ---
 ---It's better to use ContextActionService's
 ---`ContextActionService/BindAction|BindAction` than
----`UserInputService/InputBegan` for most cases. For InputBegan, your
----connected function would have to check if the player is in the context of
----the action begin performed. In most cases, this is harder than just
----calling a function when a context is entered/left. For example, if you
----want to have the `H` key trigger a car horn sound while the player is
----sitting in it, the player might type "hello" in chat or otherwise use the
----`H` key for something else. It is harder to determine if something else is
----using the H key (like chat) - the car might honk when the player didn't
----mean to! If you instead use `ContextActionService/BindAction|BindAction`
----and `ContextActionService/UnbindAction|UnbindAction` when the player
----enters/leaves the car, ContextActionService will make sure that `H` key
----presses trigger the honk action only when it is the most recently bound
----action. If something else (like chat) takes control, you won't have to
----worry about checking that.
+---`UserInputService/InputBegan` for most cases. For InputBegan, your connected
+---function would have to check if the player is in the context of the action
+---begin performed. In most cases, this is harder than just calling a function
+---when a context is entered/left. For example, if you want to have the `H` key
+---trigger a car horn sound while the player is sitting in it, the player might
+---type "hello" in chat or otherwise use the `H` key for something else. It is
+---harder to determine if something else is using the H key (like chat) - the car
+---might honk when the player didn't mean to! If you instead use
+---`ContextActionService/BindAction|BindAction` and
+---`ContextActionService/UnbindAction|UnbindAction` when the player enters/leaves
+---the car, ContextActionService will make sure that `H` key presses trigger the
+---honk action only when it is the most recently bound action. If something else
+---(like chat) takes control, you won't have to worry about checking that.
 ---
 ---## Inspecting Bound Actions
 ---
----To see a list of actions and their bound inputs, you can inspect the
----"Action Bindings" tab in the Developer Console (F9 while in game). This
----shows all bindings - including those bound by Roblox CoreScripts and
----default camera/control scripts too. This is useful for debugging: check if
----your actions are being bound/unbound at the correct times, or if some
----other action is stealing input from your actions. For example, if you are
----attempting to bind WASD, it may be the case that default character
----movement scripts are binding over those same keys. Similarly, the camera
----control script can steal right-click input if the script runs after yours.
+---To see a list of actions and their bound inputs, you can inspect the "Action
+---Bindings" tab in the Developer Console (F9 while in game). This shows all
+---bindings - including those bound by Roblox CoreScripts and default
+---camera/control scripts too. This is useful for debugging: check if your
+---actions are being bound/unbound at the correct times, or if some other action
+---is stealing input from your actions. For example, if you are attempting to
+---bind WASD, it may be the case that default character movement scripts are
+---binding over those same keys. Similarly, the camera control script can steal
+---right-click input if the script runs after yours.
 ---
 ---## Keyboardless Input
 ---
 ---ContextActionService is especially useful for supporting gamepad and touch
----input. For gamepad input, you might choose to bind the B button to an
----action that returns the user to the previous menu when they entire another
----menu. For touch, on-screen touch buttons can be used in place of key
----presses: these buttons display only while the action is bound, and the
----position, text and/or images of these buttons can be configured through
----this service. They are somewhat limited in the amount of customization
----provided by this service; it's usually a better idea to make your own
----on-screen buttons using `ImageButton` or `TextButton`.
+---input. For gamepad input, you might choose to bind the B button to an action
+---that returns the user to the previous menu when they entire another menu. For
+---touch, on-screen touch buttons can be used in place of key presses: these
+---buttons display only while the action is bound, and the position, text and/or
+---images of these buttons can be configured through this service. They are
+---somewhat limited in the amount of customization provided by this service; it's
+---usually a better idea to make your own on-screen buttons using `ImageButton`
+---or `TextButton`.
 ---
 local ContextActionService;
+---@return Dictionary
+ContextActionService.GetAllBoundCoreActionInfo = function(self) end;
+---@param actionName string
+---@return Dictionary
+---GetBoundActionInfo returns a table with the following keys describing a
+---bound action given its name. To get the same information for all actions
+---at once, use
+---`ContextActionService/GetAllBoundActionInfo|GetAllBoundActionInfo`.
+---
+---<table>
+---<tr>
+---  <th>Name</th>
+---  <th>Type</th>
+---  <th>Description</th>
+---</tr>
+---<tr>
+---  <td><code>stackOrder</code></td>
+---  <td>number</td>
+---  <td>
+---
+---Describes the index of the action on the stack (increasing)
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>priorityLevel</code>*</td>
+---  <td>number</td>
+---  <td>
+---
+---Describes the `ContextActionService/BindActionAtPriority|priority` level
+---of the action
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>createTouchButton</code></td>
+---  <td>bool</td>
+---  <td>
+---
+---Describes whether a touch button should be created on
+---`UserInputService/TouchEnabled|TouchEnabled` devices
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>inputTypes</code></td>
+---  <td>table</td>
+---  <td>
+---
+---The input types passed to `ContextActionService/BindAction|BindAction` for
+---which this action will trigger
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>description</code>†</td>
+---  <td>string</td>
+---  <td>
+---
+---The description of action set by
+---`ContextActionService/SetDescription|SetDescription`
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>title</code>†</td>
+---  <td>string</td>
+---  <td>
+---
+---The title of the action set by `ContextActionService/SetTitle|SetTitle`
+---
+---</td>
+---</tr>
+---<tr>
+---  <td><code>image</code>†</td>
+---  <td>string</td>
+---  <td>
+---
+---The image of the action's touch button set by
+---`ContextActionService/SetImage|SetImage`
+---
+---</td>
+---</tr>
+---</table>
+---
+---\*Priority level will still be included even if
+---`ContextActionService/BindActionAtPriority|BindActionAtPriority` wasn't
+---used - by default it will be 2000. †Indicates that this field will be
+---`nil` if the associated method was not called for the given action.
+---
+ContextActionService.GetBoundActionInfo = function(self, actionName) end;
+---@param actionName string
+---@param title string
+---@return void
+---SetTitle will set the text shown on a touch button created by
+---`ContextActionService/BindAction|BindAction`. Specifically, this sets the
+---`TextLabel/Text` property of a `TextLabel` within the `ImageButton` that
+---would be returned by `ContextActionService/GetButton|GetButton`. If no
+---such bound action exists (e.g. nothing is returned by GetButton), this
+---function does nothing and throws no error.
+---
+---This function is part of a family of methods that customize the touch
+---button of an action. Others in this family include
+---`ContextActionService/SetImage|SetImage` and
+---`ContextActionService/SetPosition|SetPosition`.
+---
+ContextActionService.SetTitle = function(self, actionName, title) end;
+---@param actionName string
+---@param functionToBind Function
+---@param createTouchButton bool
+---@param inputTypes Tuple
+---@return void
+ContextActionService.BindCoreAction = function(self, actionName, functionToBind, createTouchButton, inputTypes) end;
+---@param actionName string
+---@return Dictionary
+ContextActionService.GetBoundCoreActionInfo = function(self, actionName) end;
+---@return string
+---GetCurrentLocalToolIcon will return the `BackpackItem/TextureId` of a
+---`Tool` currently `Tool/Equipped|equipped` by the `Player`, or `nil` if
+---there is no such Tool or if the player lacks a
+---`Player/Character|Character`.
+---
+ContextActionService.GetCurrentLocalToolIcon = function(self) end;
+---@param userInputTypeForActivation UserInputType
+---@param keyCodeForActivation KeyCode
+---@return void
+---UnbindActivate unbinds an `Enum/KeyCode` used with an `Enum/UserInputType`
+---for activating a `Tool` (or a `HopperBin`) using
+---`ContextActionService/BindActivate|BindActivate`. This function
+---essentially undoes the action performed by that function.
+---
+ContextActionService.UnbindActivate = function(self, userInputTypeForActivation, keyCodeForActivation) end;
 ---@param actionName string
 ---@param description string
 ---@return void
@@ -5367,129 +9259,6 @@ local ContextActionService;
 ---action, and nothing more.
 ---
 ContextActionService.SetDescription = function(self, actionName, description) end;
----@param actionName string
----@param actionButton Instance
----@return void
-ContextActionService.FireActionButtonFoundSignal = function(self, actionName, actionButton) end;
----@param actionName string
----@return void
-ContextActionService.UnbindCoreAction = function(self, actionName) end;
----@param actionName string
----@param functionToBind Function
----@param createTouchButton bool
----@param inputTypes Tuple
----@return void
----This function binds _functionToBind_ to input events such as key presses,
----mouse movement, or controller input. The specific input types the engine
----listens for are listed as parameters of BindAction. Whenever a player uses
----any of these input types, the Roblox engine calls “functionToBind”.
----BindAction sets the priorityLevel via `Enum/ContextActionPriority` to
----Default.Value, which is 2000. Use `ContextActionService/GetButton` to
----control the priority of bound events.
----
----In addition to input types, BindAction has a createTouchButton parameter.
----When this is set to true it creates an `ImageButton` on any device with a
----touchscreen. A `ScreenGui` is also created to put the context buttons into
----named ContextActionGui and is parented to `PlayerGui`. The created
----ImageButton is parented to this ContextActionGui. GetButton can be used to
----retrieve the button that was created.
----
----If an input has more than one function bound to it, each function will be
----placed on a stack. A stack obeys the principle of last in first out. So
----the first object placed on the stack will be on the top. The next object
----placed on the stack becomes the top and the previous object moves one
----position down (like a stack of books). When the input is triggered, the
----function at the top of the stack is called. If the function returns
----Enum.ContextActionResult.Pass this will continue down the stack. To remove
----a function from being called by all input that it was bound by use
----`ContextActionService/UnbindAction`.
----
----BindAction allows control over whether or not a bound action should be
----processed by other actions on the stack using `Enum/ContextActionResult`.
----If Enum.ContextActionResult.Pass is returned in the callback function,
----every action below it in the stack (last function called gets executed
----first) will get a chance to process it. Anything other than Pass will be
----treated as Enum.ContextActionResult.Sink, including nil. It will also sink
----if the callback is yielded.
----
-ContextActionService.BindActionToInputTypes = function(self, actionName, functionToBind, createTouchButton, inputTypes) end;
----@param actionName string
----@param image string
----@return void
----SetPosition will set the text shown on a touch button created by
----`ContextActionService/BindAction|BindAction`. Specifically, this sets the
----`ImageLabel/Image` property of the `ImageLabel` within the `ImageButton`
----that would be returned by `ContextActionService/GetButton|GetButton`. If
----no such bound action exists (e.g. nothing is returned by GetButton), this
----function does nothing and throws no error.
----
----This function is part of a family of methods that customize the touch
----button of an action. Others in this family include
----`ContextActionService/SetPosition|SetPosition` and
----`ContextActionService/SetTitle|SetTitle`.
----
-ContextActionService.SetImage = function(self, actionName, image) end;
----@param actionName string
----@return Instance
----GetButton returns the `ImageButton` created by
----`ContextActionService/BindAction|BindAction` if its third parameter was
----true and the device is `UserInputService/TouchEnabled|TouchEnabled`. The
----only parameter to this function must match exactly the name of the action
----originally sent to BindAction.
----
----If no such action was bound or if a button was not created, this function
----returns `nil`.
----
-ContextActionService.GetButton = function(self, actionName) end;
----@param userInputTypeForActivation UserInputType
----@param keyCodeForActivation KeyCode
----@return void
----Bind an `Enum/KeyCode` that can be used with an `Enum/UserInputType` to
----activate `ClickDetector` events and `Tool` objects. When the given
----key/button is pressed, it fires the `Mouse/Button1Down` event on the mouse
----sent to `Tool/Equipped`. This in turn fires the `Tool/Activated` event if
----`Tool/ManualActivationOnly` is not set to true. For gamepad input, this
----function is called by the default control scripts in order to bind the
----ButtonR2 `enum/KeyCode`.
----
----Note that the `Enum/UserInputType` specified must be `Keyboard` or
----`Gamepad1` through `Gamepad8` in order to be valid.
----
-ContextActionService.BindActivate = function(self, userInputTypeForActivation, keyCodeForActivation) end;
----@return Dictionary
----GetAllBoundActioninfo returns a table which maps all actions' names (those
----originally passed to `ContextActionService/BindAction|BindAction`) to a
----table returned by
----`ContextActionService/GetBoundActionInfo|GetBoundActionInfo` when called
----with the action name itself. Using this function, you can inspect all
----presently bound actions. This is useful when debugging their priority
----levels or stack orders.
----
-ContextActionService.GetAllBoundActionInfo = function(self) end;
----@param actionName string
----@param position UDim2
----@return void
----SetPosition will set the text shown on a touch button created by
----`ContextActionService/BindAction|BindAction`. Specifically, this sets the
----`GuiObject/Position` property of the `ImageButton` that would be returned
----by `ContextActionService/GetButton|GetButton`. If no such bound action
----exists (e.g. nothing is returned by GetButton), this function does nothing
----and throws no error.
----
----This function is part of a family of methods that customize the touch
----button of an action. Others in this family include
----`ContextActionService/SetImage|SetImage` and
----`ContextActionService/SetTitle|SetTitle`.
----
-ContextActionService.SetPosition = function(self, actionName, position) end;
----@return Dictionary
-ContextActionService.GetAllBoundCoreActionInfo = function(self) end;
----@param actionName string
----@param functionToBind Function
----@param createTouchButton bool
----@param inputTypes Tuple
----@return void
-ContextActionService.BindCoreAction = function(self, actionName, functionToBind, createTouchButton, inputTypes) end;
 ---@param actionName string
 ---@param functionToBind Function
 ---@param createTouchButton bool
@@ -5593,13 +9362,6 @@ ContextActionService.BindCoreAction = function(self, actionName, functionToBind,
 ---customization.
 ---
 ContextActionService.BindAction = function(self, actionName, functionToBind, createTouchButton, inputTypes) end;
----@param actionName string
----@param functionToBind Function
----@param createTouchButton bool
----@param priorityLevel int
----@param inputTypes Tuple
----@return void
-ContextActionService.BindCoreActionAtPriority = function(self, actionName, functionToBind, createTouchButton, priorityLevel, inputTypes) end;
 ---@return void
 ---Removes all functions bound. No actionNames will remain. All touch buttons
 ---will be removed. If a button was manipulated manually there is no
@@ -5607,22 +9369,19 @@ ContextActionService.BindCoreActionAtPriority = function(self, actionName, funct
 ---
 ContextActionService.UnbindAllActions = function(self) end;
 ---@param actionName string
----@param state UserInputState
----@param inputObject Instance
----@return Tuple
-ContextActionService.CallFunction = function(self, actionName, state, inputObject) end;
----@param actionName string
----@return Dictionary
-ContextActionService.GetBoundCoreActionInfo = function(self, actionName) end;
----@param userInputTypeForActivation UserInputType
----@param keyCodeForActivation KeyCode
+---@param functionToBind Function
+---@param createTouchButton bool
+---@param priorityLevel int
+---@param inputTypes Tuple
 ---@return void
----UnbindActivate unbinds an `Enum/KeyCode` used with an `Enum/UserInputType`
----for activating a `Tool` (or a `HopperBin`) using
----`ContextActionService/BindActivate|BindActivate`. This function
----essentially undoes the action performed by that function.
+---BindActionAtPriority behaves like
+---`ContextActionService/BindAction|BindAction` but also allows a priority to
+---be assigned to the bound action. If multiple actions are bound to the same
+---input, the higher priority function is called regardless of the order in
+---which the actions were bound. In other words, this function overrides the
+---normal "stack" behavior of BindAction.
 ---
-ContextActionService.UnbindActivate = function(self, userInputTypeForActivation, keyCodeForActivation) end;
+ContextActionService.BindActionAtPriority = function(self, actionName, functionToBind, createTouchButton, priorityLevel, inputTypes) end;
 ---@param actionName string
 ---@return void
 ---UnbindAction will unbind an action by name from user inputs so that the
@@ -5639,134 +9398,163 @@ ContextActionService.UnbindActivate = function(self, userInputTypeForActivation,
 ---are presently bound.
 ---
 ContextActionService.UnbindAction = function(self, actionName) end;
----@return string
----GetCurrentLocalToolIcon will return the `BackpackItem/TextureId` of a
----`Tool` currently `Tool/Equipped|equipped` by the `Player`, or `nil` if
----there is no such Tool or if the player lacks a
----`Player/Character|Character`.
----
-ContextActionService.GetCurrentLocalToolIcon = function(self) end;
 ---@param actionName string
----@param title string
 ---@return void
----SetTitle will set the text shown on a touch button created by
+ContextActionService.UnbindCoreAction = function(self, actionName) end;
+---@param actionName string
+---@param actionButton Instance
+---@return void
+ContextActionService.FireActionButtonFoundSignal = function(self, actionName, actionButton) end;
+---@param actionName string
+---@param image string
+---@return void
+---SetPosition will set the text shown on a touch button created by
 ---`ContextActionService/BindAction|BindAction`. Specifically, this sets the
----`TextLabel/Text` property of a `TextLabel` within the `ImageButton` that
----would be returned by `ContextActionService/GetButton|GetButton`. If no
----such bound action exists (e.g. nothing is returned by GetButton), this
+---`ImageLabel/Image` property of the `ImageLabel` within the `ImageButton`
+---that would be returned by `ContextActionService/GetButton|GetButton`. If
+---no such bound action exists (e.g. nothing is returned by GetButton), this
 ---function does nothing and throws no error.
 ---
 ---This function is part of a family of methods that customize the touch
 ---button of an action. Others in this family include
----`ContextActionService/SetImage|SetImage` and
----`ContextActionService/SetPosition|SetPosition`.
+---`ContextActionService/SetPosition|SetPosition` and
+---`ContextActionService/SetTitle|SetTitle`.
 ---
-ContextActionService.SetTitle = function(self, actionName, title) end;
+ContextActionService.SetImage = function(self, actionName, image) end;
 ---@param actionName string
----@return Dictionary
----GetBoundActionInfo returns a table with the following keys describing a
----bound action given its name. To get the same information for all actions
----at once, use
----`ContextActionService/GetAllBoundActionInfo|GetAllBoundActionInfo`.
+---@return Instance
+---GetButton returns the `ImageButton` created by
+---`ContextActionService/BindAction|BindAction` if its third parameter was
+---true and the device is `UserInputService/TouchEnabled|TouchEnabled`. The
+---only parameter to this function must match exactly the name of the action
+---originally sent to BindAction.
 ---
----<table>
----<tr>
----  <th>Name</th>
----  <th>Type</th>
----  <th>Description</th>
----</tr>
----<tr>
----  <td><code>stackOrder</code></td>
----  <td>number</td>
----  <td>
+---If no such action was bound or if a button was not created, this function
+---returns `nil`.
 ---
----Describes the index of the action on the stack (increasing)
+ContextActionService.GetButton = function(self, actionName) end;
+---@param userInputTypeForActivation UserInputType
+---@param keyCodeForActivation KeyCode
+---@return void
+---Bind an `Enum/KeyCode` that can be used with an `Enum/UserInputType` to
+---activate `ClickDetector` events and `Tool` objects. When the given
+---key/button is pressed, it fires the `Mouse/Button1Down` event on the mouse
+---sent to `Tool/Equipped`. This in turn fires the `Tool/Activated` event if
+---`Tool/ManualActivationOnly` is not set to true. For gamepad input, this
+---function is called by the default control scripts in order to bind the
+---ButtonR2 `enum/KeyCode`.
 ---
----</td>
----</tr>
----<tr>
----  <td><code>priorityLevel</code>*</td>
----  <td>number</td>
----  <td>
+---Note that the `Enum/UserInputType` specified must be `Keyboard` or
+---`Gamepad1` through `Gamepad8` in order to be valid.
 ---
----Describes the `ContextActionService/BindActionAtPriority|priority` level
----of the action
+ContextActionService.BindActivate = function(self, userInputTypeForActivation, keyCodeForActivation) end;
+---@param actionName string
+---@param functionToBind Function
+---@param createTouchButton bool
+---@param inputTypes Tuple
+---@return void
+---This function binds _functionToBind_ to input events such as key presses,
+---mouse movement, or controller input. The specific input types the engine
+---listens for are listed as parameters of BindAction. Whenever a player uses
+---any of these input types, the Roblox engine calls “functionToBind”.
+---BindAction sets the priorityLevel via `Enum/ContextActionPriority` to
+---Default.Value, which is 2000. Use `ContextActionService/GetButton` to
+---control the priority of bound events.
 ---
----</td>
----</tr>
----<tr>
----  <td><code>createTouchButton</code></td>
----  <td>bool</td>
----  <td>
+---In addition to input types, BindAction has a createTouchButton parameter.
+---When this is set to true it creates an `ImageButton` on any device with a
+---touchscreen. A `ScreenGui` is also created to put the context buttons into
+---named ContextActionGui and is parented to `PlayerGui`. The created
+---ImageButton is parented to this ContextActionGui. GetButton can be used to
+---retrieve the button that was created.
 ---
----Describes whether a touch button should be created on
----`UserInputService/TouchEnabled|TouchEnabled` devices
+---If an input has more than one function bound to it, each function will be
+---placed on a stack. A stack obeys the principle of last in first out. So
+---the first object placed on the stack will be on the top. The next object
+---placed on the stack becomes the top and the previous object moves one
+---position down (like a stack of books). When the input is triggered, the
+---function at the top of the stack is called. If the function returns
+---Enum.ContextActionResult.Pass this will continue down the stack. To remove
+---a function from being called by all input that it was bound by use
+---`ContextActionService/UnbindAction`.
 ---
----</td>
----</tr>
----<tr>
----  <td><code>inputTypes</code></td>
----  <td>table</td>
----  <td>
+---BindAction allows control over whether or not a bound action should be
+---processed by other actions on the stack using `Enum/ContextActionResult`.
+---If Enum.ContextActionResult.Pass is returned in the callback function,
+---every action below it in the stack (last function called gets executed
+---first) will get a chance to process it. Anything other than Pass will be
+---treated as Enum.ContextActionResult.Sink, including nil. It will also sink
+---if the callback is yielded.
 ---
----The input types passed to `ContextActionService/BindAction|BindAction` for
----which this action will trigger
----
----</td>
----</tr>
----<tr>
----  <td><code>description</code>†</td>
----  <td>string</td>
----  <td>
----
----The description of action set by
----`ContextActionService/SetDescription|SetDescription`
----
----</td>
----</tr>
----<tr>
----  <td><code>title</code>†</td>
----  <td>string</td>
----  <td>
----
----The title of the action set by `ContextActionService/SetTitle|SetTitle`
----
----</td>
----</tr>
----<tr>
----  <td><code>image</code>†</td>
----  <td>string</td>
----  <td>
----
----The image of the action's touch button set by
----`ContextActionService/SetImage|SetImage`
----
----</td>
----</tr>
----</table>
----
----\*Priority level will still be included even if
----`ContextActionService/BindActionAtPriority|BindActionAtPriority` wasn't
----used - by default it will be 2000. †Indicates that this field will be
----`nil` if the associated method was not called for the given action.
----
-ContextActionService.GetBoundActionInfo = function(self, actionName) end;
+ContextActionService.BindActionToInputTypes = function(self, actionName, functionToBind, createTouchButton, inputTypes) end;
+---@param actionName string
+---@param state UserInputState
+---@param inputObject Instance
+---@return Tuple
+ContextActionService.CallFunction = function(self, actionName, state, inputObject) end;
 ---@param actionName string
 ---@param functionToBind Function
 ---@param createTouchButton bool
 ---@param priorityLevel int
 ---@param inputTypes Tuple
 ---@return void
----BindActionAtPriority behaves like
----`ContextActionService/BindAction|BindAction` but also allows a priority to
----be assigned to the bound action. If multiple actions are bound to the same
----input, the higher priority function is called regardless of the order in
----which the actions were bound. In other words, this function overrides the
----normal "stack" behavior of BindAction.
+ContextActionService.BindCoreActionAtPriority = function(self, actionName, functionToBind, createTouchButton, priorityLevel, inputTypes) end;
+---@return Dictionary
+---GetAllBoundActioninfo returns a table which maps all actions' names (those
+---originally passed to `ContextActionService/BindAction|BindAction`) to a
+---table returned by
+---`ContextActionService/GetBoundActionInfo|GetBoundActionInfo` when called
+---with the action name itself. Using this function, you can inspect all
+---presently bound actions. This is useful when debugging their priority
+---levels or stack orders.
 ---
-ContextActionService.BindActionAtPriority = function(self, actionName, functionToBind, createTouchButton, priorityLevel, inputTypes) end;
+ContextActionService.GetAllBoundActionInfo = function(self) end;
+---@param actionName string
+---@param position UDim2
+---@return void
+---SetPosition will set the text shown on a touch button created by
+---`ContextActionService/BindAction|BindAction`. Specifically, this sets the
+---`GuiObject/Position` property of the `ImageButton` that would be returned
+---by `ContextActionService/GetButton|GetButton`. If no such bound action
+---exists (e.g. nothing is returned by GetButton), this function does nothing
+---and throws no error.
+---
+---This function is part of a family of methods that customize the touch
+---button of an action. Others in this family include
+---`ContextActionService/SetImage|SetImage` and
+---`ContextActionService/SetTitle|SetTitle`.
+---
+ContextActionService.SetPosition = function(self, actionName, position) end;
+---@class RBXScriptSignal.BoundActionAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BoundActionAdded, callback: fun(actionAdded: string, createTouchButton: bool, functionInfoTable: Dictionary, isCore: bool)): RBXScriptConnection
+---
+ContextActionService.BoundActionAdded = nil;
+---@class RBXScriptSignal.BoundActionChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BoundActionChanged, callback: fun(actionChanged: string, changeName: string, changeTable: Dictionary)): RBXScriptConnection
+---
+ContextActionService.BoundActionChanged = nil;
+---@class RBXScriptSignal.BoundActionRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BoundActionRemoved, callback: fun(actionRemoved: string, functionInfoTable: Dictionary, isCore: bool)): RBXScriptConnection
+---
+ContextActionService.BoundActionRemoved = nil;
+---@class RBXScriptSignal.GetActionButtonEvent : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.GetActionButtonEvent, callback: fun(actionName: string)): RBXScriptConnection
+---
+ContextActionService.GetActionButtonEvent = nil;
+---@class RBXScriptSignal.LocalToolEquipped : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.LocalToolEquipped, callback: fun(toolEquipped: Instance)): RBXScriptConnection
+---Fires when the current player equips a
+---<a href="/reference/engine/classes/Tool">Tool</a>.
+---
+ContextActionService.LocalToolEquipped = nil;
+---@class RBXScriptSignal.LocalToolUnequipped : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.LocalToolUnequipped, callback: fun(toolUnequipped: Instance)): RBXScriptConnection
+---Fires when the current player unequips a
+---<a href="/reference/engine/classes/Tool">Tool</a>.
+---
+ContextActionService.LocalToolUnequipped = nil;
 ---@class Controller : Instance
----@field public ButtonChanged fun(button: Button): RbxScriptSignal
+---@field public ButtonChanged RBXScriptSignal.ButtonChanged
 ---The base class for controller objects, such as the `HumanoidController`
 ---object.
 ---
@@ -5779,21 +9567,28 @@ Controller.GetButton = function(self, button) end;
 ---@param button Button
 ---@param caption string
 ---@return void
-Controller.bindButton = function(self, button, caption) end;
----@param button Button
----@return bool
-Controller.getButton = function(self, button) end;
----@param button Button
----@param caption string
----@return void
 ---Activates an overriding bind on the specified button.
 ---
 Controller.BindButton = function(self, button, caption) end;
+---@param button Button
+---@return bool
+Controller.getButton = function(self, button) end;
 ---@param button Button
 ---@return void
 ---Removes the bind on button.
 ---
 Controller.UnbindButton = function(self, button) end;
+---@param button Button
+---@param caption string
+---@return void
+Controller.bindButton = function(self, button, caption) end;
+---@class RBXScriptSignal.ButtonChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ButtonChanged, callback: fun(button: Button)): RBXScriptConnection
+---Fired when the pressed state of a bound button is changed. This event can
+---be used in conjunction with `Controller/GetButton` to see whether a bound
+---button is being pressed down or not.
+---
+Controller.ButtonChanged = nil;
 ---@class ControllerService : Instance
 ---Container class for the `HumanoidController` among other classes.
 ---
@@ -5801,17 +9596,17 @@ local ControllerService;
 ---@class CookiesService : Instance
 ---Used by Roblox to control HTTP cookies for analytical purposes.
 ---
----Can only be used by Roblox's backend servers, and therefore is not
----available to developers in any shape or form.
+---Can only be used by Roblox's backend servers, and therefore is not available
+---to developers in any shape or form.
 ---
 local CookiesService;
 ---@class CoreGui : BasePlayerGui, Instance
 ---@field public SelectionImageObject GuiObject
 ---@field public Version int
----The CoreGui is a service used to store Guis created in-game by Roblox for
----the core user interface found in every game (such as the game menu, the
----playerlist, the backpack, etc.). It can also be used by `Plugin|Plugins`
----in Roblox Studio.
+---The CoreGui is a service used to store Guis created in-game by Roblox for the
+---core user interface found in every game (such as the game menu, the
+---playerlist, the backpack, etc.). It can also be used by `Plugin|Plugins` in
+---Roblox Studio.
 ---
 ---You can use the `StarterGui/SetCoreGuiEnabled` and
 ---`StarterGui/GetCoreGuiEnabled` methods in a `LocalScript` to enable and
@@ -5819,15 +9614,21 @@ local CookiesService;
 ---`PlayerGui/SetTopbarTransparency` to set the transparency of the top bar.
 ---
 local CoreGui;
+---
+CoreGui.SelectionImageObject = nil;
+---The current version of the CoreGui. Everytime the CoreGui is majorly
+---changed, this number is increased.
+---
+CoreGui.Version = nil;
 ---@return void
 CoreGui.ToggleRecording = function(self) end;
+---@return void
+CoreGui.TakeScreenshot = function(self) end;
 ---@param enabled bool
 ---@param guiAdornee Instance
 ---@param faceId NormalId
 ---@return void
 CoreGui.SetUserGuiRendering = function(self, enabled, guiAdornee, faceId) end;
----@return void
-CoreGui.TakeScreenshot = function(self) end;
 ---@class CorePackages : Instance
 ---An internal service which stores `ModuleScript`s used by Roblox's
 ---`CoreScript`s.
@@ -5835,12 +9636,12 @@ CoreGui.TakeScreenshot = function(self) end;
 local CorePackages;
 ---@class CoreScript : BaseScript, LuaSourceContainer, Instance
 ---**CoreScript** is a special type of script that cannot be edited or ran by
----normal users. They are used by Roblox to handle built-in user interfaces
----found in the `CoreGui` among other places. They can use API that is under
----the RobloxScriptSecurity security level.
+---normal users. They are used by Roblox to handle built-in user interfaces found
+---in the `CoreGui` among other places. They can use API that is under the
+---RobloxScriptSecurity security level.
 ---
----The source code for CoreScripts can be found within Roblox's content
----folder. In Windows, this is can be found at
+---The source code for CoreScripts can be found within Roblox's content folder.
+---In Windows, this is can be found at
 ---`%localappdata%\Roblox\Versions\VERSION\ExtraContent\scripts\CoreScripts`
 ---
 local CoreScript;
@@ -5854,47 +9655,53 @@ CoreScriptSyncService.GetScriptFilePath = function(self, script) end;
 ---
 local CornerWedgePart;
 ---@class CrossDMScriptChangeListener : Instance
----@field public GuidLineContentsChanged fun(guid: string, lineNumber: int, contents: string): RbxScriptSignal
----@field public GuidNameChanged fun(guid: string, fullName: string): RbxScriptSignal
+---@field public GuidLineContentsChanged RBXScriptSignal.GuidLineContentsChanged
+---@field public GuidNameChanged RBXScriptSignal.GuidNameChanged
 local CrossDMScriptChangeListener;
----@param scriptRef string
----@param lineNumber int
----@return bool
-CrossDMScriptChangeListener.IsWatchingScriptLine = function(self, scriptRef, lineNumber) end;
 ---@param scriptRef string
 ---@param debuggerConnectionId int
 ---@param lineNumber int
 ---@return void
 CrossDMScriptChangeListener.StartWatchingScriptLine = function(self, scriptRef, debuggerConnectionId, lineNumber) end;
+---@param scriptRef string
+---@param lineNumber int
+---@return bool
+CrossDMScriptChangeListener.IsWatchingScriptLine = function(self, scriptRef, lineNumber) end;
+---@class RBXScriptSignal.GuidLineContentsChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.GuidLineContentsChanged, callback: fun(guid: string, lineNumber: int, contents: string)): RBXScriptConnection
+---
+CrossDMScriptChangeListener.GuidLineContentsChanged = nil;
+---@class RBXScriptSignal.GuidNameChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.GuidNameChanged, callback: fun(guid: string, fullName: string)): RBXScriptConnection
+---
+CrossDMScriptChangeListener.GuidNameChanged = nil;
 ---@class CurveAnimation : AnimationClip, Instance
----CurveAnimation is a subtype of `AnimationClip` consumed by Roblox's
----animation system. It stores animation data for each animated channel in a
----Rig as a separate, individual curve. For example, CurveAnimation stores
----the Position channel for an articulated joint as `Vector3Curve`, and it
----might store the Rotation channel as an `EulerRotationCurve` or a
----`RotationCurve`.
+---CurveAnimation is a subtype of `AnimationClip` consumed by Roblox's animation
+---system. It stores animation data for each animated channel in a Rig as a
+---separate, individual curve. For example, CurveAnimation stores the Position
+---channel for an articulated joint as `Vector3Curve`, and it might store the
+---Rotation channel as an `EulerRotationCurve` or a `RotationCurve`.
 ---
 ---## CurveAnimation structure
 ---
----CurveAnimation stores curves in a hierarchical manner, matching the
----hierarchy of the structure of `Motor6D`s or `Bone`s in the animated model.
----Under each CurveAnimation instance lies a hierarchy of `Folder` instances
----representing animated joints in the model. Under each such folder
----instance, several possible instances may exist. An instance named
----'Position' of type `Vector3Curve` can drive the local translation of the
----`Motor6D` or `Bone` on the animated model. Similarly, an instance named
----'Rotation', of type either `EulerRotationCurve` or `RotationCurve` can
----drive the local rotation of the `Motor6D` or `Bone` on the animated model.
+---CurveAnimation stores curves in a hierarchical manner, matching the hierarchy
+---of the structure of `Motor6D`s or `Bone`s in the animated model. Under each
+---CurveAnimation instance lies a hierarchy of `Folder` instances representing
+---animated joints in the model. Under each such folder instance, several
+---possible instances may exist. An instance named 'Position' of type
+---`Vector3Curve` can drive the local translation of the `Motor6D` or `Bone` on
+---the animated model. Similarly, an instance named 'Rotation', of type either
+---`EulerRotationCurve` or `RotationCurve` can drive the local rotation of the
+---`Motor6D` or `Bone` on the animated model.
 ---
 ---## Partial matching of hierarchy
 ---
----You can match partial hierarchies to a model when playing a CurveAnimation
----in Roblox's animation system. This means that not all joints need to be
----present in the hierarchy for the joints that are present to apply
----properly. Furthermore, you can match hierarchies in a 'relative' manner.
----For example, a CurveAnimation's first `Folder` instance root can be
----`UpperTorso`, and the animation system matches that to any existing
----sub-hierarchies in the model.
+---You can match partial hierarchies to a model when playing a CurveAnimation in
+---Roblox's animation system. This means that not all joints need to be present
+---in the hierarchy for the joints that are present to apply properly.
+---Furthermore, you can match hierarchies in a 'relative' manner. For example, a
+---CurveAnimation's first `Folder` instance root can be `UpperTorso`, and the
+---animation system matches that to any existing sub-hierarchies in the model.
 ---
 ---## Animating miscellaneous channels
 ---
@@ -5902,40 +9709,34 @@ CrossDMScriptChangeListener.StartWatchingScriptLine = function(self, scriptRef, 
 ---example, you can animate FACS controls for facial animations by creating a
 ---folder under the CurveAnimation instance named after an existing
 ---`FaceControls` instance in the model. Then, to animate individual facial
----controllers, you can store individual `FloatCurve`s instances named after
----the animated `FaceControls` property.
+---controllers, you can store individual `FloatCurve`s instances named after the
+---animated `FaceControls` property.
 ---
 ---## Using CurveAnimation when making animations
 ---
----As for other AnimationClip types (such as `KeyframeSequence`), you must
----upload CurveAnimations to Roblox first before playing them. To do that,
----right click on the CurveAnimation and click 'Save to Roblox'.
----Alternatively, use `Plugin:SaveSelectedToRoblox` to bring up the animation
----upload window.
+---As for other AnimationClip types (such as `KeyframeSequence`), you must upload
+---CurveAnimations to Roblox first before playing them. To do that, right click
+---on the CurveAnimation and click 'Save to Roblox'. Alternatively, use
+---`Plugin:SaveSelectedToRoblox` to bring up the animation upload window.
 ---
----If you want to preview an Animation before uploading it to the Roblox
----site, you can generate a temporary id using
----`AnimationClipProviderProvider:RegisterAnimationClip`. This generates a
----hash id that you can use for localized animation testing.
+---If you want to preview an Animation before uploading it to the Roblox site,
+---you can generate a temporary id using
+---`AnimationClipProviderProvider:RegisterAnimationClip`. This generates a hash
+---id that you can use for localized animation testing.
 ---
 ---## Obtaining CurveAnimations
 ---
----As for other `AnimationClip` types (such as `KeyframeSequence`), if you
----want to download the CurveAnimation corresponding to an existing uploaded
----Animation using Lua scripts, use AnimationClipProvider:AnimationClipAsync.
+---As for other `AnimationClip` types (such as `KeyframeSequence`), if you want
+---to download the CurveAnimation corresponding to an existing uploaded Animation
+---using Lua scripts, use AnimationClipProvider:AnimationClipAsync.
 ---
 local CurveAnimation;
 ---@class CustomDspSoundEffect : SoundEffect, Instance
 local CustomDspSoundEffect;
 ---@class CustomEvent : Instance
----@field public ReceiverConnected fun(receiver: Instance): RbxScriptSignal
----@field public ReceiverDisconnected fun(receiver: Instance): RbxScriptSignal
+---@field public ReceiverConnected RBXScriptSignal.ReceiverConnected
+---@field public ReceiverDisconnected RBXScriptSignal.ReceiverDisconnected
 local CustomEvent;
----@return Objects
----This function returns the `CustomEventReceiver|CustomEventReceivers` that
----are connected to the `CustomEvent`.
----
-CustomEvent.GetAttachedReceivers = function(self) end;
 ---@param newValue float
 ---@return void
 ---This function sets the value of the `CustomEvent` and fires the
@@ -5943,70 +9744,120 @@ CustomEvent.GetAttachedReceivers = function(self) end;
 ---`CustomEventReciever|recievers`.
 ---
 CustomEvent.SetValue = function(self, newValue) end;
+---@return Objects
+---This function returns the `CustomEventReceiver|CustomEventReceivers` that
+---are connected to the `CustomEvent`.
+---
+CustomEvent.GetAttachedReceivers = function(self) end;
+---@class RBXScriptSignal.ReceiverConnected : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ReceiverConnected, callback: fun(receiver: Instance)): RBXScriptConnection
+---This event fires when a receiver is connected to the `CustomEvent`
+---
+CustomEvent.ReceiverConnected = nil;
+---@class RBXScriptSignal.ReceiverDisconnected : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ReceiverDisconnected, callback: fun(receiver: Instance)): RBXScriptConnection
+---This event fires when a receiver is disconnected from the `CustomEvent`.
+---
+CustomEvent.ReceiverDisconnected = nil;
 ---@class CustomEventReceiver : Instance
 ---@field public Source Instance
----@field public EventConnected fun(event: Instance): RbxScriptSignal
----@field public EventDisconnected fun(event: Instance): RbxScriptSignal
----@field public SourceValueChanged fun(newValue: float): RbxScriptSignal
+---@field public EventConnected RBXScriptSignal.EventConnected
+---@field public EventDisconnected RBXScriptSignal.EventDisconnected
+---@field public SourceValueChanged RBXScriptSignal.SourceValueChanged
 local CustomEventReceiver;
+---This property attaches the `CustomEventReceiver` object to a
+---`CustomEvent`.
+---
+CustomEventReceiver.Source = nil;
 ---@return float
 ---This function returns the current value of the reciever's
 ---`CustomEventReciever/Source` property.
 ---
 CustomEventReceiver.GetCurrentValue = function(self) end;
+---@class RBXScriptSignal.EventConnected : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.EventConnected, callback: fun(event: Instance)): RBXScriptConnection
+---This event fires when the receiver is attached to a different
+---`CustomEvent`, when the `CustomEventReciever/Source` property is changed.
+---
+CustomEventReceiver.EventConnected = nil;
+---@class RBXScriptSignal.EventDisconnected : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.EventDisconnected, callback: fun(event: Instance)): RBXScriptConnection
+---This event fires when the receiver is attached to a different
+---`CustomEvent`, when the `CustomEventReciever/Source` property is changed.
+---
+CustomEventReceiver.EventDisconnected = nil;
+---@class RBXScriptSignal.SourceValueChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.SourceValueChanged, callback: fun(newValue: float)): RBXScriptConnection
+---Fires when the value of the CustomEvent's source is changed, passing the
+---CustomEvent's new value.
+---
+CustomEventReceiver.SourceValueChanged = nil;
 ---@class CylinderHandleAdornment : HandleAdornment, PVAdornment, GuiBase3d, GuiBase, Instance
 ---@field public Angle float
 ---@field public Height float
 ---@field public InnerRadius float
 ---@field public Radius float
----For handles to be interactive, they must be parented to a player's
----PlayerGui or the CoreGui.
+---For handles to be interactive, they must be parented to a player's PlayerGui
+---or the CoreGui.
 ---
 ---The **CylinderHandleAdornment** is a cylinder that can be adorned to a
----`BasePart`. This adornment can listen to input events and is commonly used
----to make dragger tools.
+---`BasePart`. This adornment can listen to input events and is commonly used to
+---make dragger tools.
 ---
 local CylinderHandleAdornment;
+---If `Angle` is `<360`, a cylindrical sector (aka a pie-slice) of that angle
+---is rendered instead of a full cylinder. The `Angle` property can be
+---combined with `InnerRadius` to render a sector of a hollow cylinder.
+---
+CylinderHandleAdornment.Angle = nil;
+---The height of the cylinder adornment.
+---
+CylinderHandleAdornment.Height = nil;
+---If `InnerRadius` is >0, a hollow cylinder with that inner radius is
+---rendered instead of a full cylinder. The `InnerRadius` property can be
+---combined with `Angle` to render a sector of a hollow cylinder.
+---
+CylinderHandleAdornment.InnerRadius = nil;
+---The radius of the cylinder adornment.
+---
+CylinderHandleAdornment.Radius = nil;
 ---@class CylinderMesh : BevelMesh, DataModelMesh, Instance
 ---The CylinderMesh object applies a 'cylinder' mesh to the `BasePart` it is
 ---parented to.
 ---
 ---## What does a CylinderMesh do?
 ---
----A CylinderMesh gives the `BasePart` it was applied to a cylinder shaped
----mesh.
+---A CylinderMesh gives the `BasePart` it was applied to a cylinder shaped mesh.
 ---
 ---The mesh applied gives the same appearance as that due to the
 ---`SpecialMesh/MeshType` of a `SpecialMesh` being set to 'Cylinder' or
----`Part/Shape` being set to 'Cylinder'. However, unlike those two cases, it
----is orientated so that the height of the cylinder is along the `BasePart`'s
----Y axis.
+---`Part/Shape` being set to 'Cylinder'. However, unlike those two cases, it is
+---orientated so that the height of the cylinder is along the `BasePart`'s Y
+---axis.
 ---
 ---The dimensions of the mesh scale relative to the `BasePart/Size` of the
 ---`BasePart`. This scale is uniformly along the `BasePart`'s Y axis and
----maintaining a 1:1 ratio for the part's X and Z axis, using the lowest
----value. This means the `BasePart` can be resized normally, but the cross
----section of the cylinder will always remain a circle and cannot be
----stretched or compressed.
+---maintaining a 1:1 ratio for the part's X and Z axis, using the lowest value.
+---This means the `BasePart` can be resized normally, but the cross section of
+---the cylinder will always remain a circle and cannot be stretched or
+---compressed.
 ---
 ---Note as the CylinderMesh object does not include a texture the
 ---`DataModelMesh/VertexColor` property does not do anything.
 ---
 ---## Why use a CylinderMesh?
 ---
----The advantage of using a mesh over setting the `Part/Shape` property of a
----part to 'Cylinder' is that the `DataModelMesh/Scale` and
----`DataModelMesh/Offset` properties are exposed. These allow the position
----and dimensions of the mesh that is displayed to be changed without
----changing the `BasePart/Position` or `BasePart/Size` of the `Part` the mesh
----is parented to.
+---The advantage of using a mesh over setting the `Part/Shape` property of a part
+---to 'Cylinder' is that the `DataModelMesh/Scale` and `DataModelMesh/Offset`
+---properties are exposed. These allow the position and dimensions of the mesh
+---that is displayed to be changed without changing the `BasePart/Position` or
+---`BasePart/Size` of the `Part` the mesh is parented to.
 ---
 ---The key difference between a CylinderMesh or a `SpecialMesh` with
----`SpecialMesh/MeshType` set to 'Cylinder' is the orientation of the
----cylinder mesh. With a CylinderMesh, the height of the cylinder is aligned
----with the height (Y axis) of the part. With a `SpecialMesh` (or `Part` with
----`Part/Shape` set to 'Cylinder'), the height of the cylinder is aligned
----with the X axis.
+---`SpecialMesh/MeshType` set to 'Cylinder' is the orientation of the cylinder
+---mesh. With a CylinderMesh, the height of the cylinder is aligned with the
+---height (Y axis) of the part. With a `SpecialMesh` (or `Part` with `Part/Shape`
+---set to 'Cylinder'), the height of the cylinder is aligned with the X axis.
 ---
 local CylinderMesh;
 ---@class CylindricalConstraint : SlidingBallConstraint, Constraint, Instance
@@ -6026,22 +9877,86 @@ local CylinderMesh;
 ---@field public TargetAngle float
 ---@field public UpperAngle float
 ---@field public WorldRotationAxis Vector3
----A **CylindricalConstraint** allows its attachments to slide along one axis
----and rotate about another axis. It can be thought of like a combination of
----a `PrismaticConstraint` and a `HingeConstraint`. The sliding axis is
----determined by the **X** axis of the constraint's `Constraint/Attachment0`.
----The rotation axis is centered at the constraint's `Constraint/Attachment1`
----and is angled off of the sliding constraint by the constraint's
+---A **CylindricalConstraint** allows its attachments to slide along one axis and
+---rotate about another axis. It can be thought of like a combination of a
+---`PrismaticConstraint` and a `HingeConstraint`. The sliding axis is determined
+---by the **X** axis of the constraint's `Constraint/Attachment0`. The rotation
+---axis is centered at the constraint's `Constraint/Attachment1` and is angled
+---off of the sliding constraint by the constraint's
 ---`CylindricalConstraint/InclinationAngle`.
 ---
 ---This constraint, along with a `SpringConstraint`, is ideal for building
 ---vehicle suspension.
 ---
----Note that if this constraint attaches one part (**A**) to another part
----(**B**) that is anchored or connected to an anchored part (**Z**), part
----**A** will not be locally simulated when interacting with a player.
+---Note that if this constraint attaches one part (**A**) to another part (**B**)
+---that is anchored or connected to an anchored part (**Z**), part **A** will not
+---be locally simulated when interacting with a player.
 ---
 local CylindricalConstraint;
+---Type of angular actuator: None, Motor, or Servo.
+---
+CylindricalConstraint.AngularActuatorType = nil;
+---Enables the angular limits around the rotation axis.
+---
+CylindricalConstraint.AngularLimitsEnabled = nil;
+---This property specifies the sharpness of the angular servo motor in
+---reaching the `CylindricalConstraint/TargetAngle`, when
+---`CylindricalConstraint/AngularActuatorType` is set to **Servo**. Larger
+---values correspond to a faster response and smaller values results in more
+---damping and a slower response.
+---
+CylindricalConstraint.AngularResponsiveness = nil;
+---Restitution of the two limits, or how elastic they are. Value in [0, 1].
+---
+CylindricalConstraint.AngularRestitution = nil;
+---Target angular speed. This value is unsigned as the servo will always move
+---toward its target. In radians per second. Value in [0, inf).
+---
+CylindricalConstraint.AngularSpeed = nil;
+---The target angular velocity of the motor in radians per second around the
+---rotation axis. Value in [0, inf).
+---
+CylindricalConstraint.AngularVelocity = nil;
+---Signed angle (in degrees) between the reference axis and the secondary
+---axis of Attachment1 around the rotation axis. Value in [-180, 180].
+---
+CylindricalConstraint.CurrentAngle = nil;
+---Direction of the rotation axis as an angle from the x-axis in the xy-plane
+---of Attachment0. Value in [-180, 180].
+---
+CylindricalConstraint.InclinationAngle = nil;
+---Lower limit for the angle (in degrees) between the reference axis and the
+---SecondaryAxis of Attachment1 around the rotation axis. Value in [-180,
+---180].
+---
+CylindricalConstraint.LowerAngle = nil;
+---The maximum angular acceleration of the motor in radians per second
+---squared. Value in [0, inf).
+---
+CylindricalConstraint.MotorMaxAngularAcceleration = nil;
+---The maximum torque the motor can apply to achieve the target angular
+---velocity. The units are mass \* studs^2 / second^2. Value in [0, inf).
+---
+CylindricalConstraint.MotorMaxTorque = nil;
+---Enable the visibility of the rotation axis.
+---
+CylindricalConstraint.RotationAxisVisible = nil;
+---Maximum torque the servo motor can apply. The units are mass \* studs^2 /
+---second^2. Value in [0, inf).
+---
+CylindricalConstraint.ServoMaxTorque = nil;
+---Target angle (in degrees) between the reference axis and the secondary
+---axis of Attachment1 around the rotation axis. Value in [-180, 180].
+---
+CylindricalConstraint.TargetAngle = nil;
+---Upper limit for the angle (in degrees) between the reference axis and the
+---SecondaryAxis of Attachment1 around the rotation axis. Value in [-180,
+---180].
+---
+CylindricalConstraint.UpperAngle = nil;
+---The unit vector direction of the rotation axis in world coordinates.
+---
+CylindricalConstraint.WorldRotationAxis = nil;
 ---@class DataModel : ServiceProvider, Instance
 ---@field public CreatorId int64
 ---@field public CreatorType CreatorType
@@ -6059,26 +9974,400 @@ local CylindricalConstraint;
 ---@field public Workspace Workspace
 ---@field public lighting Instance
 ---@field public workspace Workspace
----@field public AllowedGearTypeChanged fun(): RbxScriptSignal
----@field public GraphicsQualityChangeRequest fun(betterQuality: bool): RbxScriptSignal
----@field public ItemChanged fun(object: Instance, descriptor: string): RbxScriptSignal
----@field public Loaded fun(): RbxScriptSignal
----@field public ScreenshotReady fun(path: string): RbxScriptSignal
----@field public ScreenshotSavedToAlbum fun(filename: string, success: bool, message: string): RbxScriptSignal
----The DataModel (commonly known as **game** after the global variable used
----to access it) is the root of Roblox's parent-child hierarchy. Its direct
----children are services (such as the `Workspace` and `Lighting`) that act as
----the fundamental components of a Roblox game.
+---@field public AllowedGearTypeChanged RBXScriptSignal.AllowedGearTypeChanged
+---@field public GraphicsQualityChangeRequest RBXScriptSignal.GraphicsQualityChangeRequest
+---@field public ItemChanged RBXScriptSignal.ItemChanged
+---@field public Loaded RBXScriptSignal.Loaded
+---@field public ScreenshotReady RBXScriptSignal.ScreenshotReady
+---@field public ScreenshotSavedToAlbum RBXScriptSignal.ScreenshotSavedToAlbum
+---The DataModel (commonly known as **game** after the global variable used to
+---access it) is the root of Roblox's parent-child hierarchy. Its direct children
+---are services (such as the `Workspace` and `Lighting`) that act as the
+---fundamental components of a Roblox game.
 ---
 local DataModel;
+---This property describes the ID of the user or group that owns the place.
+---If the `DataModel/CreatorType` property is _'User'_ then CreatorId will be
+---the `Player/UserId` of the place's owner. If the `DataModel/CreatorType`
+---is _'Group'_ then CreatorId will be the ID of the group that owns the
+---place.
+---
+DataModel.CreatorId = nil;
+---This property describes the `Enum/CreatorType` of the place, whether the
+---place is owned by a user or a group.
+---
+---If the `Enum/CreatorType` is _'User'_, then the `DataModel/CreatorId`
+---property will describe the `Player/UserId|UserId` of the account that owns
+---the game. If the CreatorType is _'Group'_, then it will describe the group
+---ID.
+---
+DataModel.CreatorType = nil;
+---This property describes the ID of the experience that the place running on
+---the server belongs to.
+---
+---This ID can be found in the top right corner of the [Asset Manager][1] in
+---Roblox Studio. When using Roblox Studio, if the place has not been
+---published to Roblox then the GameId will correspond with the template
+---being used.
+---
+---[1]: https://developer.roblox.com/resources/studio/Asset-Manager
+---
+---See also:
+---
+---- `DataModel/PlaceId`, which describes the ID of the place running on the
+---  server
+---- `DataModel/JobId`, which is a unique identifier for the server game
+---  instance running
+---- `TeleportService`, which is a service that can be used to transport
+---  `Player|Players` between games
+---
+DataModel.GameId = nil;
+---This property is broken and should not be used.
+---
+---This property historically described the `Enum/GearGenreSetting` of the
+---place, reflecting the gear permissions configured in the place settings.
+---These settings determine what gear could be added to a `Player|Player's`
+---`StarterGear`.
+---
+---This property, along with `DataModel/Genre`, no longer functions correctly
+---and attempting to read it may throw an error.
+---
+DataModel.GearGenreSetting = nil;
+---This property is broken and should not be used.
+---
+---This property historically described the `Enum/Genre` of the place as set
+---on the Roblox website.
+---
+---This property, along with `DataModel/GearGenreSetting`, no longer
+---functions correctly due to genres existing on the Roblox website that are
+---not reflected in the `Enum/Genre|Genre` enum. As a result, attempting to
+---read this property may throw an error.
+---
+DataModel.Genre = nil;
+---
+DataModel.IsSFFlagsLoaded = nil;
+---This property is a unique identifier for the running game server instance.
+---
+---The JobId is a [universally unique identifier (UUID)][1] meaning that no
+---two servers, past or present, will ever have the same JobId.
+---
+---JobId defaults to an empty string in Roblox Studio.
+---
+---See also:
+---
+---- `TeleportService/GetPlayerPlaceInstanceAsync` which can be used to
+---  retrieve the JobId of a `Player|Player's` current server
+---- `TeleportService/TeleportToPlaceInstance` which can be used to teleport
+---  a `Player` to a specific server
+---- `DataModel/PrivateServerId` describes the ID of the private server the
+---  game server instance belongs to
+---- `HttpService/GenerateGUID`, a function that can be used to generate your
+---  own UUIDs
+---
+---[1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
+---
+DataModel.JobId = nil;
+---This property describes the ID of the place running on the server.
+---
+---This ID corresponds with the number in the place's URL. For example, the
+---ID of the place at the following URL is _1818_:
+---
+---> https://www.roblox.com/games/1818/Classic-Crossroads
+---
+---The place ID can also be found in the [Asset Manager][1] in Roblox Studio
+---by right clicking on the place inside of the [Places][2] folder and
+---selecting 'Copy ID to clipboard'.
+---
+---When using Roblox Studio, if the place has not been published to Roblox
+---then the PlaceId will correspond with the template being used.
+---
+---See also:
+---
+---- `DataModel/GameId`, which describes the ID of the experience that the
+---  current place belongs to
+---- `DataModel/JobId`, which is a unique identifier for the server game
+---  instance running
+---- `TeleportService`, which is a service that can be used to transport
+---  `Player|Players` between places
+---
+---[1]: /studio/asset-manager
+---[2]: /production/publishing/publishing-experiences-and-places
+---
+DataModel.PlaceId = nil;
+---This property describes the version of the place the server is running on.
+---
+---This version number corresponds with the version number shown under the
+---_Version History_ section of the place's settings. It is not the current
+---version of the Roblox client.
+---
+---In Roblox Studio, this property is set to _0_.
+---
+---When a server instance is created for a place, it uses the place's current
+---version. If the place is later updated whilst this server is running, the
+---server will remain at its current version.
+---
+---This property can be used to display a `ScreenGui` showing the current
+---version of the game to `Player|Players` to assist with debugging.
+---
+DataModel.PlaceVersion = nil;
+---This property describes the private server ID of the server, if the server
+---is a private server.
+---
+---If the server is not a private server, then this property will be an empty
+---string.
+---
+---#### Private servers
+---
+---Private servers refer to the following:
+---
+---- [Private servers](/production/monetization/private-servers) that users
+---  can purchase from the games page
+---- Reserved servers, private servers created by the developer using
+---  `TeleportService/ReserveServer`
+---
+---#### PrivateServerId vs JobId
+---
+---The PrivateServerId of a server is different from the `DataModel/JobId`.
+---The `DataModel/JobId|JobId` is the unique identifier of the current server
+---instance.
+---
+---Private servers (VIP or reserved servers) can have multiple server
+---instances associated with them over time. This is because, although only
+---one server instance can be running at once for a private server, new
+---server instances can open and close as players join and leave the game.
+---For example, no server instance is running when nobody is playing in the
+---server. The PrivateServerId will be consistent across all of these server
+---instances, and the `DataModel/JobId` will be unique for each once.
+---
+---See also:
+---
+---- `DataModel/PrivateServerOwnerId`, a property describing the owner of a
+---  VIP server
+---- `TeleportService/ReserveServer`, a function which creates a reserved
+---  server
+---
+DataModel.PrivateServerId = nil;
+---This property describes the `Player/UserId|UserId` of the `Player` that
+---owns the [private server](/production/monetization/private-servers) if the
+---server is private.
+---
+---If the server is a standard or reserved server then this property will be
+---set to _0_.
+---
+---This property could be used to identify if a `Player` is the owner of the
+---VIP server, for example:
+---
+---```lua
+---local Players = game:GetService("Players")
+---
+----- is this a VIP server?
+---if game.PrivateServerId ~= "" and game.PrivateServerOwnerId ~= 0 then
+---
+---    -- listen for new players being added
+---    Players.PlayerAdded:Connect(function(player)
+---
+---        -- check if the player is the server owner
+---        if player.UserId == game.PrivateServerOwnerId then
+---            print("The private server owned has joined the game")
+---        end
+---    end)
+---end
+---```
+---
+---See also:
+---
+---- `DataModel/PrivateServerId`, a property describing the unique ID of VIP
+---  and `TeleportService/ReserveServer|reserved servers`
+---
+DataModel.PrivateServerOwnerId = nil;
+---This property was string that could identify the current server as a VIP
+---server.
+---
+DataModel.VIPServerId = nil;
+---This property indicates the `Player/UserId|UserId` of the account who owns
+---the VIP server.
+---
+DataModel.VIPServerOwnerId = nil;
+---The Workspace property is a reference to the `Workspace` service.
+---
+---This property will always point to the `Workspace` and will never be
+---_nil_.
+---
+---The `Workspace` can also be accessed using the global variable `workspace`
+---and the `ServiceProvider/GetService` function. For example:
+---
+---```lua
+---workspace -- a global variable
+---game.Workspace -- a property of the DataModel (game)
+---game:GetService("Workspace") -- workspace is a service
+---```
+---
+DataModel.Workspace = nil;
+---This property was once used to get the game's `Lighting` service.
+---
+DataModel.lighting = nil;
+---
+DataModel.workspace = nil;
+---@return bool
+---This function returns true if the client has finished loading the game for
+---the first time.
+---
+---When all initial `Instance|Instances` in the game have finished
+---replicating to the client, this function will return true.
+---
+---Unless they are parented to `ReplicatedFirst`, `LocalScript|LocalScripts`
+---will not run while the game has not loaded. The following snippet, ran
+---from a `LocalScript` in `ReplicatedFirst` will yield until the game has
+---loaded:
+---
+---```lua
+---if not game:IsLoaded() then
+---    game.Loaded:Wait()
+---end
+---```
+---
+---See also:
+---
+---- `DataModel/Loaded`, an event that fires when the game has loaded
+---- `Instance/WaitForChild`, a function which can be used to wait for an
+---  individual `Instance` to replicate without having to wait for the whole
+---  game to
+---
+DataModel.IsLoaded = function(self) end;
+---@param name string
+---@param defaultValue int
+---@return int
+DataModel.DefineFastInt = function(self, name, defaultValue) end;
+---@param name string
+---@param newValue bool
+---@return bool
+DataModel.SetFastFlagForTesting = function(self, name, newValue) end;
+---@param url Content
+---@return void
+---Loads a Roblox Place File from a URL.
+---
+DataModel.Load = function(self, url) end;
+---@param url Content
+---@return Objects
+---This function returns an array of `Instance|Instances` associated with the
+---given content URL.
+---
+---This function can be used to insert content from the Roblox [library][1],
+---such as:
+---
+---- Models
+---- Decals
+---- Meshes
+---- Plugins
+---- Animations
+---
+---It is not possible to insert `Sound|Sounds` using this method as they do
+---not have an `Instance` associated with them and have only a content URL.
+---
+---Unlike `InsertService/LoadAsset`, GetObjects does not require an asset to
+---be 'trusted'. This means that an asset does not need to be owned by the
+---logged in user, or created by Roblox, to be inserted. However, if the
+---asset is not owned by the logged in user it must be freely available.
+---
+---Due to this function's security context it can only be used by plugins or
+---the command bar. For an alternative that can be used in `Script|Scripts`
+---and `LocalScript|LocalScripts`, see `InsertService/LoadAsset`.
+---
+---[1]: https://www.roblox.com/develop/library
+---
+DataModel.GetObjects = function(self, url) end;
+---@param name string
+---@param newValue string
 ---@return string
----This function will always return a blank string. It was originally used to
----set the message displayed on screen while the game was loading.
+DataModel.SetFastStringForTesting = function(self, name, newValue) end;
+---@return void
+DataModel.OpenScreenshotsFolder = function(self) end;
+---@param url string
+---@param data string
+---@param contentType string
+---@param httpRequestType HttpRequestType
+---@return string
+DataModel.HttpPostAsync = function(self, url, data, contentType, httpRequestType) end;
+---@param name string
+---@param defaultValue string
+---@return string
+DataModel.DefineFastString = function(self, name, defaultValue) end;
+---@return void
+DataModel.OpenVideosFolder = function(self) end;
+---@param url string
+---@param httpRequestType HttpRequestType
+---@return string
+DataModel.HttpGetAsync = function(self, url, httpRequestType) end;
+---@param url Content
+---@return Objects
+DataModel.GetObjectsAsync = function(self, url) end;
+---@param url Content
+---@return Objects
+DataModel.GetObjectsAllOrNone = function(self, url) end;
+---@return void
+---This function shuts down the current game instance.
 ---
----This system was phased out a very long time ago, and recently the APIs for
----setting this message were removed.
+---This function cannot be used by developers to 'shut down' live game
+---servers due to its security context level. Game servers can only be
+---shutdown by the developer from the place's page on the Roblox website.
 ---
-DataModel.GetMessage = function(self) end;
+---See also:
+---
+---- `DataModel/BindToClose`, which binds a function to be run before the
+---  game instance shuts down
+---- `Player/Kick`, which kicks a `Player` from the game instance
+---
+DataModel.Shutdown = function(self) end;
+---@param kw_function Function
+---@return void
+---This function binds a function to be called prior to the game shutting
+---down.
+---
+---Multiple functions can be bound using BindToClose if it is called
+---repeatedly. The game will wait a maximum of 30 seconds for all bound
+---functions to complete running before shutting down. After 30 seconds, the
+---game will shut down regardless if all bound functions have completed or
+---not.
+---
+---Bound functions will be called in parallel, meaning they will run at the
+---same time.
+---
+---You are advised to use `RunService/IsStudio` to verify the current session
+---is not Roblox Studio. If this is not done, all bound functions will be
+---required to complete in offline testing sessions.
+---
+---When using the `DataStoreService`, best practice is to bind a function
+---saving all unsaved data to `GlobalDataStore|DataStores` using BindToClose.
+---Otherwise, data may be lost if the game shuts down unexpectedly. For an
+---example of this, refer to the code samples.
+---
+---See also:
+---
+---- `PluginGui/BindToClose`, which is used to bind a function to a
+---  `PluginGui` close button and should not be confused with this function
+---
+DataModel.BindToClose = function(self, kw_function) end;
+---@param name string
+---@return bool
+---The goal of this API is to provide a stable interface for core
+---script-level Lua code to query for enabled engine features.
+---
+---If a feature does not exist, this method returns false. This is intended
+---for the case where new Lua is running on an old engine version.
+---
+---Example:
+---
+---```lua
+---if game:GetEngineFeature("FooApi") then
+---  -- code using Foo
+---end
+---```
+---
+DataModel.GetEngineFeature = function(self, name) end;
+---@param name string
+---@param newValue int
+---@return int
+DataModel.SetFastIntForTesting = function(self, name, newValue) end;
 ---@param placeId int64
 ---@return void
 ---This function sets the `DataModel/PlaceId` of the game instance to the
@@ -6103,32 +10392,47 @@ DataModel.GetMessage = function(self) end;
 ---access the `DataStoreService`.
 ---
 DataModel.SetPlaceId = function(self, placeId) end;
----@param name string
----@param newValue string
----@return string
-DataModel.SetFastStringForTesting = function(self, name, newValue) end;
+---@param url Content
+---@return Objects
+DataModel.InsertObjectsAndJoinIfLegacyAsync = function(self, url) end;
+---@param universeId int64
+---@return void
+---This function sets the `DataModel/GameId` of the current game instance to
+---the given _universeId_. This is useful when testing local .rbxl files that
+---have not been published to Roblox.
+---
+---If you want to access the `DataStoreService` in an unpublished place, you
+---should use `DataModel/SetPlaceId` instead.
+---
+DataModel.SetUniverseId = function(self, universeId) end;
 ---@param name string
 ---@return bool
 DataModel.GetFastFlag = function(self, name) end;
----@param url string
----@param data string
----@param contentType string
----@param httpRequestType HttpRequestType
----@return string
-DataModel.HttpPostAsync = function(self, url, data, contentType, httpRequestType) end;
+---@param saveFilter SaveFilter
+---@return bool
+---This function was used by an ancient data persistence method to save the
+---current place.
+---
+---Note:
+---
+---- In order for this method to work the save place API has to be enabled
+---  for the current place.
+---
+DataModel.SavePlace = function(self, saveFilter) end;
 ---@return bool
 ---This method is no longer useful and will always return false. Use
 ---`RunService/IsServer` to see if your code is running on the server.
 ---
 DataModel.GetRemoteBuildMode = function(self) end;
 ---@param name string
----@param defaultValue bool
----@return bool
-DataModel.DefineFastFlag = function(self, name, defaultValue) end;
----@param url string
----@param httpRequestType HttpRequestType
----@return string
-DataModel.HttpGetAsync = function(self, url, httpRequestType) end;
+---@return int
+DataModel.GetFastInt = function(self, name) end;
+---@param category string
+---@param action string
+---@param label string
+---@param value int
+---@return void
+DataModel.ReportInGoogleAnalytics = function(self, category, action, label, value) end;
 ---@param gearType GearType
 ---@return bool
 ---Currently this function only returns the correct value on the client
@@ -6151,28 +10455,17 @@ DataModel.IsGearTypeAllowed = function(self, gearType) end;
 ---@return string
 DataModel.GetFastString = function(self, name) end;
 ---@param name string
+---@param defaultValue bool
 ---@return bool
----The goal of this API is to provide a stable interface for core
----script-level Lua code to query for enabled engine features.
+DataModel.DefineFastFlag = function(self, name, defaultValue) end;
+---@return string
+---This function will always return a blank string. It was originally used to
+---set the message displayed on screen while the game was loading.
 ---
----If a feature does not exist, this method returns false. This is intended
----for the case where new Lua is running on an old engine version.
+---This system was phased out a very long time ago, and recently the APIs for
+---setting this message were removed.
 ---
----Example:
----
----```lua
----if game:GetEngineFeature("FooApi") then
----  -- code using Foo
----end
----```
----
-DataModel.GetEngineFeature = function(self, name) end;
----@param category string
----@param action string
----@param label string
----@param value int
----@return void
-DataModel.ReportInGoogleAnalytics = function(self, category, action, label, value) end;
+DataModel.GetMessage = function(self) end;
 ---@return Array
 ---Returns a table containing basic information about the jobs performed by
 ---the task scheduler.
@@ -6220,32 +10513,65 @@ DataModel.ReportInGoogleAnalytics = function(self, category, action, label, valu
 ---- `DataModel/GetJobTimePeakFraction`
 ---
 DataModel.GetJobsInfo = function(self) end;
----@param universeId int64
----@return void
----This function sets the `DataModel/GameId` of the current game instance to
----the given _universeId_. This is useful when testing local .rbxl files that
----have not been published to Roblox.
+---@param urls Array
+---@return Array
+DataModel.GetObjectsList = function(self, urls) end;
+---@class RBXScriptSignal.AllowedGearTypeChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.AllowedGearTypeChanged, callback: fun()): RBXScriptConnection
+---This event fires when SetGearSettings is called with a different value for
+---_allowedGenres_.
 ---
----If you want to access the `DataStoreService` in an unpublished place, you
----should use `DataModel/SetPlaceId` instead.
+DataModel.AllowedGearTypeChanged = nil;
+---@class RBXScriptSignal.GraphicsQualityChangeRequest : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.GraphicsQualityChangeRequest, callback: fun(betterQuality: bool)): RBXScriptConnection
+---Fires when the user prompts an increase or decrease in graphics quality
+---using the hotkeys.
 ---
-DataModel.SetUniverseId = function(self, universeId) end;
----@param url Content
----@return Objects
-DataModel.InsertObjectsAndJoinIfLegacyAsync = function(self, url) end;
----@return bool
----This function returns true if the client has finished loading the game for
----the first time.
+---This event fires under the following conditions:
 ---
----When all initial `Instance|Instances` in the game have finished
----replicating to the client, this function will return true.
+---- If the user presses F10, this event fires with a _betterQuality_
+---  argument of _true_
+---- If the user presses Shift + F10, this event fires with a _betterQuality_
+---  argument of _false_
+---
+---GraphicsQualityChangeRequest does not provide the current graphics quality
+---level or cover all updates to the graphics quality. For example, changes
+---made in the core GUI escape menu are not registered. This event is
+---intended to be used by Roblox `CoreScript|Core Scripts` to update the
+---graphics quality and display notifications.
+---
+---You can retrieve a user's `Enum/SavedQualitySetting` using
+---`UserGameSettings` with the following snippet:
+---
+---```
+---UserSettings():GetService("UserGameSettings").SavedQualityLevel
+---```
+---
+---If the user's graphics settings are set to automatic then the
+---`Enum/SavedQualitySetting` will be _'Automatic'_. There is currently no
+---way for developers to reliably get the current graphics quality level of a
+---user's machine.
+---
+DataModel.GraphicsQualityChangeRequest = nil;
+---@class RBXScriptSignal.ItemChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ItemChanged, callback: fun(object: Instance, descriptor: string)): RBXScriptConnection
+---This event fires when a property of any object in the `DataModel` is
+---changed.
+---
+DataModel.ItemChanged = nil;
+---@class RBXScriptSignal.Loaded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Loaded, callback: fun()): RBXScriptConnection
+---This event fires on the client when the game finishes loading for the
+---first time.
+---
+---The Loaded event fires when all initial `Instance|Instances` in the game
+---have finished replicating to the client.
 ---
 ---Unless they are parented to `ReplicatedFirst`, `LocalScript|LocalScripts`
----will not run while the game has not loaded. The following snippet, ran
----from a `LocalScript` in `ReplicatedFirst` will yield until the game has
----loaded:
+---will not run prior to this event firing. The following snippet, ran from a
+---`LocalScript` in `ReplicatedFirst`, will yield until the game has loaded:
 ---
----```lua
+---```
 ---if not game:IsLoaded() then
 ---    game.Loaded:Wait()
 ---end
@@ -6253,132 +10579,21 @@ DataModel.InsertObjectsAndJoinIfLegacyAsync = function(self, url) end;
 ---
 ---See also:
 ---
----- `DataModel/Loaded`, an event that fires when the game has loaded
+---- `DataModel/IsLoaded`, a function that returns if the game is loaded or
+---  not
 ---- `Instance/WaitForChild`, a function which can be used to wait for an
 ---  individual `Instance` to replicate without having to wait for the whole
 ---  game to
 ---
-DataModel.IsLoaded = function(self) end;
----@param name string
----@param defaultValue int
----@return int
-DataModel.DefineFastInt = function(self, name, defaultValue) end;
----@param saveFilter SaveFilter
----@return bool
----This function was used by an ancient data persistence method to save the
----current place.
+DataModel.Loaded = nil;
+---@class RBXScriptSignal.ScreenshotReady : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ScreenshotReady, callback: fun(path: string)): RBXScriptConnection
 ---
----Note:
+DataModel.ScreenshotReady = nil;
+---@class RBXScriptSignal.ScreenshotSavedToAlbum : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ScreenshotSavedToAlbum, callback: fun(filename: string, success: bool, message: string)): RBXScriptConnection
 ---
----- In order for this method to work the save place API has to be enabled
----  for the current place.
----
-DataModel.SavePlace = function(self, saveFilter) end;
----@param url Content
----@return void
----Loads a Roblox Place File from a URL.
----
-DataModel.Load = function(self, url) end;
----@param url Content
----@return Objects
----This function returns an array of `Instance|Instances` associated with the
----given content URL.
----
----This function can be used to insert content from the Roblox [library][1],
----such as:
----
----- Models
----- Decals
----- Meshes
----- Plugins
----- Animations
----
----It is not possible to insert `Sound|Sounds` using this method as they do
----not have an `Instance` associated with them and have only a content URL.
----
----Unlike `InsertService/LoadAsset`, GetObjects does not require an asset to
----be 'trusted'. This means that an asset does not need to be owned by the
----logged in user, or created by Roblox, to be inserted. However, if the
----asset is not owned by the logged in user it must be freely available.
----
----Due to this function's security context it can only be used by plugins or
----the command bar. For an alternative that can be used in `Script|Scripts`
----and `LocalScript|LocalScripts`, see `InsertService/LoadAsset`.
----
----[1]: https://www.roblox.com/develop/library
----
-DataModel.GetObjects = function(self, url) end;
----@param name string
----@param newValue bool
----@return bool
-DataModel.SetFastFlagForTesting = function(self, name, newValue) end;
----@return void
-DataModel.OpenScreenshotsFolder = function(self) end;
----@return void
----This function shuts down the current game instance.
----
----This function cannot be used by developers to 'shut down' live game
----servers due to its security context level. Game servers can only be
----shutdown by the developer from the place's page on the Roblox website.
----
----See also:
----
----- `DataModel/BindToClose`, which binds a function to be run before the
----  game instance shuts down
----- `Player/Kick`, which kicks a `Player` from the game instance
----
-DataModel.Shutdown = function(self) end;
----@param name string
----@param defaultValue string
----@return string
-DataModel.DefineFastString = function(self, name, defaultValue) end;
----@return void
-DataModel.OpenVideosFolder = function(self) end;
----@param url Content
----@return Objects
-DataModel.GetObjectsAsync = function(self, url) end;
----@param name string
----@return int
-DataModel.GetFastInt = function(self, name) end;
----@param url Content
----@return Objects
-DataModel.GetObjectsAllOrNone = function(self, url) end;
----@param name string
----@param newValue int
----@return int
-DataModel.SetFastIntForTesting = function(self, name, newValue) end;
----@param kw_function Function
----@return void
----This function binds a function to be called prior to the game shutting
----down.
----
----Multiple functions can be bound using BindToClose if it is called
----repeatedly. The game will wait a maximum of 30 seconds for all bound
----functions to complete running before shutting down. After 30 seconds, the
----game will shut down regardless if all bound functions have completed or
----not.
----
----Bound functions will be called in parallel, meaning they will run at the
----same time.
----
----You are advised to use `RunService/IsStudio` to verify the current session
----is not Roblox Studio. If this is not done, all bound functions will be
----required to complete in offline testing sessions.
----
----When using the `DataStoreService`, best practice is to bind a function
----saving all unsaved data to `GlobalDataStore|DataStores` using BindToClose.
----Otherwise, data may be lost if the game shuts down unexpectedly. For an
----example of this, refer to the code samples.
----
----See also:
----
----- `PluginGui/BindToClose`, which is used to bind a function to a
----  `PluginGui` close button and should not be confused with this function
----
-DataModel.BindToClose = function(self, kw_function) end;
----@param urls Array
----@return Array
-DataModel.GetObjectsList = function(self, urls) end;
+DataModel.ScreenshotSavedToAlbum = nil;
 ---@class DataModelMesh : Instance
 ---@field public Offset Vector3
 ---@field public Scale Vector3
@@ -6386,15 +10601,124 @@ DataModel.GetObjectsList = function(self, urls) end;
 ---The DataModelMesh is an abstract class from which mesh classes descend.
 ---
 ---Mesh classes are objects that, when parented to `BasePart`s alter the
----appearance of the part to that of a predefined mesh. Note, they only alter
----the appearance of the part and not the physics/collision boundaries of the
----part. Developers looking to apply a mesh to a part that alters the part's
----collision should use `MeshPart`s.
+---appearance of the part to that of a predefined mesh. Note, they only alter the
+---appearance of the part and not the physics/collision boundaries of the part.
+---Developers looking to apply a mesh to a part that alters the part's collision
+---should use `MeshPart`s.
 ---
 ---Note the `MeshPart` and `CharacterMesh` classes do not descend from
 ---DataModelMesh.
 ---
 local DataModelMesh;
+---The Offset of a mesh determines the distance from the `BasePart/Position`
+---of a `BasePart` that the mesh will be displayed.
+---
+---#### How to use mesh offset
+---
+---The Offset property changes the relative position the mesh will be
+---rendered at. For example, an offset of 0, 5, 0 will cause the mesh to be
+---displayed 5 studs above the position of the `BasePart`.
+---
+---The position of the `BasePart` remains unchanged, meaning the physics
+---collision box of the part will remain in the same location. This is
+---demonstrated in the image below where the green outline (a `SelectionBox`)
+---shows the extents of the `BasePart`.
+---
+---![enter image description here][1]
+---
+---#### Other uses for mesh offset
+---
+---There are a number of interesting uses for the mesh offset property.
+---
+---- Offset and `DataModelMesh/Scale` can be animated using `TweenService`
+---  relatively inexpensively as the engine does not need to make any
+---  physics/collision calculations as the `BasePart` is not moved.
+---- Changing the relationship between the mesh and its collision extents
+---  (determined by the `BasePart`)
+---
+---[1]: /assets/bltd3942dca6b981850/OffsetAnim.gif
+---
+DataModelMesh.Offset = nil;
+---The Scale of a mesh determines the size of the mesh relative to its
+---original dimensions.
+---
+---#### How to use mesh scale
+---
+---The scale property works slightly differently depending on the type of
+---mesh being used. Note the size of the `BasePart` remains unchanged,
+---meaning the physics collision box of the part will remain the same.
+---
+---- `SpecialMesh` objects with `SpecialMesh/FileType` set to 'FileMesh'
+---  scale relative to the original dimensions of the mesh when it was
+---  uploaded to Roblox
+---- `BlockMesh` objects or `SpecialMesh` objects with `SpecialMesh/FileType`
+---  set to 'Brick', 'Wedge' or 'Sphere' scale uniformly relative to the
+---  `BasePart/Size` of their parent
+---- `CylinderMesh` objects or `SpecialMesh` objects with
+---  `SpecialMesh/FileType` set to 'Cylinder' scale relative to the
+---  `BasePart/Size` of their parent. Uniformly for the cylinders height axis
+---  and maintaining a 1:1 ratio for the length and width of the cylinder,
+---  using the lowest value.
+---- `SpecialMesh` objects with `SpecialMesh/FileType` set to 'Head'
+---  currently scale in a non standard manner. Developers should not rely on
+---  this as their are plans to change this behavior
+---- `SpecialMesh` objects with `SpecialMesh/FileType` set to 'Torso' scale
+---  in a non standard manner. Developers should not rely on this as their
+---  are plans to deprecate this mesh type.
+---
+---#### Mesh scale demonstration
+---
+---The above behavior can be seen in the following demonstration images.
+---
+---Linear scaling relative to part size for 'Brick', 'Wedge' and 'Sphere'
+---meshes. ![enter image description here][1]
+---
+---Linear scaling relative to original uploaded mesh for 'FileMesh' meshes
+---![enter image description here][2]
+---
+---Non-uniform constrained scaling for 'Cylinder' meshes
+---![enter image description here][3]
+---
+---#### Other uses for mesh scale
+---
+---There are a number of interesting uses for the mesh offset property.
+---
+---- `DataModelMesh/Offset` and Scale can be animated using `TweenService`
+---  relatively inexpensively as the engine does not need to make any
+---  physics/collision calculations as the `BasePart` is not changed.
+---- Changing the relationship between the mesh and its collision extents
+---  (determined by the `BasePart`)
+---
+---[1]: /assets/bltd4a34d2e19dc865c/Scale1.gif
+---[2]: /assets/blt3eff78f21fd4de1d/Scale2.gif
+---[3]: /assets/blt543d8e7d5ba8c404/Scale3.gif
+---
+DataModelMesh.Scale = nil;
+---**VertexColor** determines the huge change of the
+---`FileMesh/TextureId|Texture` of a `FileMesh`.
+---
+---The image below shows two versions of the hat
+---["Ozzy's Formal Top Hat"](https://www.roblox.com/catalog/3690516671/Ozzys-Formal-Top-Hat).
+---The left has a default VertexColor of (1, 1, 1), or white. The right has a
+---VertexColor of (0, 0, 1), or blue. The RGB colors on the texture of the
+---red and white hat are multiplied with that of the VertexColor's XYZ
+---components.
+---
+---<img src="/assets/blt0793b0fc6df03875/DataModelMesh.VertexColor.jpg" />
+---
+---It should be noted that this property is a `datatype/Vector3` rather than
+---a `datatype/Color3`. To convert, use the following function:
+---
+---```lua
+---local function color3ToVector3(c3)
+---   return Vector3.new(c3.r, c3.g, c3.b)
+---end
+---```
+---
+---Although this property allows basic modification of a texture, changing a
+---texture entirely provides more control. See `MeshPart` for more details.
+---
+DataModelMesh.VertexColor = nil;
 ---@class DataModelPatchService : Instance
 local DataModelPatchService;
 ---@param userId int64
@@ -6403,22 +10727,42 @@ local DataModelPatchService;
 ---@return void
 DataModelPatchService.UpdatePatch = function(self, userId, patchName, callbackFunction) end;
 ---@param patchName string
+---@return Instance
+DataModelPatchService.GetPatch = function(self, patchName) end;
+---@param patchName string
 ---@param behaviorName string
 ---@param localConfigPath string
 ---@param userId int64
 ---@return void
 DataModelPatchService.RegisterPatch = function(self, patchName, behaviorName, localConfigPath, userId) end;
----@param patchName string
----@return Instance
-DataModelPatchService.GetPatch = function(self, patchName) end;
 ---@class DataModelSession : Instance
 ---@field public CurrentDataModelType StudioDataModelType
 ---@field public SessionId string
----@field public CurrentDataModelTypeAboutToChange fun(dataModelType: StudioDataModelType): RbxScriptSignal
----@field public CurrentDataModelTypeChanged fun(): RbxScriptSignal
----@field public DataModelCreated fun(gameStateType: StudioDataModelType): RbxScriptSignal
----@field public DataModelWillBeDestroyed fun(gameStateType: StudioDataModelType): RbxScriptSignal
+---@field public CurrentDataModelTypeAboutToChange RBXScriptSignal.CurrentDataModelTypeAboutToChange
+---@field public CurrentDataModelTypeChanged RBXScriptSignal.CurrentDataModelTypeChanged
+---@field public DataModelCreated RBXScriptSignal.DataModelCreated
+---@field public DataModelWillBeDestroyed RBXScriptSignal.DataModelWillBeDestroyed
 local DataModelSession;
+---
+DataModelSession.CurrentDataModelType = nil;
+---
+DataModelSession.SessionId = nil;
+---@class RBXScriptSignal.CurrentDataModelTypeAboutToChange : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.CurrentDataModelTypeAboutToChange, callback: fun(dataModelType: StudioDataModelType)): RBXScriptConnection
+---
+DataModelSession.CurrentDataModelTypeAboutToChange = nil;
+---@class RBXScriptSignal.CurrentDataModelTypeChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.CurrentDataModelTypeChanged, callback: fun()): RBXScriptConnection
+---
+DataModelSession.CurrentDataModelTypeChanged = nil;
+---@class RBXScriptSignal.DataModelCreated : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.DataModelCreated, callback: fun(gameStateType: StudioDataModelType)): RBXScriptConnection
+---
+DataModelSession.DataModelCreated = nil;
+---@class RBXScriptSignal.DataModelWillBeDestroyed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.DataModelWillBeDestroyed, callback: fun(gameStateType: StudioDataModelType)): RBXScriptConnection
+---
+DataModelSession.DataModelWillBeDestroyed = nil;
 ---@class DataStore : GlobalDataStore, Instance
 ---See [Data Stores](/scripting/data/data-stores).
 ---
@@ -6491,9 +10835,9 @@ DataStoreIncrementOptions.SetMetadata = function(self, attributes) end;
 ---@field public CreatedTime int64
 ---@field public DataStoreName string
 ---@field public UpdatedTime int64
----Object describing data store information such as name, created time, and
----time last updated. This object is a member of the `DataStoreListingPages`
----object returned by `DataStoreService/ListDataStoresAsync`.
+---Object describing data store information such as name, created time, and time
+---last updated. This object is a member of the `DataStoreListingPages` object
+---returned by `DataStoreService/ListDataStoresAsync`.
 ---
 ---See also:
 ---
@@ -6501,10 +10845,23 @@ DataStoreIncrementOptions.SetMetadata = function(self, attributes) end;
 ---  structure, management, error handling, etc.
 ---
 local DataStoreInfo;
+---This property indicates when the data store was created in milliseconds
+---since epoch.
+---
+DataStoreInfo.CreatedTime = nil;
+---This property indicates the name of the data store. It is used as a unique
+---identifier to retrieve a data store instance with
+---`DataStoreService/GetDataStore`.
+---
+DataStoreInfo.DataStoreName = nil;
+---This property indicates the last time the data store was updated in
+---milliseconds since epoch.
+---
+DataStoreInfo.UpdatedTime = nil;
 ---@class DataStoreKey : Instance
 ---@field public KeyName string
----Object representing a key on a `DataStoreKeyPages` object. It contains the
----key name as `DataStoreKey/KeyName`. This object is a member of the
+---Object representing a key on a `DataStoreKeyPages` object. It contains the key
+---name as `DataStoreKey/KeyName`. This object is a member of the
 ---`DataStoreKeyPages` object returned by `DataStore/ListKeysAsync`.
 ---
 ---See also:
@@ -6513,12 +10870,21 @@ local DataStoreInfo;
 ---  structure, management, error handling, etc.
 ---
 local DataStoreKey;
+---This property indicates the name of the key. This name can then be used in
+---other operations such as `GlobalDataStore/GetAsync` and
+---`GlobalDataStore/SetAsync`.
+---
+---If `DataStoreOptions/AllScopes` was set to true when accessing the data
+---store through `DataStoreService/GetDataStore`, the name will include its
+---scope as a prefix.
+---
+DataStoreKey.KeyName = nil;
 ---@class DataStoreKeyInfo : Instance
 ---@field public CreatedTime int64
 ---@field public UpdatedTime int64
 ---@field public Version string
----An object describing information about a particular version of the key.
----This is returned as the second return value by `GlobalDataStore/GetAsync`,
+---An object describing information about a particular version of the key. This
+---is returned as the second return value by `GlobalDataStore/GetAsync`,
 ---`GlobalDataStore/UpdateAsync`, `GlobalDataStore/IncrementAsync`,
 ---`GlobalDataStore/RemoveAsync`, and `DataStore/GetVersionAsync`.
 ---
@@ -6528,11 +10894,19 @@ local DataStoreKey;
 ---  structure, management, error handling, etc.
 ---
 local DataStoreKeyInfo;
----@return Dictionary
----This function returns the metadata associated with the latest version of
----the object.
+---This property indicates the date and time the object was created,
+---formatted as the number of milliseconds since epoch.
 ---
-DataStoreKeyInfo.GetMetadata = function(self) end;
+DataStoreKeyInfo.CreatedTime = nil;
+---This property indicates the date and time the object was last updated,
+---formatted as the number of milliseconds since epoch.
+---
+DataStoreKeyInfo.UpdatedTime = nil;
+---This property uniquely identifies the version of the object. It can be
+---passed to `DataStore/GetVersionAsync` or `DataStore/RemoveVersionAsync` to
+---get or remove the version respectively.
+---
+DataStoreKeyInfo.Version = nil;
 ---@return Array
 ---This function returns an array of `Player/UserId|UserIds` tagged with the
 ---object. This information is useful for adhering to
@@ -6540,10 +10914,15 @@ DataStoreKeyInfo.GetMetadata = function(self) end;
 ---policies.
 ---
 DataStoreKeyInfo.GetUserIds = function(self) end;
+---@return Dictionary
+---This function returns the metadata associated with the latest version of
+---the object.
+---
+DataStoreKeyInfo.GetMetadata = function(self) end;
 ---@class DataStoreKeyPages : Pages, Instance
----A special type of `Pages` object whose pages contain `DataStoreKey`
----instances. `Pages/GetCurrentPage` can be used to retrieve an array of the
----`DataStoreKey` instances.
+---A special type of `Pages` object whose pages contain `DataStoreKey` instances.
+---`Pages/GetCurrentPage` can be used to retrieve an array of the `DataStoreKey`
+---instances.
 ---
 ---See also:
 ---
@@ -6566,8 +10945,8 @@ local DataStoreListingPages;
 ---@field public CreatedTime int64
 ---@field public IsDeleted bool
 ---@field public Version string
----An instance describing version information for a key, including the
----version string, created time, and whether it has been marked as deleted.
+---An instance describing version information for a key, including the version
+---string, created time, and whether it has been marked as deleted.
 ---
 ---See also:
 ---
@@ -6575,37 +10954,65 @@ local DataStoreListingPages;
 ---  structure, management, error handling, etc.
 ---
 local DataStoreObjectVersionInfo;
+---This property indicates when the version was created in milliseconds since
+---epoch.
+---
+DataStoreObjectVersionInfo.CreatedTime = nil;
+---This property describes whether the version has been marked as deleted.
+---Deleted versions will be permanently deleted after 30 days.
+---
+DataStoreObjectVersionInfo.IsDeleted = nil;
+---This property uniquely identifies a particular version of the key. It can
+---be passed to `DataStore/GetVersionAsync` or `DataStore/RemoveVersionAsync`
+---to get or remove the version respectively.
+---
+DataStoreObjectVersionInfo.Version = nil;
 ---@class DataStoreOptions : Instance
 ---@field public AllScopes bool
 ---Any object containing additional parameters that are used by
 ---`DataStoreService/GetDataStore`.
 ---
 local DataStoreOptions;
+---This property specifies whether the `GlobalDataStore` should work with all
+---scopes.
+---
+DataStoreOptions.AllScopes = nil;
 ---@param experimentalFeatures Dictionary
 ---@return void
 ---This function currently has no effect.
 ---
 DataStoreOptions.SetExperimentalFeatures = function(self, experimentalFeatures) end;
 ---@class DataStorePages : Pages, Instance
----A special type of `Pages` object whose pages contain key/value pairs from
----an `OrderedDataStore`. For this object,
----`Pages/GetCurrentPage|GetCurrentPage()` returns an array of tables, each
----containing keys named **key** and **value**; these reflect the key/value
----pair data.
+---A special type of `Pages` object whose pages contain key/value pairs from an
+---`OrderedDataStore`. For this object, `Pages/GetCurrentPage|GetCurrentPage()`
+---returns an array of tables, each containing keys named **key** and **value**;
+---these reflect the key/value pair data.
 ---
 local DataStorePages;
 ---@class DataStoreService : Instance
 ---@field public AutomaticRetry bool
 ---@field public LegacyNamingScheme bool
 ---**DataStoreService** exposes methods for getting `GlobalDataStore` and
----`OrderedDataStore` objects. Data stores can only be accessed by game
----servers, so you can only use `DataStoreService` within a `Script` or a
----`ModuleScript` that is used by a `Script`.
+---`OrderedDataStore` objects. Data stores can only be accessed by game servers,
+---so you can only use `DataStoreService` within a `Script` or a `ModuleScript`
+---that is used by a `Script`.
 ---
----See [Data Stores](/scripting/data/data-stores) for an in-depth guide on
----data structure, management, error handling, etc.
+---See [Data Stores](/scripting/data/data-stores) for an in-depth guide on data
+---structure, management, error handling, etc.
 ---
 local DataStoreService;
+---Sets whether data store functions should automatically retry or not.
+---
+---DataStoreService does not respect this property because automatic retry
+---has been disabled due to technical reasons. Therefore, you must implement
+---systems for retrying operations yourself. It is possible that automatic
+---retry will be enabled again in the future.
+---
+DataStoreService.AutomaticRetry = nil;
+---This property determines whether data stores use a new improved naming
+---scheme.
+---
+DataStoreService.LegacyNamingScheme = nil;
 ---@return GlobalDataStore
 ---This function returns the default `GlobalDataStore`. If you want to access
 ---a specific **named** data store instead, you should use the
@@ -6667,17 +11074,17 @@ DataStoreService.ListDataStoresAsync = function(self, prefix, pageSize) end;
 ---  structure, management, error handling, etc.
 ---
 local DataStoreSetOptions;
+---@return Dictionary
+---This function gets custom metadata associated with this
+---`DataStoreSetOptions` instance.
+---
+DataStoreSetOptions.GetMetadata = function(self) end;
 ---@param attributes Dictionary
 ---@return void
 ---This function sets custom metadata used by `GlobalDataStore/SetAsync` to
 ---associate metadata with a key. Metadata should be in key-value pair form.
 ---
 DataStoreSetOptions.SetMetadata = function(self, attributes) end;
----@return Dictionary
----This function gets custom metadata associated with this
----`DataStoreSetOptions` instance.
----
-DataStoreSetOptions.GetMetadata = function(self) end;
 ---@class DataStoreVersionPages : Pages, Instance
 ---A special type of `Pages` object whose pages contain
 ---`DataStoreObjectVersionInfo` instances from a `GlobalDataStore`.
@@ -6692,37 +11099,35 @@ DataStoreSetOptions.GetMetadata = function(self) end;
 local DataStoreVersionPages;
 ---@class Debris : Instance
 ---@field public MaxItems int
----The Debris service allows the developer to schedule the removal of the
----object without yielding any code, through the usage of the
----`Debris/AddItem` method.
+---The Debris service allows the developer to schedule the removal of the object
+---without yielding any code, through the usage of the `Debris/AddItem` method.
 ---
----After the lifetime argument has elapsed (in seconds) the object is removed
----in the same manner as `Instance/Destroy`.
+---After the lifetime argument has elapsed (in seconds) the object is removed in
+---the same manner as `Instance/Destroy`.
 ---
 ---As Debris is a service it must be created using the
 ---`ServiceProvider/GetService` method.
 ---
 ---**Why use Debris?**
 ---
----Beyond creating a bit of a mess, objects that are no longer required can
----use up system memory and cause the game to run slower over time. For this
----reason it is always advised to run the `Instance/Destroy` function on
----objects you no longer need. However in many cases an object may have a
----specific period of utility after which it needs to be destroyed.
+---Beyond creating a bit of a mess, objects that are no longer required can use
+---up system memory and cause the game to run slower over time. For this reason
+---it is always advised to run the `Instance/Destroy` function on objects you no
+---longer need. However in many cases an object may have a specific period of
+---utility after which it needs to be destroyed.
 ---
----Take the example of projectile that has just been thrown. It could be
----cleaned up using:
+---Take the example of projectile that has just been thrown. It could be cleaned
+---up using:
 ---
 ---```lua
 ---wait(3)
 ---projectile:Destroy()
 ---```
 ---
----However there are a number of issues with this approach. Firstly, it
----requires yielding the code with a wait, which is not always desirable.
----Secondly, before the 3 seconds have elapsed the object may have already
----been destroyed (for example, if it reached
----`Workspace/FallenPartsDestroyHeight`).
+---However there are a number of issues with this approach. Firstly, it requires
+---yielding the code with a wait, which is not always desirable. Secondly, before
+---the 3 seconds have elapsed the object may have already been destroyed (for
+---example, if it reached `Workspace/FallenPartsDestroyHeight`).
 ---
 ---```lua
 ---delay(3, function()
@@ -6732,10 +11137,10 @@ local DataStoreVersionPages;
 ---end)
 ---```
 ---
----This solves the above issues, as it spawns a new thread to prevent the
----current one from yielding and checks to see if it can be destroyed.
----However at this point a simple command has already become quite
----complicated and an unnecessary thread is being created.
+---This solves the above issues, as it spawns a new thread to prevent the current
+---one from yielding and checks to see if it can be destroyed. However at this
+---point a simple command has already become quite complicated and an unnecessary
+---thread is being created.
 ---
 ---This is where Debris comes in, and the following code addresses all of the
 ---above issues.
@@ -6744,21 +11149,26 @@ local DataStoreVersionPages;
 ---Debris:AddItem(projectile, 3)
 ---```
 ---
----Debris does not yield the current thread, does not require a new thread
----and will not error if the object is already destroyed. For this reason it
----is the recommended method for cleaning up objects with a fixed lifetime.
+---Debris does not yield the current thread, does not require a new thread and
+---will not error if the object is already destroyed. For this reason it is the
+---recommended method for cleaning up objects with a fixed lifetime.
 ---
 local Debris;
+---The maximum number of items that can be assigned to the Debris service at
+---one time.
+---
+---If this number is exceeded, objects are automatically removed in order
+---from oldest to newest until the amount is less than or equal to MaxItems.
+---
+---This property is currently restricted and will error if used.
+---
+Debris.MaxItems = nil;
 ---@param enabled bool
 ---@return void
 ---Controls whether or not the `Debris/MaxItems` property should use a legacy
 ---method or not.
 ---
 Debris.SetLegacyMaxItems = function(self, enabled) end;
----@param item Instance
----@param lifetime double
----@return void
-Debris.addItem = function(self, item, lifetime) end;
 ---@param item Instance
 ---@param lifetime double
 ---@return void
@@ -6815,6 +11225,10 @@ Debris.addItem = function(self, item, lifetime) end;
 ---is the recommended method for cleaning up objects with a fixed lifetime.
 ---
 Debris.AddItem = function(self, item, lifetime) end;
+---@param item Instance
+---@param lifetime double
+---@return void
+Debris.addItem = function(self, item, lifetime) end;
 ---@class DebugSettings : Instance
 ---@field public DataModel int
 ---@field public InstanceCount int
@@ -6824,11 +11238,37 @@ Debris.AddItem = function(self, item, lifetime) end;
 ---@field public ReportSoundWarnings bool
 ---@field public RobloxVersion string
 ---@field public TickCountPreciseOverride TickCountSampleMethod
----The DebugSettings allows you to view diagnostics information regarding
----Roblox. It is labeled as **Diagnostics** in the Roblox Studio Settings
----menu.
+---The DebugSettings allows you to view diagnostics information regarding Roblox.
+---It is labeled as **Diagnostics** in the Roblox Studio Settings menu.
 ---
 local DebugSettings;
+---Describes whether a `DataModel` is actively in memory, as an integer
+---(where 1 = true, and 0 = false).
+---
+DebugSettings.DataModel = nil;
+---The number of instances active in the simulation.
+---
+DebugSettings.InstanceCount = nil;
+---Whether or not a stacktrace is displayed in the output for an error.
+---
+DebugSettings.IsScriptStackTracingEnabled = nil;
+---Returns the number of internal DataModel jobs actively being processed.
+---
+DebugSettings.JobCount = nil;
+---The number of players currently in the active game-instance.
+---
+DebugSettings.PlayerCount = nil;
+---Whether or not sound warnings should be reported.
+---
+DebugSettings.ReportSoundWarnings = nil;
+---The current client version of Roblox. Can also be retrieved by using the
+---version() function.
+---
+DebugSettings.RobloxVersion = nil;
+---Sets the internal sampling method used to measure elapsed time with
+---consistency across platforms.
+---
+DebugSettings.TickCountPreciseOverride = nil;
 ---@class DebuggablePluginWatcher : Instance
 local DebuggablePluginWatcher;
 ---@class DebuggerBreakpoint : Instance
@@ -6842,17 +11282,51 @@ local DebuggablePluginWatcher;
 ---created, but it can be retrieved from the `ScriptDebugger` class.
 ---
 local DebuggerBreakpoint;
+---The condition of the debugger breakpoint.
+---
+DebuggerBreakpoint.Condition = nil;
+---This field controls whether debugger will stop on the breakpoint or not.  
+---It is used together with the `DebuggerBreakpoint/LogExpression` to log a
+---message when breakpoint is hit, without pausing into the debugger to act
+---as a 'logpoint' instead of a 'breakpoint'.
+---
+DebuggerBreakpoint.ContinueExecution = nil;
+---Whether or not the breakpoint is enabled.
+---
+DebuggerBreakpoint.IsEnabled = nil;
+---The line that the breakpoint has been placed on.
+---
+DebuggerBreakpoint.Line = nil;
+---An expression which is evaluated when the breakpoint is hit with the
+---result being logged into the Output window.  
+---Used together with `DebuggerBreakpoint/ContinueExecution` to implement a
+---'logpoint' instead of a 'breakpoint'.
+---
+DebuggerBreakpoint.LogExpression = nil;
+---Whether the breakpoint is unique for a single script instance or not.  
+---When set, the breakpoint will not be duplicated into all the clones of the
+---current script.
+---
+DebuggerBreakpoint.isContextDependentBreakpoint = nil;
 ---@class DebuggerConnection : Instance
 ---@field public ErrorMessage string
 ---@field public HasError bool
 ---@field public Id int
 ---@field public IsPaused bool
----@field public BreakpointAdded fun(breakpoint: Breakpoint): RbxScriptSignal
----@field public BreakpointChanged fun(breakpoint: Breakpoint): RbxScriptSignal
----@field public BreakpointRemoved fun(breakpoint: Breakpoint, reason: BreakpointRemoveReason): RbxScriptSignal
----@field public Paused fun(pausedState: PausedState, reason: DebuggerPauseReason): RbxScriptSignal
----@field public Resumed fun(pausedState: PausedState): RbxScriptSignal
+---@field public BreakpointAdded RBXScriptSignal.BreakpointAdded
+---@field public BreakpointChanged RBXScriptSignal.BreakpointChanged
+---@field public BreakpointRemoved RBXScriptSignal.BreakpointRemoved
+---@field public Paused RBXScriptSignal.Paused
+---@field public Resumed RBXScriptSignal.Resumed
 local DebuggerConnection;
+---
+DebuggerConnection.ErrorMessage = nil;
+---
+DebuggerConnection.HasError = nil;
+---
+DebuggerConnection.Id = nil;
+---
+DebuggerConnection.IsPaused = nil;
 ---@return void
 DebuggerConnection.Close = function(self) end;
 ---@param breakMode DebuggerExceptionBreakMode
@@ -6917,15 +11391,34 @@ DebuggerConnection.Resume = function(self, thread, status) end;
 ---@param callback Function
 ---@return int
 DebuggerConnection.EvaluateWatch = function(self, expression, frame, callback) end;
+---@class RBXScriptSignal.BreakpointAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BreakpointAdded, callback: fun(breakpoint: Breakpoint)): RBXScriptConnection
+---
+DebuggerConnection.BreakpointAdded = nil;
+---@class RBXScriptSignal.BreakpointChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BreakpointChanged, callback: fun(breakpoint: Breakpoint)): RBXScriptConnection
+---
+DebuggerConnection.BreakpointChanged = nil;
+---@class RBXScriptSignal.BreakpointRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.BreakpointRemoved, callback: fun(breakpoint: Breakpoint, reason: BreakpointRemoveReason)): RBXScriptConnection
+---
+DebuggerConnection.BreakpointRemoved = nil;
+---@class RBXScriptSignal.Paused : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Paused, callback: fun(pausedState: PausedState, reason: DebuggerPauseReason)): RBXScriptConnection
+---
+DebuggerConnection.Paused = nil;
+---@class RBXScriptSignal.Resumed : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.Resumed, callback: fun(pausedState: PausedState)): RBXScriptConnection
+---
+DebuggerConnection.Resumed = nil;
 ---@class DebuggerConnectionManager : Instance
 ---@field public Timeout double
----@field public ConnectionEnded fun(connection: DebuggerConnection, reason: DebuggerEndReason): RbxScriptSignal
----@field public ConnectionStarted fun(connection: DebuggerConnection): RbxScriptSignal
----@field public FocusChanged fun(connection: DebuggerConnection): RbxScriptSignal
+---@field public ConnectionEnded RBXScriptSignal.ConnectionEnded
+---@field public ConnectionStarted RBXScriptSignal.ConnectionStarted
+---@field public FocusChanged RBXScriptSignal.FocusChanged
 local DebuggerConnectionManager;
----@param connection DebuggerConnection
----@return void
-DebuggerConnectionManager.FocusConnection = function(self, connection) end;
+---
+DebuggerConnectionManager.Timeout = nil;
 ---@param id int
 ---@return DebuggerConnection
 DebuggerConnectionManager.GetConnectionById = function(self, id) end;
@@ -6936,6 +11429,21 @@ DebuggerConnectionManager.ConnectRemote = function(self, host, port) end;
 ---@param dataModel DataModel
 ---@return int
 DebuggerConnectionManager.ConnectLocal = function(self, dataModel) end;
+---@param connection DebuggerConnection
+---@return void
+DebuggerConnectionManager.FocusConnection = function(self, connection) end;
+---@class RBXScriptSignal.ConnectionEnded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ConnectionEnded, callback: fun(connection: DebuggerConnection, reason: DebuggerEndReason)): RBXScriptConnection
+---
+DebuggerConnectionManager.ConnectionEnded = nil;
+---@class RBXScriptSignal.ConnectionStarted : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.ConnectionStarted, callback: fun(connection: DebuggerConnection)): RBXScriptConnection
+---
+DebuggerConnectionManager.ConnectionStarted = nil;
+---@class RBXScriptSignal.FocusChanged : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.FocusChanged, callback: fun(connection: DebuggerConnection)): RBXScriptConnection
+---
+DebuggerConnectionManager.FocusChanged = nil;
 ---@class DebuggerLuaResponse : Instance
 ---@field public IsError bool
 ---@field public IsSuccess bool
@@ -6943,33 +11451,34 @@ DebuggerConnectionManager.ConnectLocal = function(self, dataModel) end;
 ---@field public RequestId int
 ---@field public Status DebuggerStatus
 local DebuggerLuaResponse;
+---
+DebuggerLuaResponse.IsError = nil;
+---
+DebuggerLuaResponse.IsSuccess = nil;
+---
+DebuggerLuaResponse.Message = nil;
+---
+DebuggerLuaResponse.RequestId = nil;
+---
+DebuggerLuaResponse.Status = nil;
 ---@return Variant
 DebuggerLuaResponse.GetArg = function(self) end;
 ---@class DebuggerManager : Instance
 ---@field public DebuggingEnabled bool
----@field public DebuggerAdded fun(debugger: Instance): RbxScriptSignal
----@field public DebuggerRemoved fun(debugger: Instance): RbxScriptSignal
+---@field public DebuggerAdded RBXScriptSignal.DebuggerAdded
+---@field public DebuggerRemoved RBXScriptSignal.DebuggerRemoved
 ---The DebuggerManager is a special singleton class responsible for managing
----Roblox's Lua Debugger feature. It can be retrieved via the
----`DebuggerManager()` function, but only from the command bar.
+---Roblox's Lua Debugger feature. It can be retrieved via the `DebuggerManager()`
+---function, but only from the command bar.
 ---
 local DebuggerManager;
----@return void
----Performs a Lua Debugger step out operation on the Lua Debugger.
+---Whether the debugger is enabled or disabled.
 ---
-DebuggerManager.StepOut = function(self) end;
----@return void
----Resumes the Lua Debugger if it is paused.
----
-DebuggerManager.Resume = function(self) end;
+DebuggerManager.DebuggingEnabled = nil;
 ---@return void
 ---Performs a Lua Debugger step over operation on the Lua Debugger.
 ---
 DebuggerManager.StepOver = function(self) end;
----@return void
----Enables the DebuggerManager.
----
-DebuggerManager.EnableDebugging = function(self) end;
 ---@return void
 ---Performs a Lua Debugger step into operation on the Lua Debugger.
 ---
@@ -6978,37 +11487,60 @@ DebuggerManager.StepIn = function(self) end;
 ---Returns a list of `ScriptDebugger` present in the experience.
 ---
 DebuggerManager.GetDebuggers = function(self) end;
+---@return void
+---Enables the DebuggerManager.
+---
+DebuggerManager.EnableDebugging = function(self) end;
+---@return void
+---Performs a Lua Debugger step out operation on the Lua Debugger.
+---
+DebuggerManager.StepOut = function(self) end;
 ---@param script Instance
 ---@return Instance
 ---Registers a script to be used in the Lua Debugger. Returns a
 ---`ScriptDebugger` for the script.
 ---
 DebuggerManager.AddDebugger = function(self, script) end;
+---@return void
+---Resumes the Lua Debugger if it is paused.
+---
+DebuggerManager.Resume = function(self) end;
+---@class RBXScriptSignal.DebuggerAdded : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.DebuggerAdded, callback: fun(debugger: Instance)): RBXScriptConnection
+---Fires when a new `ScriptDebugger` is created through the
+---`DebuggerManager/AddDebugger` method.
+---
+DebuggerManager.DebuggerAdded = nil;
+---@class RBXScriptSignal.DebuggerRemoved : RBXScriptSignal
+---@field public Connect fun(self: RBXScriptSignal.DebuggerRemoved, callback: fun(debugger: Instance)): RBXScriptConnection
+---Fires when a registered `ScriptDebugger` has been discontinued.
+---
+DebuggerManager.DebuggerRemoved = nil;
 ---@class DebuggerUIService : Instance
 local DebuggerUIService;
 ---@return void
 DebuggerUIService.Resume = function(self) end;
+---@param debuggerThreadId int
+---@return void
+DebuggerUIService.SetCurrentThreadId = function(self, debuggerThreadId) end;
+---@param debuggerConnectionId int
+---@return bool
+DebuggerUIService.IsConnectionForPlayDataModel = function(self, debuggerConnectionId) end;
+---@return void
+DebuggerUIService.Pause = function(self) end;
+---@param debuggerConnectionId int
+---@param allMarkers bool
+---@return void
+DebuggerUIService.RemoveScriptLineMarkers = function(self, debuggerConnectionId, allMarkers) end;
 ---@param guid string
 ---@param debuggerConnectionId int
 ---@param line int
 ---@param lineMarkerType bool
 ---@return void
 DebuggerUIService.SetScriptLineMarker = function(self, guid, debuggerConnectionId, line, lineMarkerType) end;
----@param debuggerConnectionId int
----@return bool
-DebuggerUIService.IsConnectionForPlayDataModel = function(self, debuggerConnectionId) end;
----@return void
-DebuggerUIService.Pause = function(self) end;
 ---@param metaBreakpointId int
 ---@return void
 DebuggerUIService.EditBreakpoint = function(self, metaBreakpointId) end;
----@param debuggerConnectionId int
----@param allMarkers bool
----@return void
-DebuggerUIService.RemoveScriptLineMarkers = function(self, debuggerConnectionId, allMarkers) end;
----@param debuggerThreadId int
----@return void
-DebuggerUIService.SetCurrentThreadId = function(self, debuggerThreadId) end;
 ---@param guid string
 ---@param debuggerConnectionId int
 ---@param line int
@@ -7025,6 +11557,18 @@ DebuggerUIService.EditWatch = function(self, expression) end;
 ---@field public VariableId int
 ---@field public VariablesCount int
 local DebuggerVariable;
+---
+DebuggerVariable.Name = nil;
+---
+DebuggerVariable.Populated = nil;
+---
+DebuggerVariable.Type = nil;
+---
+DebuggerVariable.Value = nil;
+---
+DebuggerVariable.VariableId = nil;
+---
+DebuggerVariable.VariablesCount = nil;
 ---@param name string
 ---@return DebuggerVariable
 DebuggerVariable.GetVariableByName = function(self, name) end;
@@ -7033,10 +11577,13 @@ DebuggerVariable.GetVariableByName = function(self, name) end;
 DebuggerVariable.GetVariableByIndex = function(self, index) end;
 ---@class DebuggerWatch : Instance
 ---@field public Expression string
----Represents a watch in Roblox's Lua Debugger. This object cannot be
----created, but it can be retrieved from the `ScriptDebugger` class.
+---Represents a watch in Roblox's Lua Debugger. This object cannot be created,
+---but it can be retrieved from the `ScriptDebugger` class.
 ---
 local DebuggerWatch;
+---The expression set for the DebuggerWatch.
+---
+DebuggerWatch.Expression = nil;
 ---@class Decal : FaceInstance, Instance
 ---@field public Color3 Color3
 ---@field public LocalTransparencyModifier float
@@ -7050,11 +11597,11 @@ local DebuggerWatch;
 ---
 ---## How does a Decal work?
 ---
----A Decal will apply an image to the `BasePart` it is parented to. The
----surface this image is applied to is dependent on the `FaceInstance/Face`
----property. The size of the decal is dependent on the size of the face,
----meaning the size and aspect ratio of a decal can be changed by changing
----its parent's `BasePart/Size`.
+---A Decal will apply an image to the `BasePart` it is parented to. The surface
+---this image is applied to is dependent on the `FaceInstance/Face` property. The
+---size of the decal is dependent on the size of the face, meaning the size and
+---aspect ratio of a decal can be changed by changing its parent's
+---`BasePart/Size`.
 ---
 ---The image a Decal applies is determined by its `Decal/Texture` property.
 ---Images can be uploaded to Roblox provided they adhere to the community
@@ -7063,2011 +11610,113 @@ local DebuggerWatch;
 ---
 ---## Alternatives to Decals
 ---
----Although Decals have a wide variety of applications, in some cases
----developers may wish to pick one of the following classes instead.
+---Although Decals have a wide variety of applications, in some cases developers
+---may wish to pick one of the following classes instead.
 ---
 ---- For repeated tiled textures, the `Texture` object should be used
 ---- To apply GUI elements, the `SurfaceGui` object should be used
----- If the effect of lighting on the image needs to be altered, the
----  `SurfaceGui` object should be used
+---- If the effect of lighting on the image needs to be altered, the `SurfaceGui`
+---  object should be used
 ---
 local Decal;
----@class DepthOfFieldEffect : PostEffect, Instance
----@field public FarIntensity float
----@field public FocusDistance float
----@field public InFocusRadius float
----@field public NearIntensity float
----The **DepthOfFieldEffect** simulates a camera lens by blurring parts of a
----scene not in focus. Distant objects can be blurred or this effect can be
----used to focus on specific parts of a scene, like an item in an in-game
----shop.
----
----Like other post-processing effects, **DepthOfFieldEffect** will only work
----while `PostEffect/Enabled|Enabled` and when parented to `Lighting` or
----`Workspace/CurrentCamera`. Also, it may render differently on low-end
----devices or depending on your Studio settings (see the **Quality Level**
----settings in **Rendering** &rarr; **Performance**).
----
----For more details on this effect and others, see
----[Post-Processing Effects](/building-and-visuals/lighting-and-effects/post-processing-effects).
----
----<img src="/assets/blt4d9713a56c8f78e5/DepthOfField-Diagram.svg" />
----
-local DepthOfFieldEffect;
----@class Dialog : Instance
----@field public BehaviorType DialogBehaviorType
----@field public ConversationDistance float
----@field public GoodbyeChoiceActive bool
----@field public GoodbyeDialog string
----@field public InUse bool
----@field public InitialPrompt string
----@field public Purpose DialogPurpose
----@field public Tone DialogTone
----@field public TriggerDistance float
----@field public TriggerOffset Vector3
----@field public DialogChoiceSelected fun(player: Instance, dialogChoice: Instance): RbxScriptSignal
----The Dialog object allows users to create non-player characters (NPCs) that
----players can talk to using a list of choices. The Dialog object can be
----inserted into a part such as a Humanoid's head, and then a player will see
----a speech bubble above the part that they can click on to start a
----conversation. The creator of a place can choose what choices the player
----can say by inserting `DialogChoice` objects into the dialog.
----
----**See Also:**
----
----- [How to use Dialogs][1]
----
----  [1]: https://developer.roblox.com/articles/Usage-of-dialogs
----
-local Dialog;
----@param player Instance
----@param isUsing bool
----@return void
-Dialog.SetPlayerIsUsing = function(self, player, isUsing) end;
----@return Objects
----The GetCurrentPlayers function of a Dialog will return a list of `Player`
----currently using the Dialog. If there are no players using the dialog then
----the returned list will be empty.
----
-Dialog.GetCurrentPlayers = function(self) end;
----@param player Instance
----@param dialogChoice Instance
----@return void
-Dialog.SignalDialogChoiceSelected = function(self, player, dialogChoice) end;
----@class DialogChoice : Instance
----@field public GoodbyeChoiceActive bool
----@field public GoodbyeDialog string
----@field public ResponseDialog string
----@field public UserDialog string
----Used to craft the further choices available to players who have started a
----dialog conversation with an NPC.
----
-local DialogChoice;
----@class DistortionSoundEffect : SoundEffect, Instance
----@field public Level float
----A distortion effect is used to simulate the effect that would occur when
----overdriving older style audio equipment (such as vaccuum tubes). This
----effect causes clipping in the sound and adds a general “fuzzyness”.
----
----Like all other `SoundEffect`, a DistortionSoundEffect can be applied
----either to a `Sound` or `SoundGroup` by being parented to either.
----
-local DistortionSoundEffect;
----@class DockWidgetPluginGui : PluginGui, LayerCollector, GuiBase2d, GuiBase, Instance
----@field public HostWidgetWasRestored bool
----**DockWidgetPluginGui** is a `PluginGui` that displays its contents inside
----a dockable Roblox Studio window. It is used to create widgets similar to
----the built-in **Animation Editor** and **Terrain Tools**.
----
----This GUI can be created using
----`Plugin/CreateDockWidgetPluginGui|Plugin:CreateDockWidgetPluginGui()`.
----
-local DockWidgetPluginGui;
----@return void
-DockWidgetPluginGui.RequestRaise = function(self) end;
----@class DoubleConstrainedValue : ValueBase, Instance
----@field public ConstrainedValue double
----@field public MaxValue double
----@field public MinValue double
----@field public Value double
----@field public Changed fun(value: double): RbxScriptSignal
----@field public changed fun(value: double): RbxScriptSignal
----An instance which is used to create a number value which can never be less
----than the MinValue or more than the MaxValue.
----
-local DoubleConstrainedValue;
----@class DraftsService : Instance
----@field public CommitStatusChanged fun(script: Instance, status: DraftStatusCode): RbxScriptSignal
----@field public DraftAdded fun(script: Instance): RbxScriptSignal
----@field public DraftRemoved fun(script: Instance): RbxScriptSignal
----@field public DraftStatusChanged fun(script: Instance): RbxScriptSignal
----@field public EditorsListChanged fun(script: Instance): RbxScriptSignal
----@field public UpdateStatusChanged fun(script: Instance, status: DraftStatusCode): RbxScriptSignal
-local DraftsService;
----@param scripts Objects
----@return void
-DraftsService.ShowDiffsAgainstBase = function(self, scripts) end;
----@param script Instance
----@return DraftStatusCode
-DraftsService.GetDraftStatus = function(self, script) end;
----@param scripts Objects
----@return void
-DraftsService.ShowDiffsAgainstServer = function(self, scripts) end;
----@param scripts Objects
----@return void
-DraftsService.CommitEdits = function(self, scripts) end;
----@return Objects
-DraftsService.GetDrafts = function(self) end;
----@param scripts Objects
----@return void
-DraftsService.DiscardEdits = function(self, scripts) end;
----@param scripts Objects
----@return void
-DraftsService.UpdateToLatestVersion = function(self, scripts) end;
----@param scripts Objects
----@return void
-DraftsService.RestoreScripts = function(self, scripts) end;
----@param script Instance
----@return Objects
-DraftsService.GetEditors = function(self, script) end;
----@class Dragger : Instance
----The **Dragger** object is a helper object used to create tools that can
----drag parts. It is expected (but not required) to be used with `Mouse`
----events.
----
----Its implementation is primarily used in the RbxStamper library.
----
-local Dragger;
----@param mouseRay Ray
----@return void
----Tries to move the currently dragged part to the point where MouseRay hits
----another part.
----
-Dragger.MouseMove = function(self, mouseRay) end;
----@param mousePart Instance
----@param pointOnMousePart Vector3
----@param parts Objects
----@return void
----Initializes a dragging action, specifying which parts to use when
----dragging.
----
-Dragger.MouseDown = function(self, mousePart, pointOnMousePart, parts) end;
----@param axis Axis
----@return void
----Rotates the currently dragged part(s) by 90 degrees on the given axis.
----
-Dragger.AxisRotate = function(self, axis) end;
----@return void
----Stops the current dragging action (made by `Dragger.MouseDown`)
----
-Dragger.MouseUp = function(self) end;
----@class DraggerService : Instance
----@field public AlignDraggedObjects bool
----@field public AngleSnapEnabled bool
----@field public AngleSnapIncrement float
----@field public AnimateHover bool
----@field public CollisionsEnabled bool
----@field public DraggerCoordinateSpace DraggerCoordinateSpace
----@field public DraggerMovementMode DraggerMovementMode
----@field public GeometrySnapColor Color3
----@field public HoverAnimateFrequency float
----@field public HoverThickness float
----@field public JointsEnabled bool
----@field public LinearSnapEnabled bool
----@field public LinearSnapIncrement float
----@field public PivotSnapToGeometry bool
----@field public ShowHover bool
----@field public ShowPivotIndicator bool
-local DraggerService;
----@class DynamicRotate : JointInstance, Instance
----@field public BaseAngle float
----The base class for classic motor joints.
----
-local DynamicRotate;
----@class EchoSoundEffect : SoundEffect, Instance
----@field public Delay float
----@field public DryLevel float
----@field public Feedback float
----@field public WetLevel float
----An echo effect causes a sound to repeat on a delay with diminishing
----volume, simulating the real effect of an echo. This effect can be applied
----to either an individual sound or to a sound group by parenting it to the
----desired instance.
----
----The effect is controlled by several properties. First, the Delay is how
----long the effect will wait to play the echoed sound. Feedback determines
----how much the original signal is diminished to play as the echoed sound.
----Note that this echoed sound also goes through the echo effect which will
----wait another delay and play another echo. This process will repeat until
----the volume of the echoed sound is negligible.
----
----You can also adjust the wet/dry mix of the effect. The dry component of
----the sound is the original sound that the effect is being applied to. You
----can adjust the volume of the dry sound by adjusting the DryLevel. The wet
----sound is the echoed effect itself, and its volume can be adjusted with
----WetLevel.
----
----It is recommended to only use the EchoSoundEffect with sound groups. If an
----echo effect is applied to a regular Sound, once that sound stops playing
----the echo effect will also be cut off. When applied to a SoundGroup, the
----echo effect will continue playing even if the original source sound has
----stopped.Like all other `SoundEffect`, a EchoSoundEffect can be applied
----either to a `Sound` or `SoundGroup` by being parented to either.
----
-local EchoSoundEffect;
----@class EmotesPages : InventoryPages, Pages, Instance
-local EmotesPages;
----@class EqualizerSoundEffect : SoundEffect, Instance
----@field public HighGain float
----@field public LowGain float
----@field public MidGain float
----The EqualizerSoundEffect allows for control of the volume of various
----frequency ranges for the Sound or SoundGroup the effect is applied to.
----This can be used to highlight particular elements of audio or minimize or
----outright eliminate others. The EqualizerSoundEffect gives control over
----three ranges of frequency: Low, Mid, and High, and their specific
----frequencies are as follows:
----
----- Low: 0 - 400 Hz
----- Mid: 400 - 4000 Hz
----- High: 4000+ HzLike all other `SoundEffect`, a EqualizerSoundEffect can
----  be applied either to a `Sound` or `SoundGroup` by being parented to
----  either.
----
-local EqualizerSoundEffect;
----@class EulerRotationCurve : Instance
----@field public RotationOrder RotationOrder
----A EulerRotation Curve represents a 3D rotation curve, it groups 3
----`FloatCurve|FloatCurves`, stored as 3 FloatCurve child instances. The
----rotation is decomposed in 3 Euler angles channels that can be accessed via
----`EulerRotationCurve/X`, `EulerRotationCurve/Y`, `EulerRotationCurve/Z`
----methods. The 3 axes can be sampled simultaneously via the method
----`EulerRotationCurve/GetAnglesAtTime` returning the 3 Euler angles as a
----Vector3. Similarly, `EulerRotationCurve/GetRotationAtTime` samples all
----channels simultaneously but returns a CFrame rotated by X, Y, and Z
----according to the specified rotation order.
----
-local EulerRotationCurve;
----@return FloatCurve
----Returns the `FloatCurve` controlling the Z channel. It is the first child
----instance of type `FloatCurve` named `Z`. If none is found an empty
----`FloatCurve` is created.
----
-EulerRotationCurve.Z = function(self) end;
----@return FloatCurve
----Returns the `FloatCurve` controlling the X Euler angle channel. It is the
----first child instance of type `FloatCurve` named `X`. If none is found an
----empty `FloatCurve` is created.
----
-EulerRotationCurve.X = function(self) end;
----@param time float
----@return CFrame
----Samples the `EulerRotationCurve` at a given time and returns the
----corresponding rotation. Empty Euler angles channels are interpreted as
----zero.
----
-EulerRotationCurve.GetRotationAtTime = function(self, time) end;
----@param time float
----@return Array
----Samples the 3 `FloatCurves|FloatCurve` (X, Y, Z) at the time passed as
----argument. Returns the result as 3 Euler angles. If a channel curve is
----missing or no key is found in the curve the channel is evaluated as nil.
----
-EulerRotationCurve.GetAnglesAtTime = function(self, time) end;
----@return FloatCurve
----Returns the `FloatCurve` controlling the Y channel. It is the first child
----instance of type `FloatCurve` named 'Y'. If none is found an empty
----`FloatCurve` is created.
----
-EulerRotationCurve.Y = function(self) end;
----@class EventIngestService : Instance
-local EventIngestService;
----@param target string
----@param eventContext string
----@param eventName string
----@param additionalArgs Dictionary
----@return void
-EventIngestService.SendEventImmediately = function(self, target, eventContext, eventName, additionalArgs) end;
----@param target string
----@param eventContext string
----@param eventName string
----@param additionalArgs Dictionary
----@return void
-EventIngestService.SetRBXEventStream = function(self, target, eventContext, eventName, additionalArgs) end;
----@param target string
----@param eventContext string
----@param eventName string
----@param additionalArgs Dictionary
----@return void
-EventIngestService.SendEventDeferred = function(self, target, eventContext, eventName, additionalArgs) end;
----@param target string
----@param eventContext string
----@param eventName string
----@param additionalArgs Dictionary
----@return void
-EventIngestService.SetRBXEvent = function(self, target, eventContext, eventName, additionalArgs) end;
----@class Explosion : Instance
----@field public BlastPressure float
----@field public BlastRadius float
----@field public DestroyJointRadiusPercent float
----@field public ExplosionType ExplosionType
----@field public Position Vector3
----@field public TimeScale float
----@field public Visible bool
----@field public Hit fun(part: BasePart, distance: float): RbxScriptSignal
----An Explosion applies force to `BaseParts|BasePart` within the explosion's
----`Explosion/BlastRadius`. This force breaks `JointInstances|JointInstance`
----and `WeldConstraints|WeldConstraint` between parts and kills `Humanoid`
----characters not protected by a `ForceField`. `Constraints|Constraint` will
----not be broken by an exmplosion.
----
----If an explosion is instanced whilst the game is running, it will destroy
----itself shortly afterwards meaning they do not need to be cleaned up using
----the `Debris` service.
----
----**Explosion effects**
----
----`Humanoids|Humanoid` are killed by explosions as they break the character
----`Model`'s neck joint. Parenting a `ForceField` to a model will protect all
----of its children from Explosions. This means that their joints will not be
----broken and thus `Humanoid`s will not be killed.
----
----If a developer doesn't want joints between `BaseParts|BasePart` to be
----broken or wants to implement their own formula for damaging `Humanoid`s it
----is recommended they set `Explosion/DestroyJointRadiusPercent` to 0 and use
----the `Explosion/Hit` event to handle the result of the explosion.
----
----Explosions can also be configured to damage `Terrain`, creating craters,
----this behavior is controlled by the `Explosion/ExplosionType ` property.
----
----The effect of an Explosion is not disrupted by obstacles, this means parts
----shielded behind other parts will still be effected, even if the `BasePart`
----they are shielded behind is not anchored.
----
-local Explosion;
----@class FaceControls : Instance
----@field public ChinRaiser float
----@field public ChinRaiserUpperLip float
----@field public Corrugator float
----@field public EyesLookDown float
----@field public EyesLookLeft float
----@field public EyesLookRight float
----@field public EyesLookUp float
----@field public FlatPucker float
----@field public Funneler float
----@field public JawDrop float
----@field public JawLeft float
----@field public JawRight float
----@field public LeftBrowLowerer float
----@field public LeftCheekPuff float
----@field public LeftCheekRaiser float
----@field public LeftDimpler float
----@field public LeftEyeClosed float
----@field public LeftEyeUpperLidRaiser float
----@field public LeftInnerBrowRaiser float
----@field public LeftLipCornerDown float
----@field public LeftLipCornerPuller float
----@field public LeftLipStretcher float
----@field public LeftLowerLipDepressor float
----@field public LeftNoseWrinkler float
----@field public LeftOuterBrowRaiser float
----@field public LeftUpperLipRaiser float
----@field public LipPresser float
----@field public LipsTogether float
----@field public LowerLipSuck float
----@field public MouthLeft float
----@field public MouthRight float
----@field public Pucker float
----@field public RightBrowLowerer float
----@field public RightCheekPuff float
----@field public RightCheekRaiser float
----@field public RightDimpler float
----@field public RightEyeClosed float
----@field public RightEyeUpperLidRaiser float
----@field public RightInnerBrowRaiser float
----@field public RightLipCornerDown float
----@field public RightLipCornerPuller float
----@field public RightLipStretcher float
----@field public RightLowerLipDepressor float
----@field public RightNoseWrinkler float
----@field public RightOuterBrowRaiser float
----@field public RightUpperLipRaiser float
----@field public TongueDown float
----@field public TongueOut float
----@field public TongueUp float
----@field public UpperLipSuck float
-local FaceControls;
----@class FaceInstance : Instance
----@field public Face NormalId
----The FaceInstance class is an abstract class from which the `Decal` class
----inherits.
----
-local FaceInstance;
----@class Feature : Instance
----@field public FaceId NormalId
----@field public InOut InOut
----@field public LeftRight LeftRight
----@field public TopBottom TopBottom
----The base class for the legacy motor system.
----
-local Feature;
----@class File : Instance
----@field public Size int64
----An object that represents an Asset loaded from a file on a local disk.
----
----Files generate a temporary asset id in the form _"rbxtemp://####"_, which
----can be used in Studio without uploading the asset, but will be destroyed
----when the File is destroyed or when the Studio session ends. Temporary
----asset ids are not shared across [Team Create][1].
----
----The default `Instance/Name|Name` of a File instance will be the filename
----on disk, excluding path, including extension.
----
----[1]: /studio/team-create
----
-local File;
----@return string
----This function is used to read the contents of the `File` as a raw binary
----string. This allows the file to be uploaded to web endpoints, or to be
----processed by plugins.
----
-File.GetBinaryContents = function(self) end;
----@return Content
----This function is used to retrieve a temporary asset id associated with
----this `File`. This id can be used like an _rbxassetid_ - for example, it
----can be assigned to the Image property of an `ImageLabel`.
----
----Throws an error if the file does not exist on disk.
----
-File.GetTemporaryId = function(self) end;
----@class FileMesh : DataModelMesh, Instance
----@field public MeshId Content
----@field public TextureId Content
----The FileMesh object applies a textured mesh to a `BasePart` when parented
----to it. Its properties are inherited by the `SpecialMesh` object.
----
----## What is a FileMesh?
----
----FileMeshes allow user uploaded meshes to be applied to a `BasePart`. The
----mesh that is applied is dependent on the `FileMesh/MeshId` property. A
----texture can also be applied to this mesh using `FileMesh/TextureId`.
----
----Although it is not an abstract class, and can be used by developers, all
----`FileMesh` properties are inherited by the `SpecialMesh` object. A
----`SpecialMesh` behaves identically to the FileMesh object when its
----`SpecialMesh/MeshType` is set to 'FileMesh'. Although both objects are
----functional, the `SpecialMesh` object is the official supported class.
----
----For more information on using meshes, please see the `SpecialMesh` page.
----
-local FileMesh;
----@class Fire : Instance
----@field public Color Color3
----@field public Enabled bool
----@field public Heat float
----@field public SecondaryColor Color3
----@field public Size float
----@field public TimeScale float
----@field public size float
----<video width="164" height="249" muted autoplay loop>
----<source src="/assets/bltad7b4817c21cff8d/fire.webm" type="video/webm" />
----</video>
----
----**Fire** is one of several premade particle-emitting classes. Like other
----particle emitting objects, a Fire emits particles when parented to a
----`BasePart` an `Attachment` and while `Fire/Enabled|Enabled`. This object
----is useful to create a quick visual effect in a pinch; for more detailed
----work it is preferable to use a `ParticleEmitter` instead.
----
----Fire particles emit from the center of `BasePart` to which they are
----parented. The particles are emit toward the top (+Y) direction; however, a
----negative `Fire/Heat` may be used to emit in the bottom (-Y) direction.
----Using an `Attachment` as a Parent instead allows the emission
----position/direction to be modified by changing the `Attachment/CFrame` or
----related properties.
----
----When `Fire/Enabled|Enabled` is off, existing particles continue to render
----until they expire. However, if the Fire's `Instance/Parent|Parent` is set
----to nil all existing particles immediately disappear, similar to the
----behavior of `ParticleEmitter/Clear`. It is possible to set the
----`Instance/Parent|Parent` to nil and back to the exact original object to
----achieve the same effect. If immediate disappearance is not desired, try
----moving the Fire's parent to some far away position, then
----`Instance/Destroy|Destroy` the Fire after a few seconds using
----`Debris/AddItem`. This will give the existing particles time to expire.
----
----Fire objects emit no light on their own. To help create a cohesive
----environment around a burning object, try adding a `PointLight` with an
----orange `Light/Color|Color`. This can help your fire appear more realistic.
----
----<video width="164" height="249" muted autoplay loop>
----<source src="/assets/blt02f8bc4f76c4c40a/fire-colors.webm" type="video/webm" />
----</video>
----
----Fire object consist of two emitters. Both of these are affected in various
----ways by the Fire's `Fire/Size|Size`, `Fire/Heat|Heat`, `Fire/Color|Color`
----and `Fire/SecondaryColor|SecondaryColor`. The particles emit from the
----smaller, secondary emitter have a significantly longer lifetime (and rise
----farther) than those emit by the primary emitter. In the video to the
----right, you can see the two emitters with the distinct colors.
----
----Unlike actual flames, the Fire object **does not spread on its own**. If
----you notice this behavior in your game, it is happening because of a
----`Script`.
----
-local Fire;
----@class Flag : Tool, BackpackItem, Instance
----@field public TeamColor BrickColor
----The Flag is a unit spawned with a `FlagStand` object, and will respawn
----when captured. When a player touches this object's Handle, which must be a
----child of the Flag object, which is a Part named "Handle", the flag will be
----added to the player's backpack and will appear in their hand. A player
----cannot select other weapons while carrying a flag, and can drop the flag
----at anytime by pressing "Backspace" on the keyboard. If the player carrying
----a flag steps onto another FlagStand of a different team color, the flag
----will be removed from the player's backpack and a point will be added to
----the user's
----<a href="https://developer.roblox.com/articles/Leaderboards">leaderstats</a>,
----if provided. The flag will then regenerate at the originating flag stand.
----This allows for 'Capture the Flag' to be made games very easily, which was
----the reason for its creation.
----
-local Flag;
----@class FlagStand : Part, FormFactorPart, BasePart, PVInstance, Instance
----@field public TeamColor BrickColor
----@field public FlagCaptured fun(player: Instance): RbxScriptSignal
----The `Flag` and `FlagStand` objects were created to allow developers to
----make 'Capture the Flag' style games quickly. However they have been
----deprecated and developers are advised to design their own systems which
----will be more flexible and reliable.
----
----To get started with this, developers can use the 'Capture The Flag'
----template place provided by Roblox which has a fully functioning system
----developers can take and use in their own games. A link to the place, which
----is free to edit, is [here][1].
----
----[1]: https://www.roblox.com/games/92721754/Capture-The-Flag#!/about
----
-local FlagStand;
----@class FlagStandService : Instance
----This class was an internal service responsible for handling the now
----deprecated `FlagStand` and `Flag` objects.
----
----The `Flag` and `FlagStand` objects were created to allow developers to
----make 'Capture the Flag' style games quickly. However they have been
----deprecated and developers are advised to design their own systems which
----will be more flexible and reliable.
----
----To get started with this, developers can use the 'Capture The Flag'
----template place provided by Roblox which has a fully functioning system
----developers can take and use in their own games. A link to the place, which
----is free to edit, is [here][1].
----
----[1]: https://www.roblox.com/games/92721754/Capture-The-Flag#!/about
----
-local FlagStandService;
----@class FlangeSoundEffect : SoundEffect, Instance
----@field public Depth float
----@field public Mix float
----@field public Rate float
----The FlangeSoundEffect creates a sweeping or swooshing effect on the Sound
----or SoundGroup it is applied to. It does this by copying the original audio
----signal and playing on top of the original but slightly offset and
----modulated.
----
----Like all other `SoundEffect`, a FlangeSoundEffect can be applied either to
----a `Sound` or `SoundGroup` by being parented to either.
----
-local FlangeSoundEffect;
----@class FloatCurve : Instance
----@field public Length int
----An instance representing a 1D float curve encoded via a sorted list of
----`DataType/FloatCurveKey|FloatCurveKeys`.
----
----`datatype/FloatCurveKey|FloatCurveKeys` are value-time points that
----represent the changes in value over time. The changes of a single value
----over time are represented by a curve. Animators can edit keys to modify a
----curve. The shape of the curve is dictated by the
----`Enum/KeyInterpolationMode` chosen at each key.
----
-local FloatCurve;
----@param startingIndex int
----@param count int
----@return int
----Removes a given number of Keys starting from a given index. Returns the
----number of keys that were removed.
----
-FloatCurve.RemoveKeyAtIndex = function(self, startingIndex, count) end;
----@param key FloatCurveKey
----@return Array
----Adds the key passed as argument to this curve. If a key exists at the same
----time it will be replaced. First return value is true if a key was added,
----false if a previous key was replaced. Second return value is the index at
----which the marker was added.
----
-FloatCurve.InsertKey = function(self, key) end;
----@param index int
----@return FloatCurveKey
----Returns a copy of a key at a given index.
----
-FloatCurve.GetKeyAtIndex = function(self, index) end;
----@param keys Array
----@return int
----Resets this curve's keys using the FloatCurveKey array passed as argument.
----Keys in the keysArray are sorted in ascending time order before insertion.
----Keys at duplicated times are removed in a stable manner. Returns the
----number of keys actually inserted.
----
----Keys previously stored in this curve are removed before the keys passed as
----arguments are added.
----
-FloatCurve.SetKeys = function(self, keys) end;
----@param time float
----@return Array
----The first returned value is the index of the last key with
----`key.time <= time` (or `min(1,length)` if no key was found). The second
----returned value is the index of the first key with `key.time >= time` or
----the length of the curve if no key was found satisfying the inequality.
----
-FloatCurve.GetKeyIndicesAtTime = function(self, time) end;
----@param time float
----@return float?
----Samples the float curve at a given time passed as argument.
----
-FloatCurve.GetValueAtTime = function(self, time) end;
----@return Array
----Returns a copy of all the keys in the FloatCurve as a Lua array of
----FloatCurveKey.
----
-FloatCurve.GetKeys = function(self) end;
----@class FloorWire : GuiBase3d, GuiBase, Instance
----@field public CycleOffset float
----@field public From BasePart
----@field public StudsBetweenTextures float
----@field public Texture Content
----@field public TextureSize Vector2
----@field public To BasePart
----@field public Velocity float
----@field public WireRadius float
----A FloorWire attempts to make a wire from two of its properties:
----`FloorWire/From` and `FloorWire/To`, which both need to be set to a
----`BasePart`. It sometimes goes through bricks but the majority of the time
----it works fine. It starts at From's center and goes to To's center. Which
----side of each one it goes into depends on the BaseParts's positions. It
----chooses the fastest route.
----
-local FloorWire;
----@class FlyweightService : Instance
----Internal service with no functionality available to developers.
----
-local FlyweightService;
----@class Folder : Instance
----A simple container used to hold and organize Roblox objects. Unlike other
----container classes like `Model`, it offers no additional functionality.
----
----The Folder object is ideal for organizing and storing objects. It is not
----recommended to use folders to group `BasePart`s as `Model`s offer a range
----of useful functions for moving and manipulating the parts.
----
----Folders form part of the game's hierarchy and can be accessed the same way
----as any object. For example:
+---The `DataType/Color3` tint of the `Decal`.
+---
+---Developers should note that this property only sets the tint of the decal,
+---rather than the color. This means, unless the image associated with the
+---`Decal` was originally white (RGB = 1,1,1) then the color cannot be freely
+---changed using this property.
+---
+---By reducing the RGB properties of `DataType/Color3` in union, developers
+---can make a decal darker.
+---
+Decal.Color3 = nil;
+---Acts as a multiplier for the `Decal`'s `Decal/Transparency` property. The
+---effects are only visible to the `Players/LocalPlayer`.
+---
+---This property should be used in situations where `Decal/Transparency` is
+---being set by a different script. The benefit of LocalTransparencyModifier
+---is that it can be changed without concern for the original
+---`Decal/Transparency` of the `Decal`
+---
+---When LocalTransparencyModifier is set to 1, the `Decal` will be completely
+---invisible regardless of its original transparency. When it is set to 0,
+---the `Decal`s rendered transparency will match the `Decal/Transparency`
+---value. The formula for this is:
 ---
 ---```
----local folder = game:GetService("ReplicatedStorage"):FindFirstChild("Folder")
---- local subFolder = folder:FindFirstChild("Folder")
+---Displayed Transparency = Transparency + ((1 - Transparency) * LocalTransparencyModifier)
 ---```
 ---
----Folders behave the same way as folders in a computer file system, meaning
----they can also be parented to each other. They exist as a means for
----developers to better organize the multitude of objects required by complex
----games. See below for a simple example of how folders can be used to
----organize game objects in `ReplicatedStorage`.
----
----![enter image description here][1]
----
----[1]: /assets/blt847013d8fcc8beb3/addFolder.png
----
-local Folder;
----@class ForceField : Instance
----@field public Visible bool
----A `ForceField` protects a `Humanoid` from taking damage using the
----`Humanoid/TakeDamage` function, and protects `BasePart`s from having their
----joints broken due to an `Explosion`.
----
----## ForceField Creation
----
----ForceFields are created when a character spawns on a `SpawnLocation` and
----the `SpawnLocation/Duration` property is greater than zero.
----
----ForeFields influence the instance they are parented to. When parented to a
----`Model` they will protect all of the `BasePart`s descending from that
----model. They may be parented to a `BasePart`, but the part's joints will
----only be protected if both the part and the part it is connected to also
----contain ForceField.
----
----## Forcefields and Joints
----
----When a ForceField is parented to a character `Model` the neck joint will
----be protected and thus the character can not be killed by `Explosions`.
----Developers can protect joints from Explosions without the need for a
----`ForceField` object by setting `Explosion/DestroyJointRadiusPercent` to 0.
----
----**ForceFields and Damage**
----
----ForceFields only protect `Humanoid`s from damage using the
----`Humanoid/TakeDamage` function. Humanoids can still be damaged by setting
----`Humanoid/Health` directly. For this reason, it is advised that developers
----use `Humanoid/TakeDamage`. Bearing in mind of course, that it is still
----possible to check if a `ForceField` exists before manually setting the
----humanoid's health as shown below:
----
----    if not characterModel:FindFirstChildOfClass("ForceField") then
----    	humanoid.Health = humanoid.Health - 10
----    end
----
----## ForceField Visuals
----
----When `ForceField/Visible` is set to true, a particle effect is created. A
----number of rules determine where this effect will be emitted from.
----
----When parented to a `Model`, if the model includes a `Humanoid` named
----“Humanoid” with `Humanoid/RigType` set to R15, the effect will be emitted
----from the part named “UpperTorso”. Otherwise, the effect will be emitted
----from the part named “Torso”. The part must have the same parent as the
----ForceField, if it does not exist then the effect is emitted at 0, 0, 0.
----
----When parented to a `BasePart` the effect will be emitted from the part's
----`BasePart/Position`.
----
-local ForceField;
----@class FormFactorPart : BasePart, PVInstance, Instance
----@field public FormFactor FormFactor
----@field public formFactor FormFactor
----The FormFactorPart class is an abstract class. It inherits from the
----`BasePart` class and adds the `FormFactorPart/FormFactor` property to
----classes that inherit from it.
----
----The FormFactor property has been deprecated, so this class has been
----deprecated as well.
----
-local FormFactorPart;
----@class Frame : GuiObject, GuiBase2d, GuiBase, Instance
----@field public Style FrameStyle
----Frame is a `GuiObject` that renders as a plain rectangle with no other
----content. They are the simplest concrete example of a `GuiObject`, as they
----provide very little additional functionality (`Frame.FrameStyle`). Despite
----this, Frames are useful as containers for other `GuiObject`s, such as
----`TextLabel`, `ImageLabel`. The key benefit to using a Frame over a
----`Folder` as a container object is the ability to further manipulate the
----`GuiObject.Size` and `GuiObject.Position` of any descendant `GuiObject`s.
----
-local Frame;
----@class FriendPages : Pages, Instance
----FriendPages is a special version of the `Pages` returned by
----`Players/GetFriendsAsync`. The items contained within describe information
----about a player's friends, and have the following structure:
----
----<table>
----<tr>
----<th>Name</th>
----<th>Type</th>
----<th>Description</th>
----</tr>
----<tr>
----<td><code>Id</code></td>
----<td>int64</td>
----<td>The user ID of the friend</td>
----</tr>
----<tr>
----<td><code>Username</code></td>
----<td>string</td>
----<td>The current username of the friend</td>
----</tr>
----<tr>
----<td><code>IsOnline</code></td>
----<td>boolean</td>
----<td>Whether or not the user is presently online.</td>
----</tr>
----</table>
----
----See the code samples for an easy way to iterate over a player's friends.
----
-local FriendPages;
----@class FriendService : Instance
----@field public FriendsUpdated fun(friendData: Array): RbxScriptSignal
----A service which is used to send, cancel, accept and decline friend
----requests in-game. It is primarily used by the PlayerListScript to send
----friend requests with the leaderboard.
----
-local FriendService;
----@return Array
-FriendService.GetPlatformFriends = function(self) end;
----@class FunctionalTest : Instance
----@field public Description string
----Deprecated. Use TestService instead
----
-local FunctionalTest;
----@param message string
----@return void
-FunctionalTest.Pass = function(self, message) end;
----@param message string
----@return void
-FunctionalTest.Passed = function(self, message) end;
----@param message string
----@return void
-FunctionalTest.Error = function(self, message) end;
----@param message string
----@return void
----Prints a red message to the output, prefixed by _"TestService: "_.
----
-FunctionalTest.Failed = function(self, message) end;
----@param message string
----@return void
----Prints if a condition is true, otherwise prints a warning.
----
-FunctionalTest.Warn = function(self, message) end;
----@class GamePassService : Instance
----The GamePassService is a service that supports legacy game passes using
----_Asset IDs_. `MarketplaceService` should be used for all new game passes.
----
----For more information about game passes, please see [this article][1].
----
----## Legacy Game Passes
----
----Historically, game passes on Roblox had an _Asset ID_ associated with
----them. Although game passes created with an _Asset ID_ still have an _Asset
----ID_, they now also have a _Game Pass ID_. All new game passes created
----today **only** have a _Game Pass ID_.
----
----You can retrieve the _Game Pass ID_ of any pass through its URL, for
----example the _Game Pass ID_ of the below pass is 1:
----
----> https://www.roblox.com/game-pass/1/myGamePass
----
----Whether you are using an _Asset ID_ or a _Game Pass ID_ determines which
----API members you can use.
----
----<table >
----    <thead>
----        <tr>
----            <td> </td>
----            <td>Works with Asset ID (Legacy)</td>
----            <td>Works with Game Pass ID (Current)</td>
----        </tr>
----    </thead>
----    <tbody>
----        <tr>
----            <td>Verify Ownership</td>
----            <td><a href="/reference/engine/classes/GamePassService#PlayerHasPass">GamePassService:PlayerHasPass</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#UserOwnsGamePassAsync">MarketplaceService:UserOwnsGamePassAsync</a></td>
----        </tr>
----        <tr>
----            <td>Prompt a purchase</td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptPurchase">MarketplaceService:PromptPurchase</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptGamePassPurchase">MarketplaceService:PromptGamePassPurchase</a></td>
----        </tr>
----        <tr>
----            <td>Prompted purchase finished</td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptPurchaseFinished">MarketplaceService.PromptPurchaseFinished</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptGamePassPurchaseFinished">MarketplaceService.PromptGamePassPurchaseFinished</a></td>
----        </tr>
----    </tbody>
----</table>
----
----API members that work with _Asset IDs_ **will not** work with new game
----passes as they do not have them.
----
----[1]: https://developer.roblox.com/articles/Game-Passes-One-Time-Purchases
----
-local GamePassService;
----@param player Player
----@param gamePassId int64
----@return bool
----This function will not work with new game passes, use
----`MarketplaceService#UserOwnsGamePassAsync` instead.
----
----This function returns _true_ if the `Player` has the specified legacy game
----pass.
----
----The result of this function may be cached, meaning it should not be relied
----on to give an up to date result.
----
----For more information about game passes, please see [this article][1].
----
----#### Legacy Game Passes
----
----Historically, game passes on Roblox had an _Asset ID_ associated with
----them. Although game passes created with an _Asset ID_ still have an _Asset
----ID_, they now also have a _Game Pass ID_. All new game passes created
----today **only** have a _Game Pass ID_.
----
----You can retrieve the _Game Pass ID_ of any pass through its URL, for
----example the _Game Pass ID_ of the below pass is 1:
----
----```
----https://www.roblox.com/game-pass/1/myGamePass
----```
----
----Whether you are using an _Asset ID_ or a _Game Pass ID_ determines which
----API members you can use.
----
----<table >
----    <thead>
----        <tr>
----            <td> </td>
----            <td>Works with Asset ID (Legacy)</td>
----            <td>Works with Game Pass ID (Current)</td>
----        </tr>
----    </thead>
----    <tbody>
----        <tr>
----            <td>Verify Ownership</td>
----            <td><a href="/reference/engine/classes/GamePassService#PlayerHasPass">GamePassService:PlayerHasPass</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#UserOwnsGamePassAsync">MarketplaceService:UserOwnsGamePassAsync</a></td>
----        </tr>
----        <tr>
----            <td>Prompt a purchase</td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptPurchase">MarketplaceService:PromptPurchase</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptGamePassPurchase">MarketplaceService:PromptGamePassPurchase</a></td>
----        </tr>
----        <tr>
----            <td>Prompted purchase finished</td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptPurchaseFinished">MarketplaceService.PromptPurchaseFinished</a></td>
----            <td><a href="/reference/engine/classes/MarketplaceService#PromptGamePassPurchaseFinished">MarketplaceService.PromptGamePassPurchaseFinished</a></td>
----        </tr>
----    </tbody>
----</table>
----
----API members that work with _Asset IDs_ **will not** work with new game
----passes as they do not have them.
----
-GamePassService.PlayerHasPass = function(self, player, gamePassId) end;
----@class GameSettings : Instance
----@field public AdditionalCoreIncludeDirs string
----@field public OverrideStarterScript string
----@field public VideoCaptureEnabled bool
----@field public VideoRecording bool
----@field public VideoRecordingChangeRequest fun(recording: bool): RbxScriptSignal
----Various miscellaneous options for in-game. Can be accessed from Roblox
----Studio's settings menu under the **Game** tab.
----
-local GameSettings;
----@class GamepadService : Instance
----@field public GamepadCursorEnabled bool
----@field public GamepadThumbstick1Changed fun(event: Vector2): RbxScriptSignal
----The GamepadService is internally responsible for handling inputs from
----various controllers (such as an Xbox One controller)
----
-local GamepadService;
----@return void
-GamepadService.DisableGamepadCursor = function(self) end;
----@param position Vector2
----@return void
-GamepadService.SetGamepadCursorPosition = function(self, position) end;
----@return Vector2
-GamepadService.GetGamepadCursorPosition = function(self) end;
----@param guiObject Instance
----@return void
-GamepadService.EnableGamepadCursor = function(self, guiObject) end;
----@class GenericSettings : ServiceProvider, Instance
----The abstract class for settings database classes.
----
-local GenericSettings;
----@class Geometry : Instance
----An ancient internal Roblox service, which appears to be responsible for
----all raw geometry shown in the game.
----
-local Geometry;
----@class GlobalDataStore : Instance
----A **GlobalDataStore** exposes functions for saving and loading data for
----the `DataStoreService`.
----
----See [Data Stores](/scripting/data/data-stores) for an in-depth guide on
----data structure, management, error handling, etc.
----
-local GlobalDataStore;
----@param key string
----@param value Variant
----@param userIds Array
----@param options DataStoreSetOptions
----@return Variant
----This function sets the latest value, `Player/UserId|UserIds`, and metadata
----for the given key.
----
----Values in data stores are versioned, meaning `GlobalDataStore/SetAsync`
----will create a new version every time it is called. Prior versions can be
----accessed through `DataStore/ListVersionsAsync`/`DataStore/GetVersionAsync`
----for up to 30 days at which point they are permanently deleted.
----
----`OrderedDataStore` does not support versioning, so calling this method on
----an `OrderedDataStore` key will overwrite the current value and make
----previous versions inaccessible.
----
----Metadata definitions must always be updated with a value, even if there
----are no changes to the current value; otherwise the current value will be
----lost.
----
----Any string being stored in a data store must be valid
----[UTF-8](/reference/engine/libraries/utf8). In UTF-8, values greater than
----127 are used exclusively for encoding multi-byte codepoints, so a single
----byte greater than 127 will not be valid UTF-8 and the
----`GlobalDataStore/SetAsync` attempt will fail.
----
----#### Set vs. Update
----
----`GlobalDataStore/SetAsync` is best for a quick update of a specific key,
----and it only counts against the write limit. However, it may cause data
----inconsistency if two servers attempt to set the same key at the same time.
----`GlobalDataStore/UpdateAsync` is safer for handling multi-server attempts
----because it reads the current key value (from whatever server last updated
----it) before making any changes. However, it's somewhat slower because it
----reads before it writes, and it also counts against both the read and write
----limit.
----
-GlobalDataStore.SetAsync = function(self, key, value, userIds, options) end;
----@param key string
----@param delta int
----@param userIds Array
----@param options DataStoreIncrementOptions
----@return Variant
----This function increments the value of a key by the provided amount (both
----must be integers).
----
----`OrderedDataStore` does not support versioning, so calling this method on
----an `OrderedDataStore` key will overwrite the current value with the
----incremented value and make previous versions inaccessible.
----
-GlobalDataStore.IncrementAsync = function(self, key, delta, userIds, options) end;
----@param key string
----@param transformFunction Function
----@return Tuple
----This function retrieves the value and metadata of a key from the data
----store and updates it with a new value determined by the callback function
----specified through the second parameter.
----
----If the update succeeds, a new version of the value will be created and
----prior versions will remain accessible through
----`DataStore/ListVersionsAsync` and `DataStore/GetVersionAsync`.
----
----`OrderedDataStore` does not support versioning, so calling this function
----on an `OrderedDataStore` key will overwrite the current value and make
----previous versions inaccessible.
----
----In cases where another game server updated the key in the short timespan
----between retrieving the key's current value and setting the key's value,
----`GlobalDataStore/UpdateAsync` will call the function again to ensure that
----no data is overwritten. The function will be called as many times as
----needed until the data is saved **or** until the callback function returns
----`nil`.
----
----Any string being stored in a data store must be valid
----[UTF-8](/reference/engine/libraries/utf8). In UTF-8, values greater than
----127 are used exclusively for encoding multi-byte codepoints, so a single
----byte greater than 127 will not be valid UTF-8 and the
----`GlobalDataStore/UpdateAsync` attempt will fail.
----
----#### Set vs. Update
----
----`GlobalDataStore/SetAsync` is best for a quick update of a specific key,
----and it only counts against the write limit. However, it may cause data
----inconsistency if two servers attempt to set the same key at the same time.
----`GlobalDataStore/UpdateAsync` is safer for handling multi-server attempts
----because it reads the current key value (from whatever server last updated
----it) before making any changes. However, it's somewhat slower because it
----reads before it writes, and it also counts against both the read and write
----limit.
----
----#### Callback Function
----
----The callback function accepts two arguments:
----
----- Current value of the key prior to the update.
----- `DataStoreKeyInfo` instance that contains the latest version information
----  (this argument can be ignored if metadata is not being used).
----
----In turn, the callback function returns up to three values:
----
----- The new value to set for the key.
----- An array of `Player/UserId|UserIds` to associate with the key.
----  `DataStoreKeyInfo/GetUserIds` should be returned unless the existing IDs
----  are being changed; otherwise all existing IDs will be cleared.
----- A Lua table containing metadata to associate with the key.
----  `DataStoreKeyInfo/GetMetadata` should be returned unless the existing
----  metadata is being changed; otherwise all existing metadata will be
----  cleared.
----
----The callback function cannot yield, so do **not** include calls like
----`wait()`.
----
-GlobalDataStore.UpdateAsync = function(self, key, transformFunction) end;
----@param key string
----@return Tuple
----This function returns the latest value of the provided key and a
----`DataStoreKeyInfo` instance. If the key does not exist or if the latest
----version has been marked as deleted, both return values will be `nil`.
----
----`OrderedDataStore` does not support versioning and metadata, so
----`DataStoreKeyInfo` will always be `nil` for keys in an `OrderedDataStore`.
----
----Keys are cached locally for 4 seconds after the first read. A
----`GlobalDataStore/GetAsync` call within these 4 seconds returns a value
----from the cache. Modifications to the key by `GlobalDataStore/SetAsync` or
----`GlobalDataStore/UpdateAsync` apply to the cache immediately and restart
----the 4 second timer.
----
----To get a specific version, such as a version before the latest, use
----`DataStore/GetVersionAsync`.
----
-GlobalDataStore.GetAsync = function(self, key) end;
----@param key string
----@param callback Function
----@return RBXScriptConnection
----This function sets **callback** as the function to be run any time the
----value associated with the `GlobalDataStore|data store's` key changes. Once
----every minute, OnUpdate polls for changes by other servers. Changes made on
----the same server will run the function immediately. In other words,
----functions like `GlobalDataStore/IncrementAsync|IncrementAsync()`,
----`GlobalDataStore/SetAsync|SetAsync()`, and
----`GlobalDataStore/UpdateAsync|UpdateAsync()` change the key's value in the
----data store and will cause the function to run.
----
----It's recommended that you **disconnect** the connection when the
----subscription to the key is no longer needed.
----
-GlobalDataStore.OnUpdate = function(self, key, callback) end;
----@param key string
----@return Tuple
----This function marks the specified key as deleted by creating a new
----"tombstone" version of the key. Prior to this, it returns the latest
----version prior to the remove call.
----
----After a key is removed via this function, `GlobalDataStore/GetAsync` calls
----for the key will return `nil`. Older versions of the key remain accessible
----through `DataStore/ListVersionsAsync` and `DataStore/GetVersionAsync`,
----assuming they have not expired.
----
----`OrderedDataStore` does not support versioning, so calling
----`GlobalDataStore/RemoveAsync|RemoveAsync()` on an `OrderedDataStore` key
----will permanently delete it.
----
----Removed objects will be deleted permanently after 30 days.
----
----If the previous values were already deleted via
----`GlobalDataStore/RemoveAsync` or `DataStore/RemoveVersionAsync`, the
----function will return `nil`, `nil` for value and `DataStoreKeyInfo`
----respectively.
----
-GlobalDataStore.RemoveAsync = function(self, key) end;
----@class GlobalSettings : GenericSettings, ServiceProvider, Instance
----The base object used for Roblox Studio's settings menu. Can be accessed by
----using the `settings()` function.
----
----## Settings classes under the GlobalSettings
----
----- `DebugSettings`
----- `GameSettings`
----- `LuaSettings`
----- `NetworkSettings`
----- `PhysicsSettings`
----- `RenderSettings`
----- `Studio`
----
-local GlobalSettings;
----@param name string
----@return string
----Returns the value of an FVariable, if it exists.
----
-GlobalSettings.GetFVariable = function(self, name) end;
----@param name string
----@return bool
----Returns the value of an FFlag if it exists.
----
-GlobalSettings.GetFFlag = function(self, name) end;
----@class Glue : JointInstance, Instance
----@field public F0 Vector3
----@field public F1 Vector3
----@field public F2 Vector3
----@field public F3 Vector3
----Glue is a type of joint that can break when enough force is applied.
----
-local Glue;
----@class GoogleAnalyticsConfiguration : Instance
----GoogleAnalyticsConfiguration is a settings class that stores a unique
----identifier for your game client.It is used by Roblox to persistently
----record analytics from your game client.It is stored inside of the
----`AnalysticsSettings`.
----
-local GoogleAnalyticsConfiguration;
----@class GroupService : Instance
----GroupService is a service that allows developers to fetch information
----about a Roblox group from within a game.
----
----Basic information on the group, including it's name, description, owner,
----roles and emblem can be fetched using `GroupService/GetGroupInfoAsync`.
----Lists of a group's allies and enemies can be fetched using
----`GroupService/GetAlliesAsync` and `GroupService/GetEnemiesAsync`.
----
----GroupService can also be used to fetch a list of group's a player is a
----member of, using `GroupService/GetGroupsAsync`. Note, developers wishing
----to verify if a player is in a group should use the `Player`
----`Player/IsInGroup` function rather than `GroupService/GetGroupsAsync`.
----
----The service has a number of useful applications, such as detecting if a
----player is an ally or enemy upon joining the game.
----
-local GroupService;
----@param groupId int64
----@return StandardPages
----Returns a `StandardPages` object including information on all of the
----specified group's allies.
----
----This pages does not include a list of group IDs but instead a list of
----group information tables, mirroring the format of those returned by
----`GroupService/GetGroupInfoAsync`. See below for the structure of these
----tables.
----
----```lua
----group = {
----    Name = "Knights of the Seventh Sanctum",
----    Id = 377251,
----    Owner = {
----        Name = "Vilicus",
----        Id = 23415609
----    },
----    EmblemUrl = "http://www.roblox.com/asset/?id=60428602",
----    Description = "We fight alongside the balance to make sure no one becomes to powerful",
----    Roles = {
----        [1] = {
----            Name = "Apprentice",
----            Rank = 1
----        },
----        [2] = {
----            Name = "Warrior",
----            Rank = 2
----        },
----        [3] = {
----            Name = "Earth Walker",
----            Rank = 255
----        }
----    }
----}
----```
----
----Note, as this function returns a `StandardPages` object rather than an
----array, developers may wish to convert it to an array for ease of use (see
----examples).
----
----This function has a number of useful applications, including detecting if
----a player is a member of an allied group.
----
----For enemies, use `GroupService/GetEnemiesAsync`.
----
-GroupService.GetAlliesAsync = function(self, groupId) end;
----@param userId int64
----@return Array
----**Warning:** The **IsInClan** property in the returned table will always
----return **false** and exists for backwards compatibility. The Clans feature
----was sunset from the Roblox platform in 2016.
----
----This function returns a list of tables containing information on all of
----the groups a given `Player` is a member of.
----
----The list returned will include an entry for every group the player is a
----member of. These entries are tables with the following fields.
----
----<table>
----	<thead>
----		<tr>
----			<th>Name</th>
----			<th>Description</th>
----		</tr>
----	</thead>
----	<tbody>
----<tr>
----  <td><b>Name</b></td>
----  <td>The group's name</td>
----</tr> 
----<tr>
----  <td><b>Id</b></td>
----  <td>The group ID</td>
----</tr>
----<tr>
----  <td><b>EmblemUrl</b></td>
----  <td>An asset url linking to the group's thumbnail (for example: http://www.roblox.com/asset/?id=276165514)</td>
----</tr>
----<tr>
----  <td><b>EmblemId</b></td>
----  <td>The assetId of the emblem, the same which is used in the EmblemUrl</td>
----</tr>
----<tr>
----  <td><b>Rank</b></td>
----  <td>The rankId the player has (for example: 255 for the owner)</td>
----</tr>
----<tr>
----  <td><b>Role</b></td>
----  <td>The name of the player's grouprank (for example: Group Owner)</td>
----</tr>
----<tr>
----  <td><b>IsPrimary</b></td>
----  <td>A boolean indicating if this is the player's primary group</td>
----</tr>
----<tr>
----  <td><b>IsInClan</b></td>
----  <td>A boolean indicating if the player is in this group's clan</td>
----</tr>
----</tbody>
----</table>
----
----Note unlike `GroupService/GetAlliesAsync` and
----`GroupService/GetEnemiesAsync`, GetGroupsAsync returns a table rather than
----a `StandardPages` object.
----
-GroupService.GetGroupsAsync = function(self, userId) end;
----@param groupId int64
----@return Variant
----Returns a table containing information about the given group.
----
----The table returned is the same format as that returned in
----`GroupService/GetAlliesAsync` and `GroupService/GetEnemiesAsync`. This
----format can be seen below.
----
----```lua
----group = {
----    Name = "Knights of the Seventh Sanctum",
----    Id = 377251,
----    Owner = {
----        Name = "Vilicus",
----        Id = 23415609
----    },
----    EmblemUrl = "http://www.roblox.com/asset/?id=60428602",
----    Description = "We fight alongside the balance to make sure no one becomes to powerful",
----    Roles = {
----        [1] = {
----            Name = "Apprentice",
----            Rank = 1
----        },
----        [2] = {
----            Name = "Warrior",
----            Rank = 2
----        },
----        [3] = {
----            Name = "Earth Walker",
----            Rank = 255
----        }
----    }
----}
----```
----
----Note, if a group has no owner the Owner field will be set to nil.
----
----This function has a number of useful applications, including loading the
----latest description and logo of a group for display in a group base.
----
-GroupService.GetGroupInfoAsync = function(self, groupId) end;
----@param groupId int64
----@return StandardPages
----Returns a `StandardPages` object including information on all of the
----specified group's enemies.
----
----This pages does not include a list of group IDs but instead a list of
----group information tables, mirroring the format of those returned by
----`GroupService/GetGroupInfoAsync`. See below for the structure of these
----tables.
----
----```lua
----group = {
----    Name = "Knights of the Seventh Sanctum",
----    Id = 377251,
----    Owner = {
----        Name = "Vilicus",
----        Id = 23415609
----    },
----    EmblemUrl = "http://www.roblox.com/asset/?id=60428602",
----    Description = "We fight alongside the balance to make sure no one becomes to powerful",
----    Roles = {
----        [1] = {
----            Name = "Apprentice",
----            Rank = 1
----        },
----        [2] = {
----            Name = "Warrior",
----            Rank = 2
----        },
----        [3] = {
----            Name = "Earth Walker",
----            Rank = 255
----        }
----    }
----}
----```
----
----Note, as this function returns a `StandardPages` object rather than an
----array, developers may wish to convert it to an array for ease of use (see
----examples).
----
----This function has a number of useful applications, including detecting if
----a player is a member of an enemy group.
----
----For allies, use `GroupService/GetAlliesAsync`.
----
-GroupService.GetEnemiesAsync = function(self, groupId) end;
----@class GuiBase : Instance
----GuiBase is an abstract class which most graphical user interface objects
----inherit from.
----
-local GuiBase;
----@class GuiBase2d : GuiBase, Instance
----@field public AbsolutePosition Vector2
----@field public AbsoluteRotation float
----@field public AbsoluteSize Vector2
----@field public AutoLocalize bool
----@field public ClippedRect Rect
----@field public IsNotOccluded bool
----@field public Localize bool
----@field public RawRect2D Rect
----@field public RootLocalizationTable LocalizationTable
----@field public SelectionBehaviorDown SelectionBehavior
----@field public SelectionBehaviorLeft SelectionBehavior
----@field public SelectionBehaviorRight SelectionBehavior
----@field public SelectionBehaviorUp SelectionBehavior
----@field public SelectionGroup bool
----@field public TotalGroupScale float
----@field public SelectionChanged fun(amISelected: bool, previousSelection: GuiObject, newSelection: GuiObject): RbxScriptSignal
----GuiBase2d is an abstract class inherited by 2D GUI Objects.
----
-local GuiBase2d;
----@class GuiBase3d : GuiBase, Instance
----@field public Color BrickColor
----@field public Color3 Color3
----@field public Transparency float
----@field public Visible bool
----An abstract class for 3D GUI elements that are rendered in the world.
----
-local GuiBase3d;
----@class GuiButton : GuiObject, GuiBase2d, GuiBase, Instance
----@field public AutoButtonColor bool
----@field public Modal bool
----@field public Selected bool
----@field public Style ButtonStyle
----@field public Activated fun(inputObject: InputObject, clickCount: int): RbxScriptSignal
----@field public MouseButton1Click fun(): RbxScriptSignal
----@field public MouseButton1Down fun(x: int, y: int): RbxScriptSignal
----@field public MouseButton1Up fun(x: int, y: int): RbxScriptSignal
----@field public MouseButton2Click fun(): RbxScriptSignal
----@field public MouseButton2Down fun(x: int, y: int): RbxScriptSignal
----@field public MouseButton2Up fun(x: int, y: int): RbxScriptSignal
----GuiLabel is an abstract class that inherits from `GuiObject`. It is the
----base class for `ImageButton` and `TextButton`. Objects of this type serve
----to be interactive, clickable user interface elements. It defines several
----properties for interaction behavior, namely `GuiButton/AutoButtonColor`
----and `GuiButton/Modal`, as well as a handful of events for mouse buttons
----(`GuiButton/MouseButton1Click`, `GuiButton/MouseButton1Down`, etc).
----
----The most import ant event of a GuiButton is `GuiButton/Activated`, a
----**multi-platform event** that fires when the button is activated. When
----using a mouse, this means clicking the button and releasing with the
----cursor still over the UI object. For touch, the same applies but with a
----touch instead of button press. Finally, for gamepads,
----`GuiButton/Activated` fires if a GuiButton is selected when the A-button
----is pressed and released. In short, this event is very useful for
----multi-platform user interface programming as it provides a nice general
----interface for a single user input.
----
-local GuiButton;
----@class GuiLabel : GuiObject, GuiBase2d, GuiBase, Instance
----GuiLabel is an abstract class that inherits from `GuiObject`. It is the
----base class for `ImageLabel` and `TextLabel`. Unlike `GuiButton`, objects
----of this type will not register click events, but instead serve as
----non-interactive labels. It does not implement any further properties,
----events or methods.
----
-local GuiLabel;
----@class GuiMain : ScreenGui, LayerCollector, GuiBase2d, GuiBase, Instance
----The original name of the `ScreenGui`. This class functions identically to
----the ScreenGui, and should not be used.
----
-local GuiMain;
----@class GuiObject : GuiBase2d, GuiBase, Instance
----@field public Active bool
----@field public AnchorPoint Vector2
----@field public AutomaticSize AutomaticSize
----@field public BackgroundColor BrickColor
----@field public BackgroundColor3 Color3
----@field public BackgroundTransparency float
----@field public BorderColor BrickColor
----@field public BorderColor3 Color3
----@field public BorderMode BorderMode
----@field public BorderSizePixel int
----@field public ClipsDescendants bool
----@field public Draggable bool
----@field public LayoutOrder int
----@field public NextSelectionDown GuiObject
----@field public NextSelectionLeft GuiObject
----@field public NextSelectionRight GuiObject
----@field public NextSelectionUp GuiObject
----@field public Position UDim2
----@field public Rotation float
----@field public Selectable bool
----@field public SelectionImageObject GuiObject
----@field public SelectionOrder int
----@field public Size UDim2
----@field public SizeConstraint SizeConstraint
----@field public Transparency float
----@field public Visible bool
----@field public ZIndex int
----@field public DragBegin fun(initialPosition: UDim2): RbxScriptSignal
----@field public DragStopped fun(x: int, y: int): RbxScriptSignal
----@field public InputBegan fun(input: InputObject): RbxScriptSignal
----@field public InputChanged fun(input: InputObject): RbxScriptSignal
----@field public InputEnded fun(input: InputObject): RbxScriptSignal
----@field public MouseEnter fun(x: int, y: int): RbxScriptSignal
----@field public MouseLeave fun(x: int, y: int): RbxScriptSignal
----@field public MouseMoved fun(x: int, y: int): RbxScriptSignal
----@field public MouseWheelBackward fun(x: int, y: int): RbxScriptSignal
----@field public MouseWheelForward fun(x: int, y: int): RbxScriptSignal
----@field public SelectionGained fun(): RbxScriptSignal
----@field public SelectionLost fun(): RbxScriptSignal
----@field public TouchLongPress fun(touchPositions: Array, state: UserInputState): RbxScriptSignal
----@field public TouchPan fun(touchPositions: Array, totalTranslation: Vector2, velocity: Vector2, state: UserInputState): RbxScriptSignal
----@field public TouchPinch fun(touchPositions: Array, scale: float, velocity: float, state: UserInputState): RbxScriptSignal
----@field public TouchRotate fun(touchPositions: Array, rotation: float, velocity: float, state: UserInputState): RbxScriptSignal
----@field public TouchSwipe fun(swipeDirection: SwipeDirection, numberOfTouches: int): RbxScriptSignal
----@field public TouchTap fun(touchPositions: Array): RbxScriptSignal
----GuiObject is an abstract class (much like `BasePart`) for a 2D user
----interface object. It defines all the properties relating to the display of
----a graphical user interface (GUI) object such as `GuiObject/Size` and
----`GuiObject/Position`. It also has some useful read-only properties like
----`GuiObject/AbsolutePosition`, `GuiObject/AbsoluteSize`, and
----`GuiObject/AbsoluteRotation`. It should be noted that `GuiObject` can have
----negative sizes and render normally, though `GuiObject/AnchorPoint` ought
----to be used to better control rendering.
----
----To manipulate the layout of a GuiObject in special ways, you can use a
----`UIComponent` class such as `UIListLayout`, `UIPadding` or `UIScale`.
----
----This class defines very simple animation methods:
----`GuiObject/TweenPosition`, `GuiObject/TweenSize` and
----`GuiObject/TweenSizeAndPosition` are good alternatives to `TweenService`
----for beginners.
----
----GuiObject also defines events for user input like `GuiObject/MouseEnter`,
----`GuiObject/TouchTap`, `GuiObject/InputBegan`, `GuiObject/InputChanged` and
----`GuiObject/InputEnded`. The last three of these mimic the events of
----`UserinputService` of the same name. Although it is possible to detect
----mouse button events on any GuiObject using `GuiObject/InputBegan`, only
----`ImageButton` and `TextButton` have dedicated events for these (e.g.
----`TextButton/MouseButton1Down`). This event ought not be used for general
----button activation since not all platforms use a mouse; see
----`TextButton/Activated`.
----
-local GuiObject;
----@param endSize UDim2
----@param easingDirection EasingDirection
----@param easingStyle EasingStyle
----@param time float
----@param override bool
----@param callback Function
----@return bool
----Smoothly resizes a GUI to a new `DataType/UDim2` in the specified time
----using the specified `Enum/EasingDirection|EasingDirection` and
----`Enum/EasingStyle|EasingStyle`.
----
----This function will return whether the tween will play. Normally this will
----always return true, but it will return false if another tween is active
----and override is set to false.
+---Note, this property should be used on the client only and will not
+---replicate to the server.
+---
+---For a variant of this property for `BasePart`s, see
+---`BasePart/LocalTransparencyModifier`.
+---
+Decal.LocalTransparencyModifier = nil;
+---This property dictates how shiny the decal is. It takes a value between 0
+---and 1, where 1 is "full shininess".
+---
+Decal.Shiny = nil;
+---Sets the specularity, which is how the surface responds to light being
+---shined on it.
+---
+Decal.Specular = nil;
+---The Content ID of the image to be applied by the `Decal`.
+---
+---#### How can I upload a Decal?
+---
+---Images can be uploaded to Roblox provided they adhere to the community
+---guidelines. For information on how to upload images, see
+---[Textures and Decals](/building-and-visuals/modeling/textures-and-decals).
+---
+---#### How to find do I find a Decal's Content ID?
+---
+---Unlike with `Sound` and `Animation` objects, the Content ID of a Decal is
+---not the same as the number in the URL. There are two main ways of finding
+---the Content ID of a Decal:
+---
+---- Paste the URL into the Texture property in Roblox Studio. Roblox will
+---  automatically update the property to the correct Content ID. Note this
+---  only works in Roblox Studio and cannot be done from Scripts or whilst
+---  the game is running.
+---- Insert the Decal into the game, this is generally done through the
+---  Toolbox under 'My Decals'. The Content ID can be found in the decal that
+---  is inserted. Note, `InsertService/LoadAsset` can also be used if
+---  developers wish to automate this method.
+---
+Decal.Texture = nil;
+---Determines the transparency of the `Decal` with 0 being completely opaque
+---and 1 completely transparent.
+---
+---Note, `Decal`s also respect the transparency of the original image file
+---uploaded to Roblox. This means transparency can be changed prior to
+---uploading to Roblox, and without the need to use the Transparency
+---property.
+---
+---`Decal/LocalTransparencyModifier` acts as a multiplier for the Decal's
+---transparency and should be used when the transparency of the decal is
+---likely to be changed by another script, as is the case with player
+---Characters.
+---
+---For `BasePart`s, see `BasePart/Transparency`.
+---
+Decal.Transparency = nil;
+---**ZIndex** determines the order in which decals on the same
+---`Decal/Face|Face` of a `BasePart` are rendered. Decals are rendered in
+---**ascending** priority order, where lower values are rendered first.
+---Therefore, a decal with a higher ZIndex renders later (and on top of)
+---other Decals with lower ZIndex.
+---
+---The range of valid values is -MAX_INT to MAX_INT, inclusive (2,147,483,647
+---or (2^31 - 1)). If you are unsure if you will need to layer an decal
+---between two already-existing decals in the future, it can be a good idea
+---to use multiples of 100, i.e. 0, 100, 200. This ensures a large gap of
+---ZIndex values you can use for elements rendered in-between other elements.
 ---
 ---See also:
 ---
----- `GuiObject/TweenPosition`, tweens a GUI's position
----- `GuiObject/TweenSizeAndPosition`, tweens a GUI's size and position
----  synchronously
+---- `GuiObject/ZIndex`, a property which behaves similarly, but for GUI
+---  elements
 ---
-GuiObject.TweenSize = function(self, endSize, easingDirection, easingStyle, time, override, callback) end;
----@param endPosition UDim2
----@param easingDirection EasingDirection
----@param easingStyle EasingStyle
----@param time float
----@param override bool
----@param callback Function
----@return bool
----Smoothly moves a GUI to a new `DataType/UDim2` position in the specified
----time using the specified `Enum/EasingDirection|EasingDirection` and
----`Enum/EasingStyle|EasingStyle`.
----
----This function will return whether the tween will play. It will not play if
----another tween is acting on the `GuiObject` and the override parameter is
----false.
----
----See also:
----
----- `GuiObject/TweenSize`, tweens a GUI's size
----- `GuiObject/TweenSizeAndPosition`, tweens a GUI's size and position
----  synchronously
----
-GuiObject.TweenPosition = function(self, endPosition, easingDirection, easingStyle, time, override, callback) end;
----@param endSize UDim2
----@param endPosition UDim2
----@param easingDirection EasingDirection
----@param easingStyle EasingStyle
----@param time float
----@param override bool
----@param callback Function
----@return bool
----Smoothly resizes and moves a GUI to a new `DataType/UDim2` size and
----position in the specified time using the specified
----`Enum/EasingDirection|EasingDirection` and `Enum/EasingStyle|EasingStyle`.
----
----This function will return whether the tween will play. Normally this will
----always return true, but it will return false if another tween is active
----and override is set to false.
----
----See also:
----
----- `GuiObject/TweenSize`, tweens a GUI's size
----- `GuiObject/TweenPosition`, tweens a GUI's position
----
-GuiObject.TweenSizeAndPosition = function(self, endSize, endPosition, easingDirection, easingStyle, time, override, callback) end;
----@class GuiService : Instance
----@field public AutoSelectGuiEnabled bool
----@field public CoreEffectFolder Folder
----@field public CoreGuiFolder Folder
----@field public CoreGuiNavigationEnabled bool
----@field public GuiNavigationEnabled bool
----@field public IsModalDialog bool
----@field public IsWindows bool
----@field public MenuIsOpen bool
----@field public SelectedCoreObject GuiObject
----@field public SelectedObject GuiObject
----@field public TouchControlsEnabled bool
----@field public BrowserWindowClosed fun(): RbxScriptSignal
----@field public CloseInspectMenuRequest fun(): RbxScriptSignal
----@field public CoreGuiRenderOverflowed fun(): RbxScriptSignal
----@field public EmotesMenuOpenChanged fun(isOpen: bool): RbxScriptSignal
----@field public ErrorMessageChanged fun(newErrorMessage: string): RbxScriptSignal
----@field public InspectMenuEnabledChangedSignal fun(enabled: bool): RbxScriptSignal
----@field public InspectPlayerFromHumanoidDescriptionRequest fun(humanoidDescription: Instance, name: string): RbxScriptSignal
----@field public InspectPlayerFromUserIdWithCtxRequest fun(userId: int64, ctx: string): RbxScriptSignal
----@field public KeyPressed fun(key: string, modifiers: string): RbxScriptSignal
----@field public MenuClosed fun(): RbxScriptSignal
----@field public MenuOpened fun(): RbxScriptSignal
----@field public NativeClose fun(): RbxScriptSignal
----@field public NetworkPausedEnabledChanged fun(enabled: bool): RbxScriptSignal
----@field public Open9SliceEditor fun(selectedImageObject: Instance): RbxScriptSignal
----@field public SafeZoneOffsetsChanged fun(): RbxScriptSignal
----@field public ShowLeaveConfirmation fun(): RbxScriptSignal
----@field public SpecialKeyPressed fun(key: SpecialKey, modifiers: string): RbxScriptSignal
----@field public UiMessageChanged fun(msgType: UiMessageType, newUiMessage: string): RbxScriptSignal
----The GuiService is a service which currently allows developers to control
----what `GuiObject` is currently being selected by the gamepad navigator. It
----also allows clients to check if Roblox's main menu is currently open.
----
----This service has a lot of hidden members, which are mainly used internally
----by Roblox's `CoreScript|CoreScripts`.
----
-local GuiService;
----@return int
-GuiService.GetBrickCount = function(self) end;
----@param position Vector3
----@return Instance
-GuiService.GetClosestDialogToPosition = function(self, position) end;
----@param userId int64
----@return void
----This function allows the Inspect Menu to appear showing the user that has
----the given `Player/UserId|UserId`. This is especially useful when you want
----to inspect players who aren't in the current game.
----
----This shows the same information as the “Currently Wearing” tab on the
----specified user's profile.
----
----See also:
----
----- [Avatar Inspect Menu][1], an article providing a more detailed
----  explanation of the Inspect and Buy feature and how it works
----- `GuiService:SetInspectMenuEnabled`, allows developers to enable or
----  disable default Inspect and Buy functionality. This is especially useful
----  when what is being worn on a player's avatar on the Roblox platform is
----  not necessarily the same as their in-game appearance
----- `GuiService/InspectPlayerFromHumanoidDescription`, allows a developer to
----  bring up the Inspect menu showing the assets listed in this
----  `HumanoidDescription` object
----
----[1]: https://developer.roblox.com/avatar/characters/avatar-inspect-menu
----
-GuiService.InspectPlayerFromUserId = function(self, userId) end;
----@param x1 int
----@param y1 int
----@param x2 int
----@param y2 int
----@return void
-GuiService.SetGlobalGuiInset = function(self, x1, y1, x2, y2) end;
----@param key string
----@return void
-GuiService.AddKey = function(self, key) end;
----@param userId int64
----@param ctx string
----@return void
-GuiService.InspectPlayerFromUserIdWithCtx = function(self, userId, ctx) end;
----@return bool
----Returns a boolean indicating whether or not the player Emotes menu is
----open.
----
----Developers can open or close the Emotes menu by calling the
----`GuiService/SetEmotesMenuOpen` function.
----
-GuiService.GetEmotesMenuOpen = function(self) end;
----@param selectionName string
----@param selectionParent Instance
----@return void
----Creates a gui selection group where gamepad gui navigation will only
----consider selectable gui objects that are within the group (children of
----selectionParent). A use case is you have a menu pop open, but there are
----other selectable objects on the screen (maybe from previous menus), but
----you want to the user to only be able to select gui objects in the new
----menu.
----
-GuiService.AddSelectionParent = function(self, selectionName, selectionParent) end;
----@return ConnectionError
-GuiService.GetErrorCode = function(self) end;
----@return bool
-GuiService.IsMemoryTrackerEnabled = function(self) end;
----@return string
-GuiService.GetErrorMessage = function(self) end;
----@return bool
----Returns true if the client is using the ten foot interface, which is a
----special version of Roblox's UI, exclusive to consoles. This is the only
----guaranteed way to verify if the user is on a console or not.
----
-GuiService.IsTenFootInterface = function(self) end;
----@param open bool
----@param menuName string
----@return void
-GuiService.SetMenuIsOpen = function(self, open, menuName) end;
----@param url string
----@return void
-GuiService.OpenBrowserWindow = function(self, url) end;
----@return bool
----This function returns whether or not the
----`Player/GameplayPaused|gameplay paused` notification has been disabled by
----the developer.
----
----Developers can enable or disable the notification by calling the
----`GuiService/SetGameplayPausedNotificationEnabled` function.
----
----See also:
----
----- `Workspace/StreamingPauseMode`, controls which streaming physics pause
----  mode is active
----
-GuiService.GetGameplayPausedNotificationEnabled = function(self) end;
----@return Tuple
----Returns two `DataType/Vector2` values representing the inset of user GUIs
----in pixels, from the top left corner of the screen and the bottom right
----corner of the screen respectively.
----
----The inset values supplied by this function only take effect on
----`ScreenGui|ScreenGuis` that have their
----`ScreenGui/IgnoreGuiInset|IgnoreGuiInset` property set to false.
----
-GuiService.GetGuiInset = function(self) end;
----@param title string
----@param url string
----@return void
-GuiService.OpenNativeOverlay = function(self, title, url) end;
----@param top float
----@param bottom float
----@param left float
----@param right float
----@return void
-GuiService.SetSafeZoneOffsets = function(self, top, bottom, left, right) end;
----@return bool
----This function returns whether the Inspect and Buy menu functionality is
----currently enabled. The feature is enabled by default and can be set using
----the `GuiService/SetInspectMenuEnabled` function.
----
----See also:
----
----- [Avatar Inspect Menu][1], an article providing a more detailed
----  explanation of the Inspect and Buy feature and how it works
----- `GuiService/InspectPlayerFromHumanoidDescription`, allows a developer to
----  bring up the Inspect menu showing the assets listed in this
----  `HumanoidDescription` object. This is especially useful when what is
----  being worn on a player's avatar on the Roblox platform is not
----  necessarily the same as their in-game appearance
----- `GuiService/InspectPlayerFromUserId`, allows the Inspect Menu to appear
----  showing the user that has the given `Player/UserId|UserId`. This is
----  especially useful when you want to inspect players who aren't in the
----  current game
----
----[1]: /avatar/characters/avatar-inspect-menu
----
-GuiService.GetInspectMenuEnabled = function(self) end;
----@param data string
----@param notificationType int
----@return void
-GuiService.BroadcastNotification = function(self, data, notificationType) end;
----@return Dictionary
-GuiService.GetNotificationTypeList = function(self) end;
----@param dialog Instance
----@return void
-GuiService.RemoveCenterDialog = function(self, dialog) end;
----@return Vector2
-GuiService.GetScreenResolution = function(self) end;
----@param key SpecialKey
----@return void
-GuiService.AddSpecialKey = function(self, key) end;
----@param key string
----@return void
-GuiService.RemoveKey = function(self, key) end;
----@param selectionParent Instance
----@return void
-GuiService.Select = function(self, selectionParent) end;
----@return void
-GuiService.ClearError = function(self) end;
----@param selectionName string
----@return void
----Removes a group that was created with `GuiService/AddSelectionParent` or
----`GuiService/AddSelectionTuple`.
----
-GuiService.RemoveSelectionGroup = function(self, selectionName) end;
----@param msgType UiMessageType
----@param uiMessage string
----@return void
----Sets the GuiService's Ui message.
----
-GuiService.SetUiMessage = function(self, msgType, uiMessage) end;
----@return void
----This function closes the Inspect Menu, if open, when run from a
----`LocalScript`.
----
----See also:
----
----- [Avatar Inspect Menu][1], an article providing a more detailed
----  explanation of the Inspect and Buy feature and how it works
----- `GuiService/InspectPlayerFromHumanoidDescription`, allows a developer to
----  bring up the Inspect menu showing the assets listed in this
----  `HumanoidDescription` object. This is especially useful when what is
----  being worn on a player's avatar on the Roblox platform is not
----  necessarily the same as their in-game appearance
----- `GuiService/InspectPlayerFromUserId`, allows the Inspect Menu to appear
----  showing the user that has the given `Player/UserId|UserId`. This is
----  especially useful when you want to inspect players who aren't in the
----  current game
----
----[1]: /avatar/characters/avatar-inspect-menu
----
-GuiService.CloseInspectMenu = function(self) end;
----@param enabled bool
----@return void
----This function allows developers to enable or disable default Inspect and
----Buy functionality. This is useful when you want to disable the feature in
----your game, entirely or during certain parts of your game (such as a
----cutscene). The feature is enabled by default.
----
----The code sample below demonstrates how to disable the Inspect Menu for
----your game:
----
----```lua
----local GuiService = game:GetService("GuiService")
----GuiService:SetInspectMenuEnabled(false)
----```
----
----See also:
----
----- [Avatar Inspect Menu][1], an article providing a more detailed
----  explanation of the Inspect and Buy feature and how it works
----- `GuiService/InspectPlayerFromHumanoidDescription`, allows a developer to
----  bring up the Inspect menu showing the assets listed in this
----  `HumanoidDescription` object. This is especially useful when what is
----  being worn on a player's avatar on the Roblox platform is not
----  necessarily the same as their in-game appearance
----- `GuiService/InspectPlayerFromUserId`, allows the Inspect Menu to appear
----  showing the user that has the given `Player/UserId|UserId`. This is
----  especially useful when you want to inspect players who aren't in the
----  current game
----
----[1]: /avatar/characters/avatar-inspect-menu
----
-GuiService.SetInspectMenuEnabled = function(self, enabled) end;
----@param enabled bool
----@return void
----This method allows developers to disable the built-in notification when a
----players gameplay is paused. They can then add in their own UI if they wish
----to customize it.
----
----Developers can query whether the notification is enabled by calling the
----`GuiService/GetGameplayPausedNotificationEnabled` function.
----
----See also:
----
----- `Workspace/StreamingPauseMode`, controls which streaming physics pause
----  mode is active
----
-GuiService.SetGameplayPausedNotificationEnabled = function(self, enabled) end;
----@param input string
----@return bool
-GuiService.CloseStatsBasedOnInputString = function(self, input) end;
----@param isOpen bool
----@return void
----Opens or closes the player Emotes menu.
----
-GuiService.SetEmotesMenuOpen = function(self, isOpen) end;
----@param input string
----@return bool
-GuiService.ShowStatsBasedOnInputString = function(self, input) end;
----@return int
-GuiService.GetResolutionScale = function(self) end;
----@param key SpecialKey
----@return void
-GuiService.RemoveSpecialKey = function(self, key) end;
----@return void
-GuiService.ToggleFullscreen = function(self) end;
----@return Dictionary
-GuiService.GetSafeZoneOffsets = function(self) end;
----@param isForced bool
----@return void
-GuiService.ForceTenFootInterface = function(self, isForced) end;
----@param dialog Instance
----@param centerDialogType CenterDialogType
----@param showFunction Function
----@param hideFunction Function
----@return void
-GuiService.AddCenterDialog = function(self, dialog, centerDialogType, showFunction, hideFunction) end;
----@return string
-GuiService.GetUiMessage = function(self) end;
----@return ConnectionError
-GuiService.GetErrorType = function(self) end;
----@param selectionName string
----@param selections Tuple
----@return void
----Functions similarly to `GuiService/AddSelectionParent`, but you can give
----it a tuple of `GuiObject` that you want to be contained in the group.
----
-GuiService.AddSelectionTuple = function(self, selectionName, selections) end;
----@param humanoidDescription Instance
----@param name string
----@return void
----This function allows a developer to bring up the Inspect menu showing the
----assets listed in this `HumanoidDescription` object.
----
----This allows further customization with what is shown in the Inspect Menu
----when players inspect other players in your game. If your game modifies
----what the players are wearing, you can instead give the Inspect Menu a
----HumanoidDescription object that represents what a player is wearing and
----those items will be shown. You should pass a name as well to represent the
----name of the player that will be inspected.
----
----See also:
----
----- [Avatar Inspect Menu][1], an article providing a more detailed
----  explanation of the Inspect and Buy feature and how it works
----- `GuiService/SetInspectMenuEnabled`, allows developers to enable or
----  disable default Inspect and Buy functionality
----- `GuiService/InspectPlayerFromUserId`, allows the Inspect Menu to appear
----  showing the user that has the given `Player/UserId|UserId`. This is
----  especially useful when you want to inspect players who aren't in the
----  current game
----
----[1]: https://developer.roblox.com/avatar/characters/avatar-inspect-menu
----
-GuiService.InspectPlayerFromHumanoidDescription = function(self, humanoidDescription, name) end;
----@class GuidRegistryService : Instance
----An internal service, whose functionality is not accessible to developers.
----
-local GuidRegistryService;
----@class HSRDataContentProvider : CacheableContentProvider, Instance
-local HSRDataContentProvider;
----@class HandleAdornment : PVAdornment, GuiBase3d, GuiBase, Instance
----@field public AdornCullingMode AdornCullingMode
----@field public AlwaysOnTop bool
----@field public CFrame CFrame
----@field public SizeRelativeOffset Vector3
----@field public ZIndex int
----@field public MouseButton1Down fun(): RbxScriptSignal
----@field public MouseButton1Up fun(): RbxScriptSignal
----@field public MouseEnter fun(): RbxScriptSignal
----@field public MouseLeave fun(): RbxScriptSignal
----**Note:** For handles to be interactive, they must be parented to a
----player's `PlayerGui` or the `CoreGui`. **HandleAdornment** is an abstract
----class inherited by 3D handle adornments.
----
-local HandleAdornment;
+Decal.ZIndex = nil;
