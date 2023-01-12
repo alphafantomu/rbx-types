@@ -1,0 +1,13 @@
+
+-- Rbx Types --
+-- Usage: luvit . [flags...]
+
+  --debug -d: enables debug mode, will create a log.txt file and print in the CLI
+	
+  --preloadFileSize -pfs [filesize in kb]: changes the preload file size, if the file size is too large then the file will be split
+	
+  --annotateLuaGlobals -alg: enables creating annotations for lua globals
+	
+  --output -o [file name no extension]: changes the file name for the annotation file, dont add an extension
+
+  --help -h: provides this help screen
